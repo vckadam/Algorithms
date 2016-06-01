@@ -7045,4 +7045,111 @@ public class MinStack {
         return -1;
     }
 }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+116. Populating Next Right Pointers in Each Node
+
+Given a binary tree
+
+    struct TreeLinkNode {
+      TreeLinkNode *left;
+      TreeLinkNode *right;
+      TreeLinkNode *next;
+    }
+Populate each next pointer to point to its next right node. If there is no next right node, the next pointer should be set to NULL.
+
+Initially, all next pointers are set to NULL.
+
+Note:
+
+You may only use constant extra space.
+You may assume that it is a perfect binary tree (ie, all leaves are at the same level, and every parent has two children).
+For example,
+Given the following perfect binary tree,
+         1
+       /  \
+      2    3
+     / \  / \
+    4  5  6  7
+After calling your function, the tree should look like:
+         1 -> NULL
+       /  \
+      2 -> 3 -> NULL
+     / \  / \
+    4->5->6->7 -> NULL
+////////////////////////// optimized 
+public void connect(TreeLinkNode root) {
+        if(root == null) return;
+        TreeLinkNode prev = root, cur = null;
+        prev.next = null;
+        while(prev.left != null) {
+            cur = prev;
+            while(cur != null) {
+                cur.left.next = cur.right;
+                if(cur.next != null) cur.right.next = cur.next.left;
+                else cur.right.next = null;
+                cur = cur.next;
+            }
+            prev = prev.left;
+        }
+        return;
+}
+//////////////////////////// another 	
+public void connect(TreeLinkNode root) {
+        if(root == null) return;
+        Queue<TreeLinkNode> q = new LinkedList<TreeLinkNode>();
+        q.offer(root);
+        TreeLinkNode prev = null;
+        q.offer(null);
+        while(!q.isEmpty()) {
+            TreeLinkNode temp = q.poll();
+            if(prev != null) {
+                prev.next = temp;
+            }
+            prev = temp;
+            if(temp != null) {
+                if(temp.left != null) q.offer(temp.left);
+                if(temp.right != null) q.offer(temp.right);
+            }
+            else {
+                if(!q.isEmpty()) q.offer(null);
+            }
+            
+        }
+        return;
+    }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+There is a fence with n posts, each post can be painted with one of the k colors.
+You have to paint all the posts such that no more than two adjacent fence posts have the same color.
+Return the total number of ways you can paint the fence.
+
+If n == 1, there would be k-ways to paint.
+
+if n == 2, there would be two situations:
+
+2.1 You paint same color with the previous post: k*1 ways to paint, named it as same
+2.2 You paint differently with the previous post: k*(k-1) ways to paint this way, named it as dif
+So, you can think, if n >= 3, you can always maintain these two situations, You either paint the same color with the previous one, or differently.
+
+Since there is a rule: "no more than two adjacent fence posts have the same color."
+
+We can further analyze:
+
+from 2.1, since previous two are in the same color, next one you could only paint differently, and it would form one part of "paint differently" case in the n == 3 level, and the number of ways to paint this way would equal to same*(k-1).
+from 2.2, since previous two are not the same, you can either paint the same color this time (dif*1) ways to do so, or stick to paint differently (dif*(k-1)) times.
+Here you can conclude, when seeing back from the next level, ways to paint the same, or variable same would equal to dif*1 = dif, and ways to paint differently, variable dif, would equal to same*(k-1)+dif*(k-1) = (same + dif)*(k-1)
+
+public int numsWays(int n, int k) {
+	if(n <= 0) {
+		return 0;
+	}
+	if(n == 1) return k;
+	same = k;
+	diff = k*(k-1);
+	for(int i = 3; i <= n; i++) {
+		int temp = diff;
+		diff = (same + diff)*(k-1);
+		same = diff;
+	}
+	return (same+diff);
+}
