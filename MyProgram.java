@@ -7153,3 +7153,263 @@ public int numsWays(int n, int k) {
 	}
 	return (same+diff);
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Given a string of numbers and operators, return all possible results from computing all the different possible ways to group numbers and operators. The valid operators are +, - and *.
+
+
+Example 1
+Input: "2-1-1".
+
+((2-1)-1) = 0
+(2-(1-1)) = 2
+Output: [0, 2]
+
+
+Example 2
+Input: "2*3-4*5"
+
+(2*(3-(4*5))) = -34
+((2*3)-(4*5)) = -14
+((2*(3-4))*5) = -10
+(2*((3-4)*5)) = -10
+(((2*3)-4)*5) = 10
+Output: [-34, -14, -10, -10, 10]
+
+public List<Integer> diffWaysToCompute(String input) {
+        if(input.length() == 0) return new ArrayList<Integer>();
+        HashMap<String,List<Integer>> hm = new HashMap<>();  // avoid the overlapping subproblems
+        return helper(input, hm);  // call helper with map
+    }
+    public List<Integer> helper(String input, HashMap<String,List<Integer>> hm) {
+        if(hm.containsKey(input)) return hm.get(input);  // if that string exist in map return;
+        if(!input.contains("+") && !input.contains("-") && !input.contains("*")) {
+            List<Integer> ret = new ArrayList<Integer>();  // input doesn't contains any operator means only number
+            ret.add(Integer.valueOf(input));              // return that number
+            hm.put(input,ret);
+            return ret;
+        } 
+        List<Integer> ret = new ArrayList<Integer>();       // if contains atleast one operator then go through 
+        for(int i = 0; i < input.length(); i++) {           // entrire string 
+            char ch = input.charAt(i);
+            if(ch == '+' || ch == '-' || ch == '*') {       // and when ever we hit operator divide the string.
+                List<Integer> left = helper(input.substring(0,i),hm);
+                List<Integer> right = helper(input.substring(i+1),hm);
+                for(Integer n1: left) {
+                    for(Integer n2: right) {
+                        switch(ch) {
+                            case '+' : ret.add(n1+n2); break;
+                            case '-' : ret.add(n1-n2); break;
+                            case '*' : ret.add(n1*n2); break;
+                        }
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+95. Unique Binary Search Trees II
+
+Given n, generate all structurally unique BST's (binary search trees) that store values 1...n.
+
+For example,
+Given n = 3, your program should return all 5 unique BST's shown below.
+
+   1         3     3      2      1
+    \       /     /      / \      \
+     3     2     1      1   3      2
+    /     /       \                 \
+   2     1         2                 3
+   
+   public List<TreeNode> generateTrees(int n) {
+        if(n == 0) return new ArrayList<TreeNode>();
+        return helper(1,n);
+    }
+    public List<TreeNode> helper(int left, int right) {
+        List<TreeNode> ret = new ArrayList<TreeNode>();
+        if(left > right) {
+            ret.add(null);
+            return ret;
+        }
+        if(left == right) {
+            TreeNode newNode = new TreeNode(left);
+            newNode.left = null;
+            newNode.right = null;
+            ret.add(newNode);
+            return ret;
+        }
+        for(int i = left; i <= right; i++) {
+            List<TreeNode> leftTree = helper(left, i-1);
+            List<TreeNode> rightTree = helper(i+1,right);
+            for(TreeNode leftNode: leftTree) {
+                for(TreeNode rightNode: rightTree) {
+                    TreeNode root = new TreeNode(i);
+                    root.left = leftNode;
+                    root.right = rightNode;
+                    ret.add(root);
+                }
+            }
+        }
+        return ret;
+    }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+96. Unique Binary Search Trees
+
+Given n, how many structurally unique BST's (binary search trees) that store values 1...n?
+
+For example,
+Given n = 3, there are a total of 5 unique BST's.
+
+   1         3     3      2      1
+    \       /     /      / \      \
+     3     2     1      1   3      2
+    /     /       \                 \
+   2     1         2                 3
+   
+   public int numTrees(int n) {
+        if(n == 0) return 0;
+        int[] array = new int[n+1];
+        array[0] = 1;
+        array[1] = 1;
+        for(int i = 2; i <= n; i++) {
+            int num = 0;
+            for(int j = 0; j < i; j++) {
+                num += array[j]*array[i-j-1];
+            }
+            array[i] = num;
+        }
+        return array[n];
+    }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Moving Average from Data Stream (Java)
+
+Given a stream of integers and a window size, calculate the moving average of all integers in the sliding window.
+
+import java.util.*;
+class MovingAvg{
+	int size, count, sum;
+	Queue<Integer> q;
+	public MovingAvg(int size) {
+		q = new LinkedList<Integer>();
+		sum = 0;
+		this.size = size;
+		count = 0;
+	}
+	public double getNext(int val) {
+		q.add(val);
+		sum += val;
+		count++;
+		if(count <= size) return (double)sum / count;
+		else {
+			sum -= q.remove();
+			return (double)sum/size;
+		}
+	}
+}
+public class MovingAvgMain {
+	public static void main(String[] arg) {
+		MovingAvg  ma = new MovingAvg(3);
+		System.out.println(ma.getNext(1));
+		System.out.println(ma.getNext(2));
+		System.out.println(ma.getNext(3));
+		System.out.println(ma.getNext(4));
+		System.out.println(ma.getNext(5));
+		System.out.println(ma.getNext(6));
+		System.out.println(ma.getNext(7));
+		
+	}
+}
+///// output 
+
+1.0
+1.5
+2.0
+3.0
+4.0
+5.0
+6.0
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Given a string, determine if a permutation of the string could form a palindrome.
+For example,
+"code" -> False, "aab" -> True, "carerac" -> True.
+
+public boolean isPalindrome1(String str) {
+	if(str.length() == 0) return true;
+	int[] array = new int[256];
+	int count = 0;
+	for(int i = 0; i < str.length(); i++) {
+		if(array[str.charAt(i)] > 0) array[str.charAt(i)]--;
+		else array[str.charAt(i)]++;
+	}
+	for(int i = 0; i < 256; i++) {
+		if(array[i] != 0) count++;
+	}
+	return (count<=1);
+}
+///////////////// another 
+
+public boolean isPalindrome2(String str) {
+	if(str.length() == 0) return true;
+	Set<Character>  s = new HashSet<Character>();
+	for(int i = 0; i < str.length(); i++) {
+		if(s.contains(str.charAt(i))) s.remove(str.charAt(i));
+		else s.add(str.charAt(i));
+	}
+	return s.size()<=1;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+LEETCODE 243 SHORTEST WORD DISTANCE
+
+Given a list of words and two words word1 and word2, return the shortest distance between these two words in the list.
+
+For example,
+Assume that words = ["practice", "makes", "perfect", "coding", "makes"].
+
+Given word1 = “coding”, word2 = “practice”, return 3.
+Given word1 = "makes", word2 = "coding", return 1.
+
+public int getDiff1(List<String> al, String word1, String word2) {
+		int p1 = -1, p2 = -1, min = Integer.MAX_VALUE;
+		for(int i = 0; i < al.size(); i++) {
+			if(al.get(i).equals(word1)) p1 = i;
+			if(al.get(i).equals(word2)) p2 = i;
+			if(p1 != -1 && p2 != -1) min = Math.min(min,Math.abs(p1-p2));
+		}
+		return min;
+	}
+////////////////////////////////// another 
+
+public int getDiff(List<String> al, String word1, String word2) {
+		int minDiff = Integer.MAX_VALUE;
+		int prev = 0, i = 0;
+		 while( i < al.size() && !al.get(i).equals(word1) && !al.get(i).equals(word2)) i++;
+		 prev = i++;
+		 for(;i < al.size(); i++) {
+			 if(al.get(i).equals(word1) || al.get(i).equals(word2)){
+				 if(al.get(i).equals(al.get(prev))) prev = i;
+				 else {
+					 minDiff = Math.min(minDiff, i-prev);
+					 prev = i;
+				 }
+			 }
+		 }
+		 return minDiff;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+for three words
+
+public int getDiff1(List<String> al, String word1, String word2,String word3) {
+		int p1 = -1, p2 = -1, p3 = -1,min = Integer.MAX_VALUE;
+		for(int i = 0; i < al.size(); i++) {
+			if(al.get(i).equals(word1)) p1 = i;
+			if(al.get(i).equals(word2)) p2 = i;
+			if(al.get(i).equals(word3)) p3 = i;
+			if(p1 != -1 && p2 != -1 && p3 != -1) {
+				min = Math.min(min, Math.max(Math.abs(p1-p2), Math.max(Math.abs(p1-p3),Math.abs(p2-p3))));
+			}
+		}
+		return min;
+	}
+
