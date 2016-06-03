@@ -27,6 +27,8 @@
   sb.insert(0,"string"); this will add word at the begining and move other ahead;
   15. same with arraylist add method with index and value parameters
   16. remember to write break in the case of switch 
+  17. If we are using comparator with the object in that case we always need to create another class which implements the comparator interface and implements the compare method in that classs. And we can use the 
+  methods such as Array.sort(array, new object()) or Collections.sort(list, new Object());
 
 // Find Maximum size of substring, in which no duplicate characters:
 
@@ -7412,4 +7414,100 @@ public int getDiff1(List<String> al, String word1, String word2,String word3) {
 		}
 		return min;
 	}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Flip Game
 
+You are playing the following Flip Game with your friend: Given a string that contains only these two characters: + and -, you and your friend take turns to flip twoconsecutive "++" into "--". The game ends when a person can no longer make a move and therefore the other person will be the winner.
+Write a function to compute all possible states of the string after one valid move.
+For example, given s = "++++", after one move, it may become one of the following states:
+[
+  "--++",
+  "+--+",
+  "++--"
+]
+If there is no valid move, return an empty list [].
+Understand the problem:
+The problem only asks for flipping "++" into "--", NOT -- to ++. So the solution is to move all consecutive "++" into "--".
+
+public List<String> getNextState(String s) {
+		List<String> result = new ArrayList<String>();
+		for(int i = 0; i < s.length()-1; i++) {
+			if(s.charAt(i) == '+' && s.charAt(i+1) == '+') {
+				result.add(s.substring(0,i)+"--"+s.substring(i+2));
+			}
+		}
+		return result;
+	}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Meeting Rooms
+Given an array of meeting time intervals consisting of start and end times [[s1,e1],[s2,e2],...] (si < ei), determine if a person could attend all meetings.
+For example,
+Given [[0, 30],[5, 10],[15, 20]],
+return false.
+
+class Interval{
+	     int start;
+	     int end;
+	     Interval() { start = 0; end = 0; }
+	     Interval(int s, int e) { start = s; end = e; }
+ }
+ 
+ class IntervalCompare implements Comparator<Interval> {
+	public int compare(Interval a1, Interval a2) {
+		return a1.start-a2.start;
+	}
+}
+///////////////////////////// method for array of Interval
+public boolean willAttendAll(Interval[] al) {
+		if(al.length == 0) return true;
+		Arrays.sort(al, new IntervalCompare());
+		for(int i = 1; i < al.length; i++) {
+			if(al[i].start < al[i-1].end) return false;
+		}
+		return true;		
+	}
+/////////////////////////////// method for list of Interval	
+	public boolean willAttendAll(List<Interval> al) {
+		if(al.size() == 0) return true;
+		Collections.sort(al,new IntervalCompare());
+		for(int i = 1; i < al.size(); i++) {
+			if(al.get(i).start < al.get(i-1).end) return false;			
+		}
+		return true;		
+	}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Strobogrammatic Number
+
+A strobogrammatic number is a number that looks the same when rotated 180 degrees (looked at upside down).
+Write a function to determine if a number is strobogrammatic. The number is represented as a string.
+For example, the numbers "69", "88", and "818" are all strobogrammatic.
+Understand the problem:
+The key of the problem is to understand what is called "strobogrammatic number". As defined, the number 0, 1 and 8 are strobogrammatic. However, 6 and 9 are kind of special. E.g. 
+6 0 0 9, return True
+66 000 99, return True;
+6969 return true; 
+6996, return true;
+
+public boolean isStrobogrammatic(String s) {
+		if(s.length() == 0) return true;
+		int left = 0, right = s.length()-1;
+		while(left <= right) {
+			if(s.charAt(left) == s.charAt(right)) {
+				if(s.charAt(left) == '1' || s.charAt(left) == '0' || s.charAt(left) == '8'|| s.charAt(left) == ' ') {
+					left++; right--;
+				}
+				else return false;
+			}
+			else {
+				if(s.charAt(left)=='6' && s.charAt(right) == '9') {
+					left++; right--;
+				}
+				else if(s.charAt(left) == '9' && s.charAt(right) == '6') {
+					left++; right--;
+				}
+				else return false;
+			}
+		}
+		return true;	
+	}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
