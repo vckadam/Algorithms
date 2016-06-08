@@ -29,6 +29,7 @@
   16. remember to write break in the case of switch 
   17. If we are using comparator with the object in that case we always need to create another class which implements the comparator interface and implements the compare method in that classs. And we can use the 
   methods such as Array.sort(array, new object()) or Collections.sort(list, new Object());
+  18. copy one array into another array System.arraycopy(src, srcPos, dest, destPos, length)
 
 // Find Maximum size of substring, in which no duplicate characters:
 
@@ -1420,7 +1421,21 @@ public static void reverse(int[] arr, int left, int right){
 //Ugly numbers are positive numbers whose prime factors only include 2, 3, 5. For example, 6, 8 are ugly while 14 is not ugly since it includes another prime factor 7.
 
 //Note that 1 is typically treated as an ugly number.
-
+//////////////////////////////////////// optimized
+public boolean isUgly(int num) {
+        if(num == 0) return false;
+        List<Integer> list = new ArrayList<Integer>();
+        list.add(2); list.add(3); list.add(5);
+        int i = 0;
+        while(num != 1 && i < list.size()) {
+            if(num % list.get(i) == 0) {
+                while(num != 1 && num % list.get(i) == 0) num /= list.get(i);
+            } 
+            i++;
+        }
+        return (num == 1);
+    }
+///////////////////// another
 public boolean isUgly(int num) {
         if(num <= 0) {
             return false;
@@ -3059,7 +3074,9 @@ public boolean isAnagram(String s, String t) {
         return true;
     }
 	///////////////////////////////////////////////////
-	Given an array of strings, group anagrams together.
+49. Group Anagrams
+
+Given an array of strings, group anagrams together.
 
 For example, given: ["eat", "tea", "tan", "ate", "nat", "bat"], 
 Return:
@@ -3069,13 +3086,13 @@ Return:
   ["nat","tan"],
   ["bat"]
 ]
-
+n - length of string array k - max length amoung all the string
+time complexity : O(nklogk + nlogn)
 public List<List<String>> groupAnagrams(String[] strs) {
     if(strs==null || strs.length == 0){
         return new ArrayList<List<String>>();
     }
     HashMap<String, List<String>> map = new HashMap<String, List<String>>();
-    //Arrays.sort(strs);
     for (String s:strs) {
         char[] ca = s.toCharArray();
         Arrays.sort(ca);
@@ -3089,6 +3106,28 @@ public List<List<String>> groupAnagrams(String[] strs) {
         Collections.sort(map.get(key));
     }
     return new ArrayList<List<String>>(map.values());
+////////////////////////// another 
+public List<List<String>> groupAnagrams(String[] strs) {
+        List<List<String>> result = new ArrayList<List<String>>();
+        HashMap<String, List<String>> hm = new HashMap<String,List<String>>();
+        if(strs.length == 0) return result;
+        for(String str: strs) {
+            String key = getKey(str);
+            if(!hm.containsKey(key)) hm.put(key,new ArrayList<String>());
+            hm.get(key).add(str);
+        }
+        for(List<String> list: hm.values()) {
+            Collections.sort(list);
+            result.add(list);
+        }
+        return result;
+    }
+    public String getKey(String str) {
+        if(str.length() == 0 || str.length() == 1) return str;
+        char[] charArray = str.toCharArray();
+        Arrays.sort(charArray);
+        return new String(charArray);
+    }
 ///////////////////////////////////////////////////////////////////////////////////////////
 Given a set of distinct integers, nums, return all possible subsets.
 
@@ -5801,13 +5840,13 @@ For example:
     28 -> AB 
 	
 	public String convertToTitle(int n) {
-        String result = "";
+        String result = "";          /// StringBuilder sb = new StringBuilder();
         while(n != 0) {
             char ch = (char)((n-1) % 26 + 'A');
             n = (n-1)/26;
-            result = ch+result;
+            result = ch+result;    /// sb.insert(0,ch);
         }
-        return result;
+        return result;             /// sb.toString();
     }
 	//////////////////////////////////////////////////////////////////////////////////////////
 	Related to question Excel Sheet Column Title
@@ -7415,6 +7454,49 @@ public int getDiff1(List<String> al, String word1, String word2,String word3) {
 		return min;
 	}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Shortest Word Distance II
+
+This is a follow up of Shortest Word Distance. The only difference is now you are given the list of words and your method will be called repeatedly many times with different parameters. How would you optimize it?
+Design a class which receives a list of words in the constructor, and implements a method that takes two words word1 and word2 and return the shortest distance between these two words in the list.
+For example,
+Assume that words = ["practice", "makes", "perfect", "coding", "makes"].
+Given word1 = “coding”, word2 = “practice”, return 3.
+Given word1 = "makes", word2 = "coding", return 1.
+public class solution {
+	HashMap<String, List<Integer>> hm;
+	int count;
+	public solution(String[] wordList) {
+		hm = new HashMap<String,List<Integer>>();
+		count = 0;
+		for(int i = 0; i < wordList.length; i++) {
+			add(wordList[i]);
+		}
+	}
+	public void add(String str) {
+		if(!hm.containsKey(str)) {
+			hm.put(str,new ArrayList<Integer>());
+		}
+		hm.put(str,count++);
+	}
+	public int minDistance(String str1, String str2) {
+		int minDist = Integer.MAX_VALUE, i = 0, j = 0;
+		List<Integer> l1 = hm.get(str1);
+		List<Integer> l2 = hm.get(str2);
+		while(i < l1.size() && j < l2.size()) {
+			int n1 = l1.get(i), n2 = l2.get(j);
+			if(n1 < n2) {
+				minDist = Math.min(minDist, n2-n1);
+				i++;
+			}
+			else {
+				minDist = Math.min(minDist, n1-n2);
+				j++;
+			}
+		}
+		return minDist;
+	}
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Leetcode: Flip Game
 
 You are playing the following Flip Game with your friend: Given a string that contains only these two characters: + and -, you and your friend take turns to flip twoconsecutive "++" into "--". The game ends when a person can no longer make a move and therefore the other person will be the winner.
@@ -7511,3 +7593,1127 @@ public boolean isStrobogrammatic(String s) {
 		return true;	
 	}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Group Shifted Strings
+
+Given a string, we can "shift" each of its letter to its successive letter, for example: "abc" -> "bcd". We can keep "shifting" which forms the sequence:
+"abc" -> "bcd" -> ... -> "xyz"
+Given a list of strings which contains only lowercase alphabets, group all strings that belong to the same shifting sequence.
+For example, given: ["abc", "bcd", "acef", "xyz", "az", "ba", "a", "z"], 
+Return:
+[
+  ["abc","bcd","xyz"],
+  ["az","ba"],
+  ["acef"],
+  ["a","z"]
+]
+Note: For the return value, each inner list's elements must follow the lexicographic order.
+
+import java.util.*;
+public class GroupStrings {
+	public static List<List<String>> groupStrings(String[] strings) {
+		List<List<String>> result = new ArrayList<List<String>>();
+		if(strings.length == 0) return result;
+		Map<String, List<String>> hm = new HashMap<String, List<String>>();
+		for(String str: strings) {
+			String key = getKey(str);
+			if(!hm.containsKey(key)) hm.put(key, new ArrayList<String>());
+			hm.get(key).add(str);
+		}
+		for(List<String> list: hm.values()) {
+			Collections.sort(list);
+			result.add(list);
+		}
+		return result;
+	}
+	public static String getKey(String str) {
+		if(str.length() == 0) return str;
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < str.length(); i++) {
+			int val = str.charAt(i)-str.charAt(0);
+			if(val < 0) val += 26;
+			sb.append((char)val);
+		}
+		return sb.toString();
+	}
+	public static void main(String[] args) {
+		String[] strings = {"abc", "bcd", "acef", "xyz", "az", "ba", "a", "z","zab","yza","yz",""};
+		List<List<String>> result = groupStrings(strings);
+		System.out.println(result.toString());
+
+	}
+
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Maximum Size Subarray Sum Equals k
+
+Given an array nums and a target value k, find the maximum length of a subarray that sums to k. If there isn't one, return 0 instead.
+Example 1:
+Given nums = [1, -1, 5, -2, 3], k = 3,
+return 4. (because the subarray [1, -1, 5, -2] sums to 3 and is the longest)
+Example 2:
+Given nums = [-2, -1, 2, 1], k = 1,
+return 2. (because the subarray [-1, 2] sums to 1 and is the longest)
+
+public static int subArraySumK(int[] array, int k){
+		if(array.length == 0) return 0;
+		HashMap<Integer,Integer> hm = new HashMap<Integer, Integer>();
+		hm.put(0, -1);            // very important because at index -1 sum is 0 and that sum can be 0 later index
+		int sum = 0, maxLen = Integer.MIN_VALUE;
+		for(int i = 0; i < array.length; i++){
+			sum+=array[i];
+			if(!hm.containsKey(sum)) hm.put(sum, i); // if not contains then and only then we need to put.
+			if(hm.containsKey(sum-k)) {
+				maxLen = Math.max(maxLen,i-hm.get(sum-k));
+			}
+		}
+		return maxLen;
+	}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+LeetCode - Nested List Weight Sum
+
+Given a nested list of integers, return the sum of all integers in the list weighted by their depth.
+
+ Each element is either an integer, or a list -- whose elements may also be integers or other lists.
+
+Example 1:
+Given the list [[1,1],2,[1,1]], return 10. (four 1's at depth 2, one 2 at depth 1)
+
+Example 2:
+Given the list [1,[4,[6]]], return 27. (one 1 at depth 1, one 4 at depth 2, and one 6 at depth 3; 1 + 4*2 + 6*3 = 27)
+
+/**
+ * // This is the interface that allows for creating nested lists.
+ * // You should not implement it, or speculate about its implementation
+ * public interface NestedInteger {
+ *
+ *     // @return true if this NestedInteger holds a single integer, rather than a nested list.
+ *     public boolean isInteger();
+ *
+ *     // @return the single integer that this NestedInteger holds, if it holds a single integer
+ *     // Return null if this NestedInteger holds a nested list
+ *     public Integer getInteger();
+ *
+ *     // @return the nested list that this NestedInteger holds, if it holds a nested list
+ *     // Return null if this NestedInteger holds a single integer
+ *     public List<NestedInteger> getList();
+ * }
+ */
+ 
+  public int depthSum(List<NestedInteger> nestedList) {
+	  if(nestedList.size() == 0) return 0;
+	  return helper(nestedList, 1);
+  }
+  public int helper(List<NestedInteger> list, int level) {
+	  int sum = 0;
+	  for(NestedInteger item: list) {
+		  if(item.isInteger()) sum += item.getInteger()*level;
+		  else sum += helper(item.getList(), level+1);
+	  }
+	  return sum;
+  }
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  278. First Bad Version
+  
+  You are a product manager and currently leading a team to develop a new product. Unfortunately, the latest version of your product fails the quality check. Since each version is developed based on the previous version, all the versions after a bad version are also bad.
+
+Suppose you have n versions [1, 2, ..., n] and you want to find out the first bad one, which causes all the following ones to be bad.
+
+You are given an API bool isBadVersion(version) which will return whether version is bad. Implement a function to find the first bad version. You should minimize the number of calls to the API.
+////////////////////// optimized version
+public int firstBadVersion(int n) {
+        int left = 1, right = n, mid;
+        while(left < right) {
+            mid = left + (right - left)/2;
+            if(!isBadVersion(mid)) left = mid + 1;
+            else right = mid;
+        }
+        return left;
+    }
+//////////////////////////////// another version
+public int firstBadVersion(int n) {
+        int left = 1, right = n, mid;
+        while(left < right) {
+            mid = left + (right - left)/2;
+            if(left + 1 == right) break;
+            if(isBadVersion(mid)) right = mid;
+            else left = mid;
+        }
+        return (!isBadVersion(left) && isBadVersion(right))?right:1;
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+50. Pow(x, n)
+
+Implement pow(x, n).
+
+public double myPow(double x, int n) {
+        if(n == 0) return 1;
+        if(n == 1) return x;
+        if(n == -1) return 1/x;
+        if(n % 2 != 0) {
+            if(n > 0) {
+                return x * myPow(x,n-1);
+            }
+            else {
+                return (1/x)*myPow(x,n+1);
+            }
+        }
+        else {
+            double temp = myPow(x,n/2);
+            return temp*temp;
+        }
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+69. Sqrt(x) 
+
+Implement int sqrt(int x).
+
+Compute and return the square root of x.
+
+public int mySqrt(int x) {
+        if( x == 0 || x == 1) return x;
+        long left = 1, right = x/2;
+        long mid;
+        while(left < right) {
+            mid = left + (right - left)/2;
+            if(mid * mid == x || (mid * mid < x && ((mid+1) * (mid+1)) > x)) return (int)mid;
+            else if(mid * mid < x) left = mid + 1;
+            else right = mid - 1;
+        }
+        return (int)left;
+    }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Leetcode: Two Sum III - Data structure design
+Design and implement a TwoSum class. It should support the following operations: add and find.
+add - Add the number to an internal data structure.
+find - Find if there exists any pair of numbers which sum is equal to the value.
+For example,
+add(1); add(3); add(5);
+find(4) -> true
+find(7) -> false
+
+Follow-up: 
+What if you add a few, but search very heavily? You need to make sure search only takes O(1) time. Add(num), add num with all the previous added numbers 
+search(target), only takes O(1) time. 
+
+import java.util.*;
+class TwoSumIII {
+	HashMap<Integer, Integer> hm;
+	public TwoSumIII(){
+		hm = new HashMap<Integer,Integer>();
+	}
+	public void add(int num) {
+		hm.put(num, hm.getOrDefault(num,0)+1);
+	}
+	public boolean find(int num) {
+		for(Integer key: hm.keySet()) {
+			if(key != num-key) {
+				if(hm.containsKey(num-key)) return true;
+			}
+			else {
+				if(hm.get(key) >= 2) return true;
+			}
+		}
+		return false;
+	}
+}
+class TwoSumSet {
+	Set<Integer> set;
+	ArrayList<Integer> alist;
+	public TwoSumSet() {
+		set = new HashSet<Integer>();
+		alist = new ArrayList<Integer>();
+	}
+	public void add(int num) {
+		if(!alist.isEmpty()) {
+			for(Integer n: alist) {
+				set.add(num + n);
+			}
+		}
+		alist.add(num);
+	}
+	public boolean find(int num) {
+		return set.contains(num);
+	}
+}
+public class TwoSumIIIMain {
+
+	public static void main(String[] args) {
+		TwoSumIII ts = new TwoSumIII();
+		ts.add(1); ts.add(3); ts.add(3); ts.add(5);
+		System.out.println(ts.find(4));
+		System.out.println(ts.find(6));
+		System.out.println(ts.find(9));
+		TwoSumSet ts1 = new TwoSumSet();
+		ts1.add(1); ts1.add(3); ts1.add(3); ts1.add(5);
+		System.out.println(ts1.find(4));
+		System.out.println(ts1.find(6));
+		System.out.println(ts1.find(9));
+
+	}
+
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Unique Word Abbreviation
+
+An abbreviation of a word follows the form <first letter><number><last letter>. Below are some examples of word abbreviations:
+a) it                      --> it    (no abbreviation)
+
+     1
+b) d|o|g                   --> d1g
+
+              1    1  1
+     1---5----0----5--8
+c) i|nternationalizatio|n  --> i18n
+
+              1
+     1---5----0
+d) l|ocalizatio|n          --> l10n
+Assume you have a dictionary and given a word, find whether its abbreviation is unique in the dictionary. A word's abbreviation is unique if no other word from the dictionary has the same abbreviation.
+Example: 
+Given dictionary = [ "deer", "door", "cake", "card" ]
+
+isUnique("dear") -> false
+isUnique("cart") -> true
+isUnique("cane") -> false
+isUnique("make") -> true
+
+
+The description (A word's abbreviation is unique if no other word from the dictionary has the same abbreviation) is clear however a bit twisting. It took me a few "Wrong Answer"s to finally understand what it's asking for.
+We are trying to search for a word in a dictionary. If this word (also this word’s abbreviation) is not in the dictionary OR this word and only it’s abbreviation in the dictionary. We call a word’s abbreviation unique.
+EX:
+
+1) [“dog”]; isUnique(“dig”);   
+//False, because “dig” has the same abbreviation with “dog" and “dog” is already in the dictionary. It’s not unique.
+
+2) [“dog”, “dog"]; isUnique(“dog”);  
+//True, because “dog” is the only word that has “d1g” abbreviation.
+
+3) [“dog”, “dig”]; isUnique(“dog”);   
+//False, because if we have more than one word match to the same abbreviation, this abbreviation will never be unique
+
+public static boolean isExistAbbreviation(String[] words, String word) {
+		HashMap<String, String> hm = new HashMap<String,String>();
+		for(String str: words) {
+			String key = getAbbreviation(str);
+			if(!hm.containsKey(key)) hm.put(key, str);
+			else {
+				hm.put(key, "");
+			}
+		}
+		return !hm.containsKey(getAbbreviation(word)) || hm.get(getAbbreviation(word)).equals(word);
+	}
+	public static String getAbbreviation(String str) {
+		if(str.length() <= 2) return str;
+		else return str.charAt(0)+String.valueOf(str.length()-2)+str.charAt(str.length()-1);
+	}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Read N Characters Given Read4
+
+he API: int read4(char *buf) reads 4 characters at a time from a file.
+The return value is the actual number of characters read. For example, it returns 3 if there is only 3 characters left in the file.
+By using the read4 API, implement the function int read(char *buf, int n) that reads n characters from the file.
+Note:
+The read function will only be called once for each test case.
+
+public int read(char[] buf, int n) {
+  boolean eof = false;      // end of file flag
+  int total = 0;            // total bytes have read
+  char[] tmp = new char[4]; // temp buffer
+
+  while (!eof && total < n) {
+    int count = read4(tmp);
+
+    // check if it's the end of the file
+    eof = count < 4;
+
+    // get the actual count
+    count = Math.min(count, n - total);
+
+    // copy from temp buffer to buf
+    for (int i = 0; i < count; i++) 
+      buf[total++] = tmp[i];
+  }
+
+  return total;
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+29. Divide Two Integers
+
+Divide two integers without using multiplication, division and mod operator.
+
+If it is overflow, return MAX_INT.
+
+public int divide(int dividend, int divisor) {
+        if(divisor == 0 || dividend == Integer.MIN_VALUE && divisor == -1 ) return Integer.MAX_VALUE;
+        int sign = (dividend < 0)^(divisor < 0)?-1:1;  // xor to decide the sign
+        long divd = Math.abs((long)dividend);  // convert them to positive
+        long divs = Math.abs((long)divisor);
+        int result = 0;
+        while(divs <= divd) {   /// at the last iteration divs will be equal to div and then 1 will be added
+            long temp = divs;
+            int mul = 1;
+            while(divd >= temp<<1) {  // if 3 then will check 6 is grater of not.
+                temp<<=1; mul<<=1;    // set mul and temp according to that.. 
+            }
+            divd -= temp;
+            result+= mul;
+        }
+        return result*sign;
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+264. Ugly Number II
+
+Write a program to find the n-th ugly number.
+
+Ugly numbers are positive numbers whose prime factors only include 2, 3, 5. For example, 1, 2, 3, 4, 5, 6, 8, 9, 10, 12 is the sequence of the first 10 ugly numbers.
+
+Note that 1 is typically treated as an ugly number.
+
+Hint:
+
+The naive approach is to call isUgly for every number until you reach the nth one. Most numbers are not ugly. Try to focus your effort on generating only the ugly ones.
+An ugly number must be multiplied by either 2, 3, or 5 from a smaller ugly number.
+The key is how to maintain the order of the ugly numbers. Try a similar approach of merging from three sorted lists: L1, L2, and L3.
+Assume you have Uk, the kth ugly number. Then Uk+1 must be Min(L1 * 2, L2 * 3, L3 * 5).
+////// explaination
+/*The idea of this solution is from this page:http://www.geeksforgeeks.org/ugly-numbers/
+
+The ugly-number sequence is 1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, … because every number can only be divided by 2, 3, 5, one way to look at the sequence is to split the sequence to three groups as below:
+
+(1) 1×2, 2×2, 3×2, 4×2, 5×2, …
+(2) 1×3, 2×3, 3×3, 4×3, 5×3, …
+(3) 1×5, 2×5, 3×5, 4×5, 5×5, …
+We can find that every subsequence is the ugly-sequence itself (1, 2, 3, 4, 5, …) multiply 2, 3, 5.
+
+Then we use similar merge method as merge sort, to get every ugly number from the three subsequence.
+
+Every step we choose the smallest one, and move one step after,including nums with same value.*/
+
+public int nthUglyNumber(int n) {
+        int[] array = new int[n];
+        array[0] = 1;
+        int p2 = 0, p3 = 0, p5 = 0;
+        for(int i = 1; i < n; i++) {
+            array[i] = Math.min(2*array[p2],Math.min(3*array[p3], 5*array[p5]));
+            if(array[i] == 2*array[p2]) p2++;
+            if(array[i] == 3*array[p3]) p3++;
+            if(array[i] == 5*array[p5]) p5++;
+        }
+        return array[n-1];
+    }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+313. Super Ugly Number
+
+Write a program to find the nth super ugly number.
+
+Super ugly numbers are positive numbers whose all prime factors are in the given prime list primes of size k. For example, [1, 2, 4, 7, 8, 13, 14, 16, 19, 26, 28, 32] is the sequence of the first 12 super ugly numbers given primes = [2, 7, 13, 19] of size 4.
+
+Note:
+(1) 1 is a super ugly number for any given primes.
+(2) The given numbers in primes are in ascending order.
+(3) 0 < k ≤ 100, 0 < n ≤ 106, 0 < primes[i] < 1000.
+
+public int nthSuperUglyNumber(int n, int[] primes) {
+        int[] array = new int[n];
+        int[] count = new int[primes.length];
+        array[0] = 1;
+        for(int i = 1; i < n; i++) {
+            array[i] = Integer.MAX_VALUE;
+            for(int j = 0; j < primes.length; j++) 
+                array[i] = Math.min(array[i],primes[j]*array[count[j]]);
+            for(int j = 0; j < primes.length; j++)  {
+                if(primes[j]*array[count[j]] <= array[i]) count[j]++; // <= because we don't need other dublicate
+            }
+        }
+        return array[n-1];
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+279. Perfect Squares
+
+Given a positive integer n, find the least number of perfect square numbers (for example, 1, 4, 9, 16, ...) which sum to n.
+
+For example, given n = 12, return 3 because 12 = 4 + 4 + 4; given n = 13, return 2 because 13 = 4 + 9.
+
+public int numSquares(int n) {
+        int[] dp = new int[n+1];
+        Arrays.fill(dp,Integer.MAX_VALUE);
+        dp[0] = 0;
+        for(int i = 0; i <= n; i++) {
+            for(int j = 1; i + j * j <= n; j++) {
+                dp[i + j * j] = Math.min(dp[i + j * j], dp[i]+1);
+            }
+        }
+        return dp[n];
+    }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+43. Multiply Strings
+
+Given two numbers represented as strings, return multiplication of the numbers as a string.
+
+Note:
+The numbers can be arbitrarily large and are non-negative.
+Converting the input string to integer is NOT allowed.
+You should NOT use internal library such as BigInteger.
+////////////////////// optimized 
+public String multiply(String num1, String num2) {
+        int n = num1.length(), m = num2.length();
+        int[] array = new int[n+m];
+        for(int i = n-1; i >= 0; i--) {
+            for(int j = m-1; j >= 0; j--) {
+                int indx1 = i + j, indx2 = indx1 + 1;
+                int sum = (num1.charAt(i)-'0')*(num2.charAt(j)-'0') + array[indx2];
+                array[indx2] = sum % 10;
+                array[indx1] = array[indx1] + sum / 10;
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for(int num: array) {
+            if(sb.length()==0 && num == 0) continue;
+            sb.append(num);
+        }
+        return (sb.length()==0)?"0":sb.toString();
+    }
+////////////////////////////////// another 
+public String multiply(String num1, String num2) {
+        int n = num1.length(), m = num2.length();
+        int[] array = new int[n+m];
+        for(int i = n-1; i >= 0; i--) {
+            for(int j = m-1; j >= 0; j--) {
+                int mul = (num1.charAt(i)-'0')*(num2.charAt(j)-'0');
+                int indx1 = i + j, indx2 = indx1 + 1;
+                int sum = mul + array[indx2];
+                array[indx2] = sum % 10;
+                array[indx1] = array[indx1] + sum / 10;
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for(int num: array) {
+            if(!(sb.length()==0 && num == 0)) sb.append(num);
+        }
+        return (sb.length()==0)?"0":sb.toString();
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+300. Longest Increasing Subsequence
+
+Given an unsorted array of integers, find the length of longest increasing subsequence.
+
+For example,
+Given [10, 9, 2, 5, 3, 7, 101, 18],
+The longest increasing subsequence is [2, 3, 7, 101], therefore the length is 4. Note that there may be more than one LIS combination, it is only necessary for you to return the length.
+
+Your algorithm should run in O(n2) complexity.
+
+Follow up: Could you improve it to O(n log n) time complexity?
+
+public int lengthOfLIS(int[] nums) {
+        if(nums.length == 0) return 0;
+        int[] dp = new int[nums.length];
+        int max = 0;
+        for(int i = 1; i < nums.length; i++) {
+            for(int j = 0; j < i; j++) {
+                if(nums[j] < nums[i]) {
+                    dp[i] = Math.max(dp[i], dp[j]+1);
+                    if(dp[i] > max) max = dp[i];
+                }
+            }
+        }
+        return max+1;
+    }
+/////////////////////// with better time complexity
+//// if the current element is smaller than the first element of the new array then change first element of 
+new array
+/// if the current element is greater than the last element of the new array then add new element in the array.
+/// if current element is inbetween we need to find it's perfect location using binary search, but lenght won't change.
+public int lengthOfLIS(int[] nums) {
+        if(nums.length == 0) return 0;
+        int[] array = new int[nums.length];
+        array[0] = nums[0];
+        int len = 1;
+        for(int i = 1; i < nums.length; i++) {
+            if(nums[i] < array[0]) array[0] = nums[i];
+            else if(nums[i] > array[len-1]) array[len++] = nums[i];
+            else array[findIndex(array,0,len-1,nums[i])] = nums[i];
+        }
+        return len;
+    }
+    public int findIndex(int[] nums, int left, int right, int num) {
+        int mid; 
+        while(left < right) {
+            mid = left + (right-left)/2;
+            if(nums[mid] >= num) right = mid;
+            else left = mid + 1;
+        }
+        return right;
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Ceilling function using binary search
+	public static int findCeilling(int[] nums, int num) {
+		int left = 0, right = nums.length-1, mid;
+		if(num <= nums[left]) return nums[left];
+		if(num > nums[right]) return -1;
+		while(left < right) {
+			mid = left + (right-left)/2;
+			if(nums[mid] >= num) right = mid;
+			else left = mid + 1;
+		}
+		return nums[right];
+	}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Floor function using binary search
+
+	public static int findFloor(int[] nums, int num) {
+		int left = 0, right = nums.length-1, mid;
+		if(num < nums[left]) return -1;
+		if(num >= nums[right]) return nums[right];
+		while(left < right) {
+			mid = left + (right - left)/2;
+			if(nums[mid] > num) right = mid -1;
+			else {
+				 if(nums[mid+1] <= num) left = mid + 1;
+				 else right = mid;
+			}
+		}
+		return nums[left];
+	}	
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+334. Increasing Triplet Subsequence 
+
+Given an unsorted array return whether an increasing subsequence of length 3 exists or not in the array.
+
+Formally the function should:
+Return true if there exists i, j, k 
+such that arr[i] < arr[j] < arr[k] given 0 ≤ i < j < k ≤ n-1 else return false.
+Your algorithm should run in O(n) time complexity and O(1) space complexity.
+
+Examples:
+Given [1, 2, 3, 4, 5],
+return true.
+
+Given [5, 4, 3, 2, 1],
+return false.
+/////////////////////////optimized
+	public boolean increasingTriplet(int[] nums) {
+        int first = Integer.MAX_VALUE,second = Integer.MAX_VALUE;
+        for(int i = 0; i < nums.length; i++) {
+            if(nums[i] <= first) first = nums[i];  // remember to put == otherwise there will be wrong answer in
+            else if(nums[i] <= second) second = nums[i];  // case of dublicate
+            else return true;
+        }
+        return false;
+    }
+//////////////////////// another
+	public boolean increasingTriplet(int[] nums) {
+        int prev1 = Integer.MIN_VALUE,prev2 = Integer.MIN_VALUE,len = 0;
+        for(int i = 0; i < nums.length; i++) {
+            if(nums[i] > prev1 && nums[i] > prev2) {
+                prev2 = prev1;
+                prev1 = nums[i];
+                len++;
+            }
+            else if(nums[i] > prev2 && nums[i] < prev1) prev1 = nums[i];
+            else if(nums[i] < prev1 && nums[i] < prev2) prev2 = nums[i];
+            if(len == 3) return true;
+        }
+        return false;
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+274. H-Index
+
+Given an array of citations (each citation is a non-negative integer) of a researcher, write a function to compute the researcher's h-index.
+
+According to the definition of h-index on Wikipedia: "A scientist has index h if h of his/her N papers have at least h citations each, and the other N − h papers have no more than h citations each."
+
+For example, given citations = [3, 0, 6, 1, 5], which means the researcher has 5 papers in total and each of them had received 3, 0, 6, 1, 5 citations respectively. Since the researcher has 3 papers with at least 3 citations each and the remaining two with no more than 3 citations each, his h-index is 3.
+
+Note: If there are several possible values for h, the maximum one is taken as the h-index.
+
+	public int hIndex(int[] citations) {
+        int len = citations.length;
+        int[] count = new int[len+1];
+        for(int num : citations) {
+            if(num >= len) count[len]++;
+            else count[num]++;
+        }
+        int total = 0;
+        for(int i = count.length-1; i >= 0; i--) {
+            total+=count[i];
+            if(total >= i) return i;
+        }
+        return 0;
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+275. H-Index II
+
+Follow up for H-Index: What if the citations array is sorted in ascending order? Could you optimize your algorithm?
+
+Hint:
+
+Expected runtime complexity is in O(log n) and the input is sorted.
+
+	public int hIndex(int[] citations) {
+        if(citations.length == 0 || citations[citations.length-1] == 0) return 0;
+        int len = citations.length, left = 0, right = len-1, mid, total = len;
+        while(left < right) {
+            mid = left + (right - left)/2;
+            total = len-mid;
+            if(total <= citations[mid]) right = mid;
+            else left = mid+1;
+        }
+        return len-left;
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+307. Range Sum Query - Mutable
+
+Given an integer array nums, find the sum of the elements between indices i and j (i ≤ j), inclusive.
+
+The update(i, val) function modifies nums by updating the element at index i to val.
+Example:
+Given nums = [1, 3, 5]
+
+sumRange(0, 2) -> 9
+update(1, 2)
+sumRange(0, 2) -> 8
+Note:
+The array is only modifiable by the update function.
+You may assume the number of calls to update and sumRange function is distributed evenly
+
+public class NumArray {
+    int[] fenwick;
+    int[] nums;
+    public NumArray(int[] nums) {
+        fenwick = new int[nums.length+1];
+        this.nums = new int[nums.length];
+        this.nums = nums;
+        for(int i = 0; i < nums.length; i++) {
+            changeFenwick(i,nums[i]);
+        }
+    }
+    void update(int i, int val) {
+        changeFenwick(i,val-nums[i]); // remember to pass val-nums[i];
+        nums[i] = val;
+    }
+    public int sumRange(int i, int j) {
+        if(i == 0) return getSum(j);
+        return getSum(j)-getSum(i-1);  // remember
+    }
+    
+    void changeFenwick(int i,int val) {
+        i += 1;
+        while(i <= fenwick.length-1) {
+            fenwick[i]+=val;
+            i += (i&(~i+1));
+        }
+    }
+    
+    public int getSum(int ind) {
+        ind+=1;
+        int sum = 0;
+        while(ind > 0) {
+            sum+=fenwick[ind];
+            ind -= (ind&(~ind + 1));
+        }
+        return sum;
+    }
+}
+
+
+// Your NumArray object will be instantiated and called as such:
+// NumArray numArray = new NumArray(nums);
+// numArray.sumRange(0, 1);
+// numArray.update(1, 10);
+// numArray.sumRange(1, 2);
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+304. Range Sum Query 2D - Immutable
+
+Given a 2D matrix matrix, find the sum of the elements inside the rectangle defined by its upper left corner (row1, col1) and lower right corner (row2, col2).
+
+Range Sum Query 2D
+The above rectangle (with the red border) is defined by (row1, col1) = (2, 1) and (row2, col2) = (4, 3), which contains sum = 8.
+
+Example:
+Given matrix = [
+  [3, 0, 1, 4, 2],
+  [5, 6, 3, 2, 1],
+  [1, 2, 0, 1, 5],
+  [4, 1, 0, 1, 7],
+  [1, 0, 3, 0, 5]
+]
+
+sumRegion(2, 1, 4, 3) -> 8
+sumRegion(1, 1, 2, 2) -> 11
+sumRegion(1, 2, 2, 4) -> 12
+Note:
+You may assume that the matrix does not change.
+There are many calls to sumRegion function.
+You may assume that row1 ≤ row2 and col1 ≤ col2.
+
+public class NumMatrix {
+    int[][] mat;
+    public NumMatrix(int[][] matrix) {
+        if(matrix.length != 0) {
+            mat = new int[matrix.length][matrix[0].length];
+            mat[0][0] = matrix[0][0];
+            for(int j = 1; j < mat[0].length; j++) {
+                mat[0][j] = mat[0][j-1]+matrix[0][j];
+            }
+            for(int i = 1; i < mat.length; i++) {
+                mat[i][0] = mat[i-1][0] +matrix[i][0];
+            }
+            for(int i = 1; i < mat.length; i++) {
+                for(int j = 1; j < mat[0].length; j++) {
+                    mat[i][j] = matrix[i][j] + mat[i-1][j] + mat[i][j-1] - mat[i-1][j-1];
+                }
+            }
+        }
+    }
+
+    public int sumRegion(int row1, int col1, int row2, int col2) {
+        if(row1 == 0 && col1 == 0) return mat[row2][col2];
+        int sum = mat[row2][col2];
+        int i  = row2, j = col1-1;
+        if(i >= 0 && i <= mat.length && j >= 0 && j <= mat[0].length) sum-=mat[i][j];
+        i = row1-1; j = col2;
+        if(i >= 0 && i <= mat.length && j >= 0 && j <= mat[0].length) sum-=mat[i][j];
+        i = row1-1; j = col1-1;
+        if(i >= 0 && i <= mat.length && j >= 0 && j <= mat[0].length) sum+=mat[i][j];
+        return sum;
+    }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+5. Longest Palindromic Substring
+
+Given a string S, find the longest palindromic substring in S. You may assume that the maximum length of S is 1000, and there exists one unique longest palindromic substring.
+
+public class Solution {
+    int start = 0, maxLen = Integer.MIN_VALUE;
+    public String longestPalindrome(String s) {
+        if(s.length() == 0 || s.length() == 1) return s;
+        for(int i = 0; i < s.length()-1; i++) {
+            expand(s,i,i);
+            expand(s,i,i+1);
+        }
+        return s.substring(start,start+maxLen);
+    }
+    public void expand(String s, int i, int j) {
+        while(i >= 0 && j < s.length() && s.charAt(i) == s.charAt(j)) {
+            i--; j++;
+        }
+        if(j-i-1 > maxLen) {
+            maxLen = j-i-1;
+            start = i+1;
+        }
+    }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+127. Word Ladder
+
+Given two words (beginWord and endWord), and a dictionary's word list, find the length of shortest transformation sequence from beginWord to endWord, such that:
+
+Only one letter can be changed at a time
+Each intermediate word must exist in the word list
+For example,
+
+Given:
+beginWord = "hit"
+endWord = "cog"
+wordList = ["hot","dot","dog","lot","log"]
+As one shortest transformation is "hit" -> "hot" -> "dot" -> "dog" -> "cog",
+return its length 5.
+
+Note:
+Return 0 if there is no such transformation sequence.
+All words have the same length.
+All words contain only lowercase alphabetic characters.
+
+	public int ladderLength(String beginWord, String endWord, Set<String> wordList) {
+        if(wordList.size() == 0 || beginWord.length() == 0) return 0;
+        Set<String> current = new HashSet<String>();
+        current.add(beginWord);
+        int dist = 1;
+        wordList.remove(beginWord);
+        wordList.add(endWord);
+        while(!current.contains(endWord)) {
+            Set<String> next = new HashSet<String>();
+            for(String str : current) {
+                for(int i = 0; i < str.length(); i++) {
+                    char[] array = str.toCharArray();  // put out side of char loop
+                    for(char c = 'a'; c <= 'z'; c++) {
+                        array[i] = c;
+                        String nextStr = new String(array);
+                        if(wordList.contains(nextStr)) {
+                            next.add(nextStr);
+                            wordList.remove(nextStr);
+                        }
+                    }
+                }
+            }
+            dist++;
+            if(next.size()==0) return 0;
+            current = next;
+        }
+        return dist;
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+3. Longest Substring Without Repeating Characters 
+
+Given a string, find the length of the longest substring without repeating characters.
+
+Examples:
+
+Given "abcabcbb", the answer is "abc", which the length is 3.
+
+Given "bbbbb", the answer is "b", with the length of 1.
+
+Given "pwwkew", the answer is "wke", with the length of 3. Note that the answer must be a substring, "pwke" is a subsequence and not a substring.
+////////////////////// optimized
+	public int lengthOfLongestSubstring(String s) {
+        if(s.length() == 0) return 0;
+        Map<Character, Integer> hm = new HashMap<Character,Integer>();
+        int maxLen = 0,i = 0,j = 0;
+        for(; i < s.length(); i++) {
+            if(hm.containsKey(s.charAt(i))) {
+                maxLen = Math.max(maxLen,i-j);
+                j = Math.max(j,hm.get(s.charAt(i))+1);
+            }
+            hm.put(s.charAt(i),i);
+        }
+        return  Math.max(maxLen,i-j);
+    }
+/////////////////////// another
+	public int lengthOfLongestSubstring(String s) {
+        if(s.length() == 0) return 0;
+        Map<Character, Integer> hm = new HashMap<Character,Integer>();
+        int maxLen = Integer.MIN_VALUE , i = 0;
+        while(i < s.length()) {
+            if(!hm.containsKey(s.charAt(i))) {
+                hm.put(s.charAt(i),i);
+                i++;
+            }
+            else {
+                i = hm.get(s.charAt(i)) + 1;
+                maxLen = Math.max(maxLen, hm.size());
+                hm.clear();
+            }
+        }
+        maxLen = Math.max(maxLen,hm.size());
+        return maxLen;
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+200. Number of Islands
+
+Given a 2d grid map of '1's (land) and '0's (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+
+Example 1:
+
+11110
+11010
+11000
+00000
+Answer: 1
+
+Example 2:
+
+11000
+11000
+00100
+00011
+Answer: 3
+///////////////////////////////////////// optimized 
+public int numIslands(char[][] grid) {
+        if(grid.length == 0) return 0;
+        boolean[][] flag = new boolean[grid.length][grid[0].length];
+        int count = 0;
+        for(int i = 0; i < grid.length; i++) {
+            for(int j = 0; j < grid[0].length; j++) {
+               if(grid[i][j] == '1') {
+                   count++;
+                   mark(grid,i,j);
+               }
+            }
+        }
+        return count;
+    }
+    public void mark(char[][] grid, int i, int j) {
+        if(i < 0 || i >= grid.length || j < 0 || j >= grid[0].length || grid[i][j] =='0') return;
+        grid[i][j] = '0';
+        mark(grid,i-1,j); 
+        mark(grid,i+1,j);
+        mark(grid,i,j-1);
+        mark(grid,i,j+1);
+    }
+//////////////////////////////////////////// another
+class Node{
+    public int i,j;
+    public Node(int i,int j) {
+        this.i = i;
+        this.j = j;
+    }
+}
+public class Solution {
+    public int numIslands(char[][] grid) {
+        if(grid.length == 0) return 0;
+        boolean[][] flag = new boolean[grid.length][grid[0].length];
+        int count = 0;
+        for(int i = 0; i < grid.length; i++) {
+            for(int j = 0; j < grid[0].length; j++) {
+               if(flag[i][j] || grid[i][j] == '0') continue;
+                Queue<Node> q = new LinkedList<Node>();
+                q.add(new Node(i,j));
+                while(!q.isEmpty()) {
+                    Node temp = q.remove();
+                    flag[temp.i][temp.j] = true;
+                    if(temp.i-1 >= 0 && grid[temp.i-1][temp.j] == '1' && !flag[temp.i-1][temp.j]) {
+                        q.add(new Node(temp.i-1,temp.j));
+                    }
+                    if(temp.i+1 < grid.length && grid[temp.i+1][temp.j] == '1' && !flag[temp.i+1][temp.j]) {
+                        q.add(new Node(temp.i+1,temp.j));
+                    }
+                    if(temp.j-1 >= 0 && grid[temp.i][temp.j-1] == '1' && !flag[temp.i][temp.j-1]) {
+                        q.add(new Node(temp.i,temp.j-1));
+                    }
+                    if(temp.j+1 < grid[0].length && grid[temp.i][temp.j+1] == '1' && !flag[temp.i][temp.j+1]) {
+                        q.add(new Node(temp.i,temp.j+1));
+                    }
+                }
+                count++;
+            }
+        }
+        return count;
+    }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+130. Surrounded Regions
+
+Given a 2D board containing 'X' and 'O', capture all regions surrounded by 'X'.
+
+A region is captured by flipping all 'O's into 'X's in that surrounded region.
+
+For example,
+X X X X
+X O O X
+X X O X
+X O X X
+After running your function, the board should be:
+
+X X X X
+X X X X
+X X X X
+X O X X
+//////////////////////////////////// optimized 
+public void solve(char[][] board) {
+        if(board.length == 0) return ;
+        if(board.length == 1 || board[0].length == 1) return;
+        int h = board.length, w = board[0].length;
+        for(int i = 0; i < h; i++) {
+            if(board[i][0] == 'O') set(board,i,0);
+            if(board[i][w-1] == 'O') set(board,i,w-1);
+        }
+        for(int j = 0; j < w; j++) {
+            if(board[0][j] == 'O') set(board,0,j);
+            if(board[h-1][j] == 'O') set(board,h-1,j);
+        }
+        for(int i = 0; i < h; i++) {
+            for(int j = 0; j < w; j++) {
+                if(board[i][j] == 'O') board[i][j] = 'X';
+                if(board[i][j] == 'M') board[i][j] = 'O';
+            }
+        }
+    }
+    public void set(char[][] board,int i, int j) {
+        if(i < 0 || i >= board.length || j < 0 || j >= board[0].length) return;
+        board[i][j] = 'M';
+        if(i-1 >= 0 && board[i-1][j] == 'O') set(board,i-1,j);
+        if(j-1 >= 0 && board[i][j-1] == 'O') set(board,i,j-1);
+        if(i+1 < board.length && board[i+1][j] == 'O') set(board,i+1,j);
+        if(j+1 < board[0].length && board[i][j+1] == 'O') set(board,i,j+1);
+    }
+//////////////////////////////////// another
+public void solve(char[][] board) {
+        if(board.length == 0) return ;
+        for(int i = 0; i < board.length; i++) {
+            for(int j = 0; j < board[0].length; j++) {
+                if(board[i][j] == 'O') {
+                    char[][] temp = new char[board.length][board[0].length];
+                    for(int k = 0; k < board.length; k++) {
+                        System.arraycopy(board[k],0,temp[k],0,board[k].length);
+                    }
+                    if(check(temp,i,j)) {
+                        change(board,i,j);
+                    }
+                }
+            }
+        }
+    }
+    public boolean check(char[][] board, int i, int j) {
+        if(i < 0 || i >= board.length || j < 0 || j >= board[0].length||board[i][j] == 'X') return true;
+        if(board[i][j] == 'O' && i-1 < 0 || i+1 >= board.length || j-1 < 0 || j+1 >= board[0].length) return false;
+        board[i][j] = 'X';
+        boolean left = true, right = true, up = true, down = true;
+        if(board[i-1][j] == 'O') left = check(board,i-1,j);
+        if(board[i+1][j] == 'O') right = check(board,i+1,j);
+        if(board[i][j-1] == 'O') up = check(board,i,j-1);
+        if(board[i][j+1] == 'O') down = check(board,i,j+1);
+        return (left && right && up && down);
+    }
+    public void change(char[][] board, int i, int j) {
+        if(i < 0 || i >= board.length || j < 0 || j >= board[0].length) return;
+        board[i][j] = 'X';
+        if(board[i-1][j] == 'O') change(board,i-1,j);
+        if(board[i+1][j] == 'O') change(board,i+1,j);
+        if(board[i][j-1] == 'O') change(board,i,j-1);
+        if(board[i][j+1] == 'O') change(board,i,j+1);
+        return;
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Flip Game II
+
+You are playing the following Flip Game with your friend: Given a string that contains only these two characters: + and -, you and your friend take turns to flip twoconsecutive "++" into "--". The game ends when a person can no longer make a move and therefore the other person will be the winner.
+Write a function to determine if the starting player can guarantee a win.
+For example, given s = "++++", return true. The starting player can guarantee a win by flipping the middle "++" to become "+--+".
+
+public boolean canWin(String s) {
+	if(s.length() == 0) return false;
+	char[] array = s.toCharArray();
+	return helper(array);
+}
+public boolean helper(char[] array) {
+	for(int i = 0; i < array.length-1; i++) {
+		if(array[i] == '+' && array[i+1] == '+') {
+			array[i] = '-';
+			array[i+1] = '-';
+			boolean flag = !helper(array)
+			array[i] = '+';
+			array[i+1] = '+';
+			if(flag) return true;
+		}
+	}
+	return false;
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+221. Maximal Square
+Given a 2D binary matrix filled with 0's and 1's, find the largest square containing all 1's and return its area.
+
+For example, given the following matrix:
+
+1 0 1 0 0
+1 0 1 1 1
+1 1 1 1 1
+1 0 0 1 0
+Return 4.
+
+public int maximalSquare(char[][] matrix) {
+        if(matrix.length == 0) return 0;
+        int[][] dp = new int[matrix.length+1][matrix[0].length+1];
+        int result = 0;
+        for(int i = 1; i <= matrix.length; i++) {
+            for(int j = 1; j <= matrix[0].length; j++) {
+                if(matrix[i-1][j-1] == '1') {
+                    dp[i][j] = Math.min(Math.min(dp[i-1][j],dp[i][j-1]),dp[i-1][j-1])+1;
+                    result = Math.max(dp[i][j],result);
+                }
+            }
+        }
+        return result*result;
+    }
