@@ -30,6 +30,7 @@
   17. If we are using comparator with the object in that case we always need to create another class which implements the comparator interface and implements the compare method in that classs. And we can use the 
   methods such as Array.sort(array, new object()) or Collections.sort(list, new Object());
   18. copy one array into another array System.arraycopy(src, srcPos, dest, destPos, length)
+  19. sort array in reverse Arrays.sort(nums, Collection.reverseOrder());
 
 // Find Maximum size of substring, in which no duplicate characters:
 
@@ -370,7 +371,9 @@ public List<List<Integer>> generate(int numRows) {
 		}
 	}
 	
-	// array [1,2,5] and amount = 11 how many minimum number of coins needed to form amount
+	// array [1,2,5] and amount = 11 how many minimum number of coins needed to form amount // 
+	
+	Not working 
 	public static int coinChange(int[] coins, int amount) {
 	        Arrays.sort(coins); // sort arraay
 	        int a = 0, b, x = -1;
@@ -393,6 +396,18 @@ public List<List<Integer>> generate(int numRows) {
 	        return x;
 	    
 	}
+/////////////////// another 
+public int coinChange(int[] coins, int amount) { // no need to sort
+        int[] dp = new int[amount+1];
+        Arrays.fill(dp,Integer.MAX_VALUE);
+        dp[0] = 0;
+        for(int i = 0; i < coins.length; i--) {
+            for(int j = coins[i]; j <= amount; j++) {
+                if(dp[j-coins[i]] != Integer.MAX_VALUE) dp[j] = Math.min(dp[j],dp[j-coins[i]]+1);
+            }
+        }
+        return (dp[amount]==Integer.MAX_VALUE)?-1:dp[amount];
+    }
 
 	// Merge sort
 	// so here we have two array and if we are given only one array as the input parameter in the 
@@ -7558,6 +7573,75 @@ public boolean willAttendAll(Interval[] al) {
 		return true;		
 	}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Meeting Rooms II
+Given an array of meeting time intervals consisting of start and end times [[s1,e1],[s2,e2],...] (si < ei), find the minimum number of conference rooms required.
+For example,
+Given [[0, 30],[5, 10],[15, 20]],
+return 2.
+
+import java.util.*;
+
+class Interval7{
+	int start, end;
+	public Interval7(int start, int end) {
+		this.start = start;
+		this.end = end;
+	}
+}
+public class MeetingRoomMain {
+
+	public static void main(String[] args) {
+		Interval7 s1 = new Interval7(1,5);
+		Interval7 s2 = new Interval7(2,4);
+		Interval7 s3 = new Interval7(4,9);
+		Interval7 s4 = new Interval7(3,8);
+		Interval7 s5 = new Interval7(7,9);
+		Interval7[] array = new Interval7[5];
+		array[0] = s1; array[1] = s2; array[2] = s3; array[3] = s4; array[4] = s5;
+		System.out.println(minimumRooms(array));
+
+	}
+	public static int minimumRooms(Interval7[] array) {
+		if(array.length == 0) return 0;
+		int[] start = new int[array.length],end = new int[array.length];
+		for(int i = 0; i < array.length; i++) {
+			start[i] = array[i].start;
+			end[i] = array[i].end;
+		}
+		Arrays.sort(start); Arrays.sort(end);
+		int room = 0, endInd = 0;
+		for(int i = 0; i < start.length; i++) {
+			if(start[i] < end[endInd]) room++;
+			else endInd++;
+		}
+		return room;
+	}
+
+}
+////////////////////////////////////// another method minimumRooms
+public static int minimumRooms(Interval7[] array) {
+		if(array.length == 0) return 0;
+		int[] start = new int[array.length],end = new int[array.length];
+		for(int i = 0; i < array.length; i++) {
+			start[i] = array[i].start;
+			end[i] = array[i].end;
+		}
+		Arrays.sort(start); Arrays.sort(end);
+		int i = 0, j = 0, activeRoom = 0,minRoom = 0;
+		while(i < array.length && j < array.length) {
+			if(start[i] < end[j]) {
+				activeRoom++;
+				minRoom = Math.max(minRoom,activeRoom);
+				i++;
+			}
+			else {
+				activeRoom--; j++;
+			}
+		}
+		return minRoom;
+	}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Leetcode: Strobogrammatic Number
 
 A strobogrammatic number is a number that looks the same when rotated 180 degrees (looked at upside down).
@@ -8717,3 +8801,667 @@ public int maximalSquare(char[][] matrix) {
         }
         return result*result;
     }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Wiggle Sort
+Given an unsorted array nums, reorder it in-place such that nums[0] <= nums[1] >= nums[2] <= nums[3]....
+For example, given nums = [3, 5, 2, 1, 6, 4], one possible answer is [1, 6, 2, 5, 3, 4].
+
+public void wiggleSort(int[] nums) {
+	if(nums.length == 0) return;
+	for(int i = 0; i < nums.length-1; i++) {
+		if(i % 2 == 0 && nums[i] > nums[i+1]) swap(nums,i,i+1);
+		if(i % 2 != 0 && nums[i] < nums[i+1]) swap(nums,i,i+1);
+	}
+}
+public void swap(int[] nums, int i, int j) {
+	int temp = nums[i];
+	nums[i] = nums[j];
+	nums[j] = temp;
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode wiggleSort 2
+Given an unsorted array nums, reorder it such that nums[0] < nums[1] > nums[2] < nums[3]....
+
+Example:
+(1) Given nums = [1, 5, 1, 1, 6, 4], one possible answer is [1, 4, 1, 5, 1, 6]. 
+(2) Given nums = [1, 3, 2, 2, 3, 1], one possible answer is [2, 3, 1, 3, 1, 2].
+
+Note:
+You may assume all input has valid answer.
+
+Follow Up:
+Can you do it in O(n) time and/or in-place with O(1) extra space?
+
+public void wiggleSortII(int[] nums) {
+	if(nums.length < 2) return;
+	Arrays.sort(nums);
+	int len = nums.length,i = 0, mid, k = 0;
+	mid = (len % 2 == 0)? len/2-1:len/2;
+	int[] temp = new int[nums.length];
+	while(i <= mid) {
+		temp[k++] = nums[mid-i];
+		if(k < nums.length) temp[k++] = nums[len-i-1];
+		i++;
+	}
+	for(int j = 0; j < temp.length; j++) nums[j] = temp[j];
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+207. Course Schedule
+
+There are a total of n courses you have to take, labeled from 0 to n - 1.
+
+Some courses may have prerequisites, for example to take course 0 you have to first take course 1, which is expressed as a pair: [0,1]
+
+Given the total number of courses and a list of prerequisite pairs, is it possible for you to finish all courses?
+
+For example:
+
+2, [[1,0]]
+There are a total of 2 courses to take. To take course 1 you should have finished course 0. So it is possible.
+
+2, [[1,0],[0,1]]
+There are a total of 2 courses to take. To take course 1 you should have finished course 0, and to take course 0 you should also have finished course 1. So it is impossible.
+
+public boolean canFinish(int n, int[][] pre) {
+        ArrayList[] graph = new ArrayList[n];
+        Set<Integer> set1 = new HashSet<Integer>(), set2 = new HashSet<Integer>(), set3 = new HashSet<Integer>();
+        for(int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<Integer>();
+            set1.add(i);
+        }
+        for(int i = 0; i < pre.length; i++) {
+            graph[pre[i][1]].add(pre[i][0]);
+        }
+        while(set1.size() > 0) {
+            int v = set1.iterator().next();
+            if(dfs(v,set1,set2,set3,graph)) return false;
+        }
+        return true;
+    }
+    public boolean dfs(int v,Set<Integer> set1, Set<Integer> set2, Set<Integer> set3, ArrayList[] graph) {
+        move(v, set1, set2);
+        ArrayList<Integer> list = graph[v];
+        for(int n : list) {
+            if(set3.contains(n)) continue;
+            if(set2.contains(n)) return true;
+            if(dfs(n,set1,set2,set3,graph)) return true;
+        }
+        move(v, set2, set3);
+        return false;
+    }
+    public void move(int v,Set<Integer> src, Set<Integer> dst) {
+        src.remove(v);
+        dst.add(v);
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+210. Course Schedule II
+
+There are a total of n courses you have to take, labeled from 0 to n - 1.
+
+Some courses may have prerequisites, for example to take course 0 you have to first take course 1, which is expressed as a pair: [0,1]
+
+Given the total number of courses and a list of prerequisite pairs, return the ordering of courses you should take to finish all courses.
+
+There may be multiple correct orders, you just need to return one of them. If it is impossible to finish all courses, return an empty array.
+
+For example:
+
+2, [[1,0]]
+There are a total of 2 courses to take. To take course 1 you should have finished course 0. So the correct course order is [0,1]
+
+4, [[1,0],[2,0],[3,1],[3,2]]
+There are a total of 4 courses to take. To take course 3 you should have finished both courses 1 and 2. Both courses 1 and 2 should be taken after you finished course 0. So one correct course order is [0,1,2,3]. Another correct ordering is[0,2,1,3].
+
+public int[] findOrder(int n, int[][] pre) {
+        ArrayList[] graph = new ArrayList[n];
+        Set<Integer> set1 = new HashSet<Integer>(), set2 = new HashSet<Integer>(), set3 = new HashSet<Integer>();
+        ArrayList<Integer> result = new ArrayList<Integer>();
+        for(int i = 0; i < n ; i++) {
+            set1.add(i);
+            graph[i] = new ArrayList<Integer>();
+        }
+        for(int i = 0; i < pre.length; i++) {
+            graph[pre[i][1]].add(pre[i][0]);
+        }
+        while(set1.size() > 0) {
+            int k = set1.iterator().next();
+            if(dfs(k,set1,set2,set3,graph,result)) return new int[0];
+        }
+        return result.stream().mapToInt(i->i).toArray();
+        
+    }
+    public boolean dfs(int v, Set<Integer> set1, Set<Integer> set2, Set<Integer> set3, ArrayList[] graph, ArrayList<Integer> result) {
+        move(v, set1, set2);
+        ArrayList<Integer> list = graph[v];
+        for(int n : list) {
+            if(set3.contains(n)) continue;
+            if(set2.contains(n)) return true;
+            if(dfs(n,set1,set2,set3,graph,result)) return true;
+        }
+        result.add(0,v);
+        move(v, set2, set3);
+        return false;
+    }
+    public void move(int v, Set<Integer> src, Set<Integer> dst) {
+        src.remove(v); 
+        dst.add(v);
+    }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+134. Gas Station
+
+There are N gas stations along a circular route, where the amount of gas at station i is gas[i].
+
+You have a car with an unlimited gas tank and it costs cost[i] of gas to travel from station i to its next station (i+1). You begin the journey with an empty tank at one of the gas stations.
+
+Return the starting gas station's index if you can travel around the circuit once, otherwise return -1.
+////////////////////////////////////////optimized 
+	public int canCompleteCircuit(int[] gas, int[] cost) {
+        int extra = 0, prev = 0, start = 0;
+        for(int i = 0; i < gas.length; i++) {
+           extra += (gas[i]-cost[i]);
+           if(extra < 0) {
+               start = i+1;
+               prev += extra;
+               extra = 0;
+           }
+        }
+        return (extra+prev < 0)?-1:start;
+    }
+///////////////////////////////////////// another
+	public int canCompleteCircuit(int[] gas, int[] cost) {
+        for(int i = 0; i < gas.length; i++) {
+           if(helper(i, gas, cost)) return i;
+        }
+        return -1;
+    }
+    public boolean helper(int index, int[] gas, int[] cost) {
+        int k = gas.length, i = 0, extra = 0;
+        while(i < k) {
+            extra += (gas[index] - cost[index]);
+            if(extra < 0) return false;
+            index = (index+1)%k;
+            i++;
+        }
+        return true;
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+93. Restore IP Addresses
+
+Given a string containing only digits, restore it by returning all possible valid IP address combinations.
+
+For example:
+Given "25525511135",
+
+return ["255.255.11.135", "255.255.111.35"]. (Order does not matter)
+
+	public List<String> restoreIpAddresses(String s) {
+        List<String> result = new ArrayList<String>();
+        int len = s.length();
+        for(int i = 1; i < 4 && i < len-2; i++) {
+            for(int j = i+1; j < i+4 && j < len-1; j++) {
+                for(int k = j+1; k < j+4 && k < len; k++) {
+                    String s1 = s.substring(0,i), s2 =s.substring(i,j), s3 = s.substring(j,k), s4 = s.substring(k);
+                    if(isValid(s1) && isValid(s2) && isValid(s3) && isValid(s4)) {
+                        result.add(s1+"."+s2+"."+s3+"."+s4);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+    public boolean isValid(String str) {
+        if(str.length() == 0 || str.length() > 3 || (str.charAt(0)=='0' && str.length() > 1) || Integer.parseInt(str) > 255) 
+        return false;
+        return true;
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+79. Word Search
+
+Given a 2D board and a word, find if the word exists in the grid.
+
+The word can be constructed from letters of sequentially adjacent cell, where "adjacent" cells are those horizontally or vertically neighboring. The same letter cell may not be used more than once.
+
+For example,
+Given board =
+
+[
+  ['A','B','C','E'],
+  ['S','F','C','S'],
+  ['A','D','E','E']
+]
+word = "ABCCED", -> returns true,
+word = "SEE", -> returns true,
+word = "ABCB", -> returns false.
+//// optimized 
+	public boolean exist(char[][] board, String word) {
+        if(board.length == 0) return false;
+        for(int i = 0; i < board.length; i++) {
+            for(int j = 0; j < board[0].length; j++) {
+                if(word.charAt(0) == board[i][j]) {
+                    if(dfs(board,word,i,j,0)) return true;
+                }
+            }
+        }
+        return false;
+    }
+    public boolean dfs(char[][] board, String word, int i, int j, int count) {
+        if(count == word.length()) return true;
+        if(i < 0 || i >= board.length || j < 0 || j >= board[0].length || word.charAt(count) != board[i][j]) return false;
+        board[i][j] = '*';
+        boolean flag = (dfs(board,word,i-1,j,count+1) ||
+                        dfs(board,word,i+1,j,count+1) ||
+                        dfs(board,word,i,j-1,count+1) ||
+                        dfs(board,word,i,j+1,count+1));
+        board[i][j] = word.charAt(count);
+        return flag;
+    }
+////////////////////////////// another but will not work for third case it will return true; but best for dfs
+public boolean exist(char[][] board, String word) {
+        if(board.length == 0) return false;
+        for(int i = 0; i < board.length; i++) {
+            for(int j = 0; j < board[0].length; j++) {
+                if(word.charAt(0) == board[i][j]) {
+                    if(dfs(board,word,i,j,0,"")) return true;
+                }
+            }
+        }
+        return false;
+    }
+    public boolean dfs(char[][] board, String word, int i, int j, int count,String s) {
+        if(count >= word.length()) return false;
+        s+=board[i][j];
+        if(s.equals(word)) return true;
+        boolean left = false,right = false ,up = false,down = false;
+		board[i][j] = '*';
+        if(i-1 >= 0 && word.charAt(count+1) == board[i-1][j]) {
+            left = dfs(board,word,i-1,j,count+1,s);
+        }
+         
+        if(i+1 < board.length && word.charAt(count+1) == board[i+1][j]) {
+            right = dfs(board,word,i+1,j,count+1,s);
+        }
+           
+        if(j-1 >= 0 && word.charAt(count+1) == board[i][j-1]) {
+            up = dfs(board,word,i,j-1,count+1,s);
+        }
+           
+        if(j+1 < board[0].length && word.charAt(count+1) == board[i][j+1]) {
+            down = dfs(board,word,i,j+1,count+1,s);
+        }
+		board[i][j] = word.charAt(count);
+        return (left || right || up || down);
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+211. Add and Search Word - Data structure design
+
+Design a data structure that supports the following two operations:
+
+void addWord(word)
+bool search(word)
+search(word) can search a literal word or a regular expression string containing only letters a-z or .. A . means it can represent any one letter.
+
+For example:
+
+addWord("bad")
+addWord("dad")
+addWord("mad")
+search("pad") -> false
+search("bad") -> true
+search(".ad") -> true
+search("b..") -> true
+Note:
+You may assume that all words are consist of lowercase letters a-z.
+///////////////////////////////////// solution based on tries 
+class TrieNode {
+    TrieNode[] children;
+    boolean eow;
+    public TrieNode() {
+        children = new TrieNode[26];
+        eow = false;
+    }
+}
+public class WordDictionary {
+    TrieNode root;
+    public WordDictionary() {
+        root = new TrieNode();
+    }
+    // Adds a word into the data structure.
+    public void addWord(String word) {
+        TrieNode current = root;
+        for(int i = 0; i < word.length(); i++) {
+            if(current.children[word.charAt(i)-'a'] == null) {
+                current.children[word.charAt(i)-'a'] = new TrieNode();
+            }
+            current = current.children[word.charAt(i)-'a'];
+        }
+        current.eow = true;
+    }
+
+    // Returns if the word is in the data structure. A word could
+    // contain the dot character '.' to represent any one letter.
+    public boolean search(String word) {
+        TrieNode current = root;
+        return helper(word,current,0);
+    }
+    public boolean helper(String word,TrieNode current, int count) {
+        if(count == word.length()) return current.eow;
+        if(word.charAt(count)=='.') {
+            for(int i = 0; i < 26; i++) {
+                if(current.children[i] != null && helper(word,current.children[i],count+1)) return true;
+            }
+            return false;
+        }
+        if(current.children[word.charAt(count)-'a'] == null) return false;
+        else current = current.children[word.charAt(count)-'a'];
+        return helper(word,current,count+1);
+    }
+}
+
+// Your WordDictionary object will be instantiated and called as such:
+// WordDictionary wordDictionary = new WordDictionary();
+// wordDictionary.addWord("word");
+// wordDictionary.search("pattern");
+///////////////////////////////////////////////////// another solution
+public class WordDictionary {
+    HashMap<Integer,List<String>> hm = new HashMap<Integer,List<String>>();
+    // Adds a word into the data structure.
+    public void addWord(String word) {
+        if(!hm.containsKey(word.length())) hm.put(word.length(),new ArrayList<String>());
+        hm.get(word.length()).add(word);
+    }
+
+    // Returns if the word is in the data structure. A word could
+    // contain the dot character '.' to represent any one letter.
+    public boolean search(String word) {
+        if(!hm.containsKey(word.length())) return false;
+        else {
+            List<String> list = hm.get(word.length());
+            for(String str: list) {
+                int i;
+                for(i = 0; i < str.length(); i++) {
+                    if(word.charAt(i) == '.') continue;
+                    if(word.charAt(i) != str.charAt(i)) break;
+                }
+                if(i == str.length()) return true;
+            }
+            return false;
+        }
+    }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+208. Implement Trie (Prefix Tree)
+Implement a trie with insert, search, and startsWith methods.
+
+Note:
+You may assume that all inputs are consist of lowercase letters a-z.
+
+class TrieNode {
+    // Initialize your data structure here.
+    TrieNode[] children;
+    boolean eow;
+    public TrieNode() {
+        children = new TrieNode[26];
+        eow = false;
+    }
+}
+
+public class Trie {
+    private TrieNode root;
+
+    public Trie() {
+        root = new TrieNode();
+    }
+
+    // Inserts a word into the trie.
+    public void insert(String word) {
+        TrieNode current = root;
+        for(int i = 0; i < word.length(); i++) {
+            if(current.children[word.charAt(i)-'a'] == null) {
+                current.children[word.charAt(i)-'a'] = new TrieNode();
+            }
+            current = current.children[word.charAt(i)-'a'];
+        }
+        current.eow = true;
+    }
+
+    // Returns if the word is in the trie.
+    public boolean search(String word) {
+        TrieNode current = root;
+        for(int i = 0; i < word.length(); i++) {
+            if(current.children[word.charAt(i)-'a'] == null) return false;
+            current = current.children[word.charAt(i)-'a'];
+        }
+        return current.eow;
+    }
+
+    // Returns if there is any word in the trie
+    // that starts with the given prefix.
+    public boolean startsWith(String prefix) {
+        TrieNode current = root;
+        for(int i = 0; i < prefix.length(); i++){
+            if(current.children[prefix.charAt(i)-'a'] == null) return false;
+            current =current.children[prefix.charAt(i)-'a'];
+        }
+        return true;
+    }
+}
+
+// Your Trie object will be instantiated and called as such:
+// Trie trie = new Trie();
+// trie.insert("somestring");
+// trie.search("key");
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Walls and Gates
+
+You are given a m x n 2D grid initialized with these three possible values.
+-1 - A wall or an obstacle.
+0 - A gate.
+INF - Infinity means an empty room. We use the value 231 - 1 = 2147483647 to represent INF as you may assume that the distance to a gate is less than2147483647.
+Fill each empty room with the distance to its nearest gate. If it is impossible to reach a gate, it should be filled with INF.
+import java.util.*;
+public class WallGatesMain {
+	public static void wallsGates(int[][] array) {
+		for(int i = 0; i < array.length; i++) {
+			for(int j = 0; j < array[0].length; j++) {
+				if(array[i][j] == 0) {
+					dfs(array,i-1,j,1);
+					dfs(array,i+1,j,1);
+					dfs(array,i,j+1,1);
+					dfs(array,i,j-1,1);
+				}
+			}
+		}
+		return;
+	}
+	public static void dfs(int[][] array, int i, int j, int count) {
+		if(i < 0 || i >= array.length || j < 0 || j >= array[0].length || array[i][j] == 0 || array[i][j] == -1) return;
+		int temp = Math.min(count, array[i][j]);
+		array[i][j] = -1;
+		dfs(array,i-1,j,count+1);
+		dfs(array,i+1,j,count+1);
+		dfs(array,i,j-1,count+1);
+		dfs(array,i,j+1,count+1);
+		array[i][j] = temp;
+	}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Problem Statement
+    	Fabian is in charge of a law firm working on an important case. For a case coming up, he needs a specific folder which is stored in one of the filing cabinets arranged in a line against the wall of the records room. He has assigned a number of workers to find the folder from the filing cabinets. He doesn't want the workers to get in each other's way, nor does he want folders from different filing cabinets getting mixed up, so he has decided to partition the cabinets, and assign a specific section to each worker. Each worker will have at least 1 cabinet to search through.
+
+
+
+More specifically, Fabian wants to divide the line of filing cabinets into N sections (where N is the number of workers) so that every cabinet that the ith worker looks through is earlier in the line than every cabinet that the jth worker has to look through, for i < j.
+
+
+
+His initial thought was to make all the sections equal, giving each worker the same number of filing cabinets to look through, but then he realized that the filing cabinets differed in the number of folders they contained. He now has decided to partition the filing cabinets so as to minimize the maximum number of folders that a worker would have to look through. For example, suppose there were three workers and nine filing cabinets with the following number of folders:
+
+10 20 30 40 50 60 70 80 90
+
+
+He would divide up the filing cabinets into the following sections:
+
+10 20 30 40 50 | 60 70 | 80 90
+
+
+The worker assigned to the first section would have to look through 150 folders. The worker assigned to the second section would have to search through 130 folders, and the last worker would filter through 170 folders. In this partitioning, the maximum number of folders that a worker looks through is 170. No other partitioning has less than 170 folders in the largest partition.
+
+
+
+Write a class FairWorkload with a method getMostWork which takes a int[] folders (the number of folders for each filing cabinet) and an int workers (the number of workers). The method should return an int which is the maximum amount of folders that a worker would have to look through in an optimal partitioning of the filing cabinets. For the above example, the method would have returned 170.
+ 
+
+ public class WorkLoadMain {
+
+	public static void main(String[] args) {
+		int[] jobs = {10, 7, 8, 12, 6, 8};
+		int workers = 4;
+		System.out.println(minimumWorkLoad(jobs,workers));
+	}
+	public static int minimumWorkLoad(int[] jobs, int workers) {
+		int left = 0, right = 0, maxJob = 0, result = 0, mid = 0;
+		for(int i = 0; i < jobs.length; i++)  {
+			maxJob = Math.max(maxJob, jobs[i]);
+			right += jobs[i];
+		}
+		result = right;
+		while(left <= right) {
+			mid = (left + right)/2;
+			if(mid >= maxJob && isPossible(mid,jobs, workers)) {
+				result = Math.min(result, mid);
+				right = mid - 1;
+			}
+			else left = mid + 1;
+		}
+		return result;
+	}
+	public  static boolean isPossible(int result, int[] jobs, int workers) {
+		int count = 1, currentTime = 0, i = 0;
+		while(i < jobs.length) {
+			if(currentTime+jobs[i] > result)  {
+				count++;
+				currentTime = 0;
+			}
+			else {
+				currentTime += jobs[i++];
+			}
+		}
+		return (count <= workers);		
+	}
+
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+DisJointSEt 
+Design disjoint sets which supports makeSet, union and findSet operations. Uses union by rank and path compression for optimization.
+
+import java.util.*;
+class SetNode {
+	int data, rank;
+	SetNode parent;
+	public SetNode(int data) {
+		this.data = data;
+		rank = 0;
+		parent = this;
+	}
+}
+class DisjointSet {
+	HashMap<Integer,SetNode> hm;
+	public DisjointSet() {
+		hm = new HashMap<Integer,SetNode>();
+	}
+	public void makeSet(int data) {
+		SetNode node = new SetNode(data);
+		hm.put(data, node);
+	}
+	public void unionSet(int n1, int n2) {
+		SetNode node1 = hm.get(n1);
+		SetNode node2 = hm.get(n2);
+		SetNode parent1 = findParent(node1);
+		SetNode parent2 = findParent(node2);
+		if(parent1 == parent2) return;
+		if(parent1.rank >= parent2.rank) {
+			parent1.rank = (parent1.rank == parent2.rank)?parent1.rank+1:parent1.rank;
+			parent2.parent = parent1;
+		}
+		else parent1.parent = parent2;
+	}
+	public int findSet(int data) {
+		SetNode current = hm.get(data);
+		SetNode parent = findParent(current);
+		return parent.data;
+		
+	}
+	public SetNode findParent(SetNode node) {
+		SetNode current = node.parent;
+		if(current.parent == current) {
+			return current;
+		}
+		node.parent = findParent(node.parent);
+		return node.parent;
+	}
+}
+public class DisjointSetMain {
+
+	public static void main(String[] args) {
+		DisjointSet ds = new DisjointSet();
+		ds.makeSet(1); ds.makeSet(2); ds.makeSet(3); ds.makeSet(4); ds.makeSet(5);
+		ds.makeSet(6); ds.makeSet(7);
+		ds.unionSet(1, 2); ds.unionSet(2, 3); ds.unionSet(4, 5); ds.unionSet(6, 7);
+		ds.unionSet(5, 6); ds.unionSet( 3, 7);
+		System.out.println(ds.findSet(1)); 
+		System.out.println(ds.findSet(2)); 
+		System.out.println(ds.findSet(3)); 
+		System.out.println(ds.findSet(4)); 
+		System.out.println(ds.findSet(5)); 
+		System.out.println(ds.findSet(6)); 
+		System.out.println(ds.findSet(7)); 
+	}
+
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Topological sort in graph
+
+Generate topologically sorted order for directed acyclic graph. 
+
+import java.util.*;
+class Graph{
+	int vertex;
+	ArrayList[] graph;
+	public Graph(int n, int[][] edges) {
+		vertex = n;
+		graph = new ArrayList[n];
+		for(int i = 0; i < n; i++) graph[i] = new ArrayList<Integer>();
+		for(int i = 0; i < edges.length; i++) {
+			graph[edges[i][0]].add(edges[i][1]);
+		}
+	}
+	public List<Integer> topologicalSort() {
+		List<Integer> result = new ArrayList<Integer>();
+		Stack<Integer> stack = new Stack<Integer>();
+		Set<Integer> set = new HashSet<Integer>();
+		for(int i = 0; i < vertex; i++) {
+			if(!set.contains(i)) helper(stack,set,i);
+		}
+		while(!stack.isEmpty()) result.add(stack.pop());
+		return result;
+	}
+	public void helper(Stack<Integer> result, Set<Integer> set, int current) {
+		set.add(current);
+		List<Integer> temp = graph[current];
+		for(int i = 0; i < temp.size(); i++) {
+			if(!set.contains(temp.get(i)))helper(result,set,temp.get(i));
+		}
+		result.push(current);
+	}
+}
+public class TopologicalSortMain {
+
+	public static void main(String[] args) {
+		int array[][] = {{0,2},{1,2},{1,3},{2,4},{3,5},{4,7},{4,5},{5,6}};
+		Graph graph = new Graph(8,array);
+		List<Integer> result = graph.topologicalSort();
+		System.out.println(result.toString());
+	}
+
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
