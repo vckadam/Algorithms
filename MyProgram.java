@@ -7491,7 +7491,8 @@ public class solution {
 		if(!hm.containsKey(str)) {
 			hm.put(str,new ArrayList<Integer>());
 		}
-		hm.put(str,count++);
+		//hm.put(str,count++);
+		hm.get(str).add(count++);
 	}
 	public int minDistance(String str1, String str2) {
 		int minDist = Integer.MAX_VALUE, i = 0, j = 0;
@@ -7511,6 +7512,41 @@ public class solution {
 		return minDist;
 	}
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Shortest Word Distance III
+This is a follow up of Shortest Word Distance. The only difference is now word1 could be the same as word2.
+Given a list of words and two words word1 and word2, return the shortest distance between these two words in the list.
+word1 and word2 may be the same and they represent two individual words in the list.
+For example,
+Assume that words = ["practice", "makes", "perfect", "coding", "makes"].
+Given word1 = “makes”, word2 = “coding”, return 1.
+Given word1 = "makes", word2 = "makes", return 3.
+
+	public static int minDistance(String[] strArray,String word1, String word2) {
+		int p1 = -1, p2 = -1, minDist = Integer.MAX_VALUE;
+		if(strArray.length == 0 || strArray.length == 1) return 0;
+		boolean flag1 = true, flag2 = true;
+		if(word1.equals(word2)) flag2 = false;
+		for(int i = 0; i < strArray.length; i++) {
+			if(flag1 && strArray[i].equals(word1)) {
+				p1 = i; 
+				if(!flag2) { flag2 = true; flag1 = false; }
+			}
+			else if(flag2 && strArray[i].equals(word2)) {
+				p2 = i;
+				if(!flag1) { flag1 = true; flag2 = false; }
+			}
+			if(p1 != -1 && p2 != -1) 
+				minDist = Math.min(minDist, Math.abs(p1-p2));
+		}
+		return (minDist==Integer.MAX_VALUE)?0:minDist;
+	}
+	public static void main(String[] args) {
+		String[] strArray = {"practice","practice", "makes", "perfect", "coding", "makes","makes","practice"};
+		System.out.println(minDistance(strArray,"practice","practice"));
+	}
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Leetcode: Flip Game
 
@@ -7866,6 +7902,65 @@ public int mySqrt(int x) {
         }
         return (int)left;
     }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+1	Two Sum
+Given an array of integers, return indices of the two numbers such that they add up to a specific target.
+
+You may assume that each input would have exactly one solution.
+
+Example:
+Given nums = [2, 7, 11, 15], target = 9,
+
+Because nums[0] + nums[1] = 2 + 7 = 9,
+return [0, 1].
+
+public int[] twoSum(int[] nums, int target) {
+        if(nums.length == 0) {
+            return new int[0];
+        }
+        int[] result = new int[2];
+        HashMap<Integer,Integer> hm = new HashMap<Integer,Integer>();
+        for(int i = 0; i < nums.length; i++) {
+            if(hm.containsKey(target-nums[i])) {
+                result[0] = hm.get(target-nums[i]);
+                result[1] = i;
+                break;
+            }
+            if(!hm.containsKey(nums[i])) hm.put(nums[i],i);
+        }
+        return result;
+        
+    }
+	
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+167	Two Sum II - Input array is sorted 
+
+Two Sum II - Input array is sorted
+
+Array of integers that AN GIVEN IS already  sorted in Ascending the Order , that the Find TWO SUCH They Numbers up to the Add A specific target The Number.
+
+The function twoSum should return indices of the two numbers such that they add up to the target, where index1 must be less than index2. Please note that your returned answers (both index1 and index2) are not zero-based.
+
+You may assume that each input would have exactly one solution.
+
+The INPUT:  Numbers = {2,. 7,. 11, 15}, target The =. 9 the Output:  index1 = 1, 2 index2 =
+
+
+	public static void sum2(int[] array,int sum) {
+		int left = 0, right = array.length-1;
+		while(left < right) {
+			if(array[left] + array[right] == sum)  {
+				System.out.println(left+" "+right);
+				return;
+			}
+			else if(array[left]+ array[right] < sum) {
+				left++;
+			}
+			else right--;
+		}
+		System.out.println("Sum doesn't exist");
+		return;
+	}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Leetcode: Two Sum III - Data structure design
@@ -9347,7 +9442,7 @@ Write a class FairWorkload with a method getMostWork which takes a int[] folders
 		}
 		return (count <= workers);		
 	}
-
+0
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -9465,3 +9560,466 @@ public class TopologicalSortMain {
 
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+355. Design Twitter 
+
+Design a simplified version of Twitter where users can post tweets, follow/unfollow another user and is able to see the 10 most recent tweets in the user's news feed. Your design should support the following methods:
+
+postTweet(userId, tweetId): Compose a new tweet.
+getNewsFeed(userId): Retrieve the 10 most recent tweet ids in the user's news feed. Each item in the news feed must be posted by users who the user followed or by the user herself. Tweets must be ordered from most recent to least recent.
+follow(followerId, followeeId): Follower follows a followee.
+unfollow(followerId, followeeId): Follower unfollows a followee.
+Example:
+
+Twitter twitter = new Twitter();
+
+// User 1 posts a new tweet (id = 5).
+twitter.postTweet(1, 5);
+
+// User 1's news feed should return a list with 1 tweet id -> [5].
+twitter.getNewsFeed(1);
+
+// User 1 follows user 2.
+twitter.follow(1, 2);
+
+// User 2 posts a new tweet (id = 6).
+twitter.postTweet(2, 6);
+
+// User 1's news feed should return a list with 2 tweet ids -> [6, 5].
+// Tweet id 6 should precede tweet id 5 because it is posted after tweet id 5.
+twitter.getNewsFeed(1);
+
+// User 1 unfollows user 2.
+twitter.unfollow(1, 2);
+
+// User 1's news feed should return a list with 1 tweet id -> [5],
+// since user 1 is no longer following user 2.
+twitter.getNewsFeed(1);
+
+public class Twitter {
+    HashMap<Integer,List<Tweet>> userTweet;
+    HashMap<Integer,List<Integer>> followers;
+    int count;
+    class Tweet {
+        int id, counter;
+        public Tweet(int id) {
+            this.id = id;
+            counter = count++;
+        }
+    }
+    class TweetCompare implements Comparator<Tweet>{
+        public int compare(Tweet t1, Tweet t2) {
+            return t2.counter-t1.counter;
+        }
+    }
+    /** Initialize your data structure here. */
+    public Twitter() {
+        userTweet = new HashMap<Integer,List<Tweet>>();
+        followers = new HashMap<Integer,List<Integer>>();
+        count = 0;
+    }
+    
+    /** Compose a new tweet. */
+    public void postTweet(int userId, int tweetId) {
+        Tweet tweet = new Tweet(tweetId);
+        if(!userTweet.containsKey(userId)) userTweet.put(userId,new ArrayList<Tweet>());
+        userTweet.get(userId).add(0,tweet);
+    }
+    
+    /** Retrieve the 10 most recent tweet ids in the user's news feed. Each item in the news feed must be posted by users who the user followed or by the user herself. Tweets must be ordered from most recent to least recent. */
+    public List<Integer> getNewsFeed(int userId) {
+        List<Integer> result = new ArrayList<Integer>();
+        List<Tweet> temp = new ArrayList<Tweet>();
+        if(userTweet.containsKey(userId)) temp.addAll(userTweet.get(userId));
+        if(followers.containsKey(userId)) {
+            List<Integer> follower = followers.get(userId);
+            for(Integer i: follower) {
+                if(userTweet.containsKey(i)) temp.addAll(userTweet.get(i));
+            }
+        }
+        Collections.sort(temp,new TweetCompare());
+        for(int j = 0; j < 10 && j < temp.size(); j++) {
+            result.add(temp.get(j).id);
+        }
+        return result;
+    }
+    
+    /** Follower follows a followee. If the operation is invalid, it should be a no-op. */
+    public void follow(int followerId, int followeeId) {
+        if(followerId == followeeId) return;
+        if(!followers.containsKey(followerId)) followers.put(followerId,new ArrayList<Integer>());
+        if(!followers.containsKey(followeeId)) followers.put(followeeId, new ArrayList<Integer>());
+        List<Integer> follower = followers.get(followerId);
+        if(!follower.contains(followeeId)) {
+            follower.add(followeeId);
+            followers.put(followerId, follower);
+        }
+    }
+    
+    /** Follower unfollows a followee. If the operation is invalid, it should be a no-op. */
+    public void unfollow(int followerId, int followeeId) {
+       if(followerId == followeeId) return;
+       if(followers.containsKey(followerId)) {
+           List<Integer> follower = followers.get(followerId);
+           if(follower.contains(followeeId))  {
+               follower.remove(follower.indexOf(followeeId));
+               followers.put(followerId, follower);
+           }
+       }
+    }
+} 
+
+/**
+ * Your Twitter object will be instantiated and called as such:
+ * Twitter obj = new Twitter();
+ * obj.postTweet(userId,tweetId);
+ * List<Integer> param_2 = obj.getNewsFeed(userId);
+ * obj.follow(followerId,followeeId);
+ * obj.unfollow(followerId,followeeId);
+ */
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Paint House
+
+There are a row of n houses, each house can be painted with one of the three colors: red, blue or green. The cost of painting each house with a certain color is different. You have to paint all the houses such that no two adjacent houses have the same color.
+The cost of painting each house with a certain color is represented by a n x 3 cost matrix. For example, costs[0][0] is the cost of painting house 0 with color red; costs[1][2] is the cost of painting house 1 with color green, and so on... Find the minimum cost to paint all houses.
+/// from index 1
+//// currentRedCost = min(prevBlueCost, prevGreenCost) + currentRedCost;
+	public static int paintHouseMinCost(int[][] cost) {
+		if(cost.length == 0) return 0;
+		int len = cost.length;
+		for(int i = 1; i < len; i++) {
+			cost[i][0] += Math.min(cost[i-1][1], cost[i-1][2]);
+			cost[i][1] += Math.min(cost[i-1][0], cost[i-1][2]);
+			cost[i][2] += Math.min(cost[i-1][0], cost[i-1][1]);
+		}
+		return Math.min(cost[len-1][0], Math.min(cost[len-1][1], cost[len-1][2]));
+	}
+	public static void main(String[] args) {
+		int[][] cost = {{5,8,6},{19,14,13},{7,5,12},{14,15,17},{3,20,10}};
+		System.out.println(paintHouseMinCost(cost));
+	}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Paint House II
+There are a row of n houses, each house can be painted with one of the k colors. The cost of painting each house with a certain color is different. You have to paint all the houses such that no two adjacent houses have the same color.
+The cost of painting each house with a certain color is represented by a n x k cost matrix. For example, costs[0][0] is the cost of painting house 0 with color 0; costs[1][2] is the cost of painting house 1 with color 2, and so on... Find the minimum cost to paint all houses.
+Note:
+All costs are positive integers.
+Follow up:
+Could you solve it in O(nk) runtime?
+
+public static int paintHouseMinCost2(int[][] cost) {
+		if(cost.length == 0 || cost.length > 1 && cost[0].length == 1) return 0;
+		int n = cost.length-1, m = cost[0].length-1;
+		for(int i = 1; i <= n; i++) {
+			int[] min = findMin(cost[i-1]);
+			for(int j = 0; j <= m; j++) {
+				if(min[0] != j) cost[i][j] += cost[i-1][min[0]];
+				else cost[i][j] += cost[i-1][min[1]]; 
+			}
+		}
+		int result = Integer.MAX_VALUE;	
+		for(int j = 0; j <= m; j++) {
+			result = Math.min(result, cost[n][j]);
+		}
+		return result;
+	}
+	public static int[] findMin(int[] array) {
+		int[] result = new int[2];
+		int min1 = Integer.MAX_VALUE, min2 = Integer.MAX_VALUE;
+		for(int i = 0; i < array.length; i++) {
+			if(array[i] <= min1) {
+				result[1] = result[0];
+				result[0] = i;
+				min2 = min1;
+				min1 = array[i];
+			}
+			else if(array[i] <= min2) {
+				result[1] = i;
+				min2 = array[i];
+			}
+		}
+		return result;
+	}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+LeetCode 281 - Zigzag Iterator
+
+Suppose you have a Iterator class with has_next() and get_next() methods.
+Please design and implement a ZigzagIterator class as a wrapper of two iterators.
+For example, given two iterators:
+i0 = [1,2,3,4]
+i1 = [5,6]
+ZigzagIterator it(i0, i1);
+
+while(it.has_next()) {
+    print(it.get_next());
+}
+The output of the above pseudocode would be [1,5,2,6,3,4].
+/////////////////////// using list iterator
+class ZigZagList {
+	Iterator<Integer> i, j ,temp;
+	public ZigZagList(List<Integer> l1, List<Integer> l2) {
+		i = l2.iterator();
+		j = l1.iterator();
+	}
+	public boolean hasNext() {
+		return i.hasNext()||j.hasNext();
+	}
+	public int getNext() {
+		if(j.hasNext()) { temp = i; i = j; j = temp; }
+		return i.next();
+	}
+	
+}
+/////////////////////// using array 
+class ZigZagIterator {
+	int[] array1, array2;
+	int i, j;
+	boolean flag;
+	public ZigZagIterator(int[] array1, int[] array2) {
+		this.array1 = array1;
+		this.array2 = array2;
+		i = 0; j = 0; flag = true;
+	}
+	public boolean hasNext() {
+		return (i < array1.length|| j < array2.length);
+	}
+	public int getNext(){
+		if(!hasNext()) return -1;
+		if(i < array1.length && j < array2.length) {
+			if(flag) {
+				flag = false;
+				return array1[i++];
+			}
+			else {
+				flag = true;
+				return array2[j++];
+			}
+		}
+		else if(i < array1.length) return array1[i++];
+		else return array2[j++];
+	}
+	
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Number of Connected Components in an Undirected Graph
+Given n nodes labeled from 0 to n - 1 and a list of undirected edges (each edge is a pair of nodes), write a function to find the number of connected components in an undirected graph.
+Example 1:
+     0          3
+     |          |
+     1 --- 2    4
+Given n = 5 and edges = [[0, 1], [1, 2], [3, 4]], return 2.
+Example 2:
+     0           4
+     |           |
+     1 --- 2 --- 3
+Given n = 5 and edges = [[0, 1], [1, 2], [2, 3], [3, 4]], return 1.
+Note:
+You can assume that no duplicate edges will appear in edges. Since all edges are undirected, [0, 1] is the same as [1, 0] and thus will not appear together in edges
+
+public class ConnectedComponentMain {
+	public static int connectedComponent(int n, int[][] array){
+		ArrayList[] graphlist = new ArrayList[n];
+		Set<Integer> set = new HashSet<Integer>();
+		int counter = 0;
+		for(int i = 0; i < n; i++) graphlist[i] = new ArrayList<Integer>();
+		for(int i = 0; i < array.length; i++)  {
+			graphlist[array[i][0]].add(array[i][1]);
+			graphlist[array[i][1]].add(array[i][0]);
+		}
+		for(int i = 0; i < n; i++) {
+			if(!set.contains(i)){ dfs(i,set,graphlist); counter++; }
+		}
+		return counter;
+	}
+	public static void dfs(int v, Set<Integer> set, ArrayList[] graph) {
+		if(set.contains(v)) return;
+		set.add(v);
+		List<Integer> neighbours = graph[v];
+		for(int n: neighbours) {
+			if(!set.contains(n)) dfs(n,set,graph);
+		}
+	}
+	public static void main(String[] args) {
+		int[][] array = {{0, 1},{1, 2},{3, 4},{2, 3}};
+		System.out.println(connectedComponent(5,array));
+	}
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+LeetCode 348 - Design Tic-Tac-Toe
+
+Design a Tic-tac-toe game that is played between two players on a n x n grid.
+You may assume the following rules:
+A move is guaranteed to be valid and is placed on an empty block.
+Once a winning condition is reached, no more moves is allowed.
+A player who succeeds in placing n of their marks in a horizontal, vertical, or diagonal row wins the game.
+Example:
+Given n = 3, assume that player 1 is "X" and player 2 is "O" in the board.
+TicTacToe toe = new TicTacToe(3);
+toe.move(0, 0, 1); -> Returns 0 (no one wins)
+|X| | |
+| | | | // Player 1 makes a move at (0, 0).
+| | | |
+toe.move(0, 2, 2); -> Returns 0 (no one wins)
+|X| |O|
+| | | | // Player 2 makes a move at (0, 2).
+| | | |
+toe.move(2, 2, 1); -> Returns 0 (no one wins)
+|X| |O|
+| | | | // Player 1 makes a move at (2, 2).
+| | |X|
+toe.move(1, 1, 2); -> Returns 0 (no one wins)
+|X| |O|
+| |O| | // Player 2 makes a move at (1, 1).
+| | |X|
+toe.move(2, 0, 1); -> Returns 0 (no one wins)
+|X| |O|
+| |O| | // Player 1 makes a move at (2, 0).
+|X| |X|
+toe.move(1, 0, 2); -> Returns 0 (no one wins)
+|X| |O|
+|O|O| | // Player 2 makes a move at (1, 0).
+|X| |X|
+toe.move(2, 1, 1); -> Returns 1 (player 1 wins)
+|X| |O|
+|O|O| | // Player 1 makes a move at (2, 1).
+|X|X|X|
+Follow up:
+Could you do better than O(n2) per move() operation?
+Hint:
+Could you trade extra space such that move() operation can be done in O(1)?
+You need two arrays: int rows[n], int cols[n], plus two variables: diagonal, anti_diagonal.
+
+/////////////////////////////////// O(1) time 
+
+class TicTacToe2 {
+	int[] rows, cols;
+	int diagonal, antiDiagonal;
+	public TicTacToe2(int n) {
+		rows = new int[n];
+		cols = new int[n];
+		diagonal = 0; antiDiagonal = 0;
+	}
+	public int move(int i, int j, int player) {
+		int n = rows.length;
+		int sign = (player == 1)?1:-1;
+		rows[i]+=sign; cols[j]+=sign;
+		if(i == j) diagonal+=sign;
+		if(i+j+1 == n) antiDiagonal+=sign;
+		if(Math.abs(rows[i]) == n || 
+		   Math.abs(cols[j]) == n ||
+		   Math.abs(diagonal) == n || 
+		   Math.abs(antiDiagonal)== n) return player;
+		return 0;
+	}
+}
+/////////////////////////////////////O(n) time 
+
+class TicTacToe {
+	char[][] mat;
+	boolean win;
+	public TicTacToe(int n) {
+		mat = new char[n][n];
+		win = false;
+	}
+	public int move(int i, int j, int player) {
+		char sign = (player == 1)?'X':'O';
+		if(win) return -1;
+		if(mat[i][j] == 'O' || mat[i][j] == 'X') return -1;
+		mat[i][j] = sign;
+		int n = mat.length;
+		boolean flag1 = true, flag2 = true, flag3 = false, flag4 = false;
+		if(i == j) flag3 = true;
+		if(i+j+1 == n) flag4 = true;
+		for(int k = 0; k < n; k++) {
+			if(mat[k][j] != sign) flag1 = false;
+			if(mat[i][k] != sign) flag2 = false;
+			if(i == j && mat[k][k] != sign) flag3 = false;
+			if(i+j+1 == n && mat[k][n-k-1] != sign) flag4 = false;
+		}
+		if(flag1 || flag2 || flag3 || flag4) win = true;
+		return (flag1 || flag2 || flag3 || flag4 )?player:0;
+	}
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+357. Count Numbers with Unique Digits 
+Given a non-negative integer n, count all numbers with unique digits, x, where 0 ≤ x < 10n.
+
+Example:
+Given n = 2, return 91. (The answer should be the total numbers in the range of 0 ≤ x < 100, excluding [11,22,33,44,55,66,77,88,99])
+
+Hint:
+
+A direct way is to use the backtracking approach.
+Backtracking should contains three states which are (the current number, number of steps to get that number and a bitmask which represent which number is marked as visited so far in the current number). Start with state (0,0,0) and count all valid number till we reach number of steps equals to 10n.
+This problem can also be solved using a dynamic programming approach and some knowledge of combinatorics.
+Let f(k) = count of numbers with unique digits with length equals k.
+f(1) = 10, ..., f(k) = 9 * 9 * 8 * ... (9 - k + 2) [The first factor is 9 because a number cannot start with 0].
+
+public int countNumbersWithUniqueDigits(int n) {
+        if(n == 0) return 1;
+        int count = 9, result = 10;
+        for(int i = 2; i <= n; i++) {
+            count*=(9-i+2);
+            result+=count;
+        }
+        return result;
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode 156: Binary Tree Upside Down
+
+Given a binary tree where all the right nodes are either leaf nodes with a sibling (a left node that shares the same parent node) or empty, flip it upside down and turn it into a tree where the original right nodes turned into left leaf nodes. Return the new root.
+
+For example:
+Given a binary tree {1,2,3,4,5},
+
+
+    1
+   / \
+  2   3
+ / \
+4   5
+
+return the root of the binary tree [4,5,2,#,#,3,1].
+
+
+   4
+  / \
+ 5   2
+    / \
+   3   1  
+//// optimized  O(n) solution
+public Node upsideDown2(Node root) {
+		if(root == null|| root.leftNode == null && root.rightNode == null) return root;
+		Node newNode = upsideDown2(root.leftNode);
+		root.leftNode.leftNode = root.rightNode;
+		root.leftNode.rightNode = root;
+		root.leftNode = null; root.rightNode = null;
+		return newNode;
+	}
+//////////// O(n) iterative 
+	public Node upsideDown3(Node root) {
+		Node next = null, prev = null, temp = null, curr = root;
+		while(curr != null) {
+			next = curr.leftNode;
+			curr.leftNode = temp;
+			temp = curr.rightNode;
+			curr.rightNode = prev;
+			prev = curr;
+			curr = next;
+		}
+		return prev;
+	}
+//////////// O(n2) solution
+	public Node upsideDown(Node root) {
+		if(root == null) return null;
+		if(root.getLeftNode() == null && root.getRightNode() == null) return root;
+		Node l = upsideDown(root.leftNode);
+		Node r = upsideDown(root.rightNode);
+		Node temp = l;
+		while(l.rightNode != null) l = l.rightNode;
+		l.leftNode = r;
+		l.rightNode = root;
+		root.leftNode = null; root.rightNode = null;
+		return temp;		
+	}
+   
