@@ -4788,7 +4788,61 @@ public int myAtoi(String str) {
 		}
 		return result;
 	}
-	////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Check whether a given string consists the substring of type “ab*c”
+
+
+public static boolean isSubstring(String str, String substr) {
+		if(str.length() == 0 || substr.length() == 0) return false;
+		String[] sArray = substr.split("\\*");		
+		int k = 0;
+		if(sArray[0].length() != 0) {
+			int[] pre1 = getPreArray(sArray[0]);
+			k = isSubstring(str,sArray[0],pre1);
+			//if(k == -1) return false;
+			//else if(k != -1 && sArray.length == 1) return true;
+			if(sArray.length == 1 || k == -1) return (k != -1);
+		}
+		if(sArray.length > 1 && sArray[1].length() != 0) {
+			int[] pre2 = getPreArray(sArray[1]);
+			k = isSubstring(str.substring(k),sArray[1],pre2);
+			//return(k == -1)?false:true;	
+			return (k != -1);
+		}
+		return false;
+	}
+	public static int isSubstring(String str, String substr,int[] pre) {
+		if(str.length() == 0) return -1;
+		int i = 0, j = 0;
+		while(i < str.length()) {
+			if(str.charAt(i) == substr.charAt(j)) {
+				i++;j++;				
+			}
+			else {
+				if(j == 0) i++;
+				else j = pre[j-1];
+			}
+			if(j == pre.length) return i;
+		}
+		return -1;
+	}
+	public static int[] getPreArray(String str) {
+		int[] result = new int[str.length()];
+		int j = 0, i = 1;
+		while(i < str.length()) {
+			if(str.charAt(i) == str.charAt(j)) {
+				result[i] = j + 1;
+				i++; j++;
+			}
+			else {
+				if(j == 0) i++;
+				else j = result[j-1];
+			}
+		}
+		return result;
+	}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Write a function that takes an unsigned integer and returns the number of ’1' bits it has 
 (also known as the Hamming weight).
 
@@ -10022,4 +10076,251 @@ public Node upsideDown2(Node root) {
 		root.leftNode = null; root.rightNode = null;
 		return temp;		
 	}
-   
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Leetcode: 3Sum Smaller
+  
+ Given an array of n integers nums and a target, find the number of index triplets i, j, k with 0 <= i < j < k n that satisfy the condition nums[i] + nums[j] + nums[k] < target.
+For example, given nums = [-2, 0, 1, 3], and target = 2.
+Return 2. Because there are two triplets which sums are less than 2:
+[-2, 0, 1]
+[-2, 0, 3]
+
+	public static int threeSum(int[] array,int k) {
+		Arrays.sort(array);
+		int count = 0;
+		for(int i = 0; i <= array.length-3; i++) {
+			int left = i+1,right = array.length-1;
+			while(left < right) {
+				if(array[i]+array[left]+array[right] < k) {
+					count += (right-left);
+					left++;
+				}
+				else right--;
+			}
+		}
+		return count;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Verify preorder sequence of Binary Search Tree
+
+You have an array of preorder traversal of Binary Search Tree ( BST). Your program should verify whether it is a correct sequence or not.
+
+10,5,2,7,15 - true; 10,5,2,7,15,4 - false;
+
+	public static boolean isPreorder2(int[] array) {
+		if(array.length == 0) return false;
+		int i = -1, low = Integer.MIN_VALUE;
+		for(int n: array) {
+			if(n < low) return false;
+			while(i >= 0 && n > array[i]) low = array[i--];
+			array[++i] = n;
+		}
+		return true;
+	}
+	public static boolean isPreorder(int[] array) {
+		if(array.length == 0) return false;
+		Stack<Integer> stack = new Stack<Integer>();
+		int low = Integer.MIN_VALUE;
+		for(int n: array) {
+			if(n < low) return false;
+			while(!stack.isEmpty() && n > stack.peek()) low = stack.pop();
+			stack.push(n);
+		}
+		return true;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Binary Tree Longest Consecutive Sequence
+
+Given a binary tree, find the length of the longest consecutive sequence path.
+The path refers to any sequence of nodes from some starting node to any node in the tree along the parent-child connections. The longest consecutive path need to be from parent to child (cannot be the reverse).
+For example,
+   1
+    \
+     3
+    / \
+   2   4
+        \
+         5
+Longest consecutive sequence path is 3-4-5, so return 3.
+   2
+    \
+     3
+    / 
+   2    
+  / 
+ 1
+Longest consecutive sequence path is 2-3,not3-2-1, so return 2.
+
+	int max = 0;
+	public int longestSequence(Node root) {
+		if(root == null) return 0;
+		helper1(root,root.getData(),0);
+		return max;
+	}
+	public void helper1(Node root, int val, int count) {
+		if(root == null) return;
+		if(root.getData() == val) count++; 
+		else count = 1;
+		max = Math.max(max, count);
+		helper1(root.leftNode,root.getData()+1,count);
+		helper1(root.rightNode, root.getData()+1,count);
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Count Univalue Subtrees
+Given a binary tree, count the number of uni-value subtrees.
+A Uni-value subtree means all nodes of the subtree have the same value.
+For example:
+Given binary tree,
+              5
+             / \
+            1   5
+           / \   \
+          5   5   5
+return 4.
+int count = 0;
+public int countUnivalueSubtree(Node root) {
+	if(root == null) return 0;
+	helper(root);
+	return count;
+}
+public boolean helper(Node root) {
+	if(root == null) return true;
+	if(root.left == null && root.right == null) {
+		count++; 
+		return true;
+	}
+	boolean l = helper(root.left);
+	boolean r = helper(root.right);
+	if(l && r) {
+		if(root.left == null && root.val == root.right.val || root.right == null && root.val == root.left.val
+		   || root.val == root.left.val && root.val == root.right.val ) {
+			count++; 
+			return true;
+		}
+	}
+	return false;
+}
+///////////////////// usint count array
+
+	public int countUniTree(Node root) {
+		if(root == null) return 0;
+		int[] count = new int[1];
+		helperUni(root, count);
+		return count[0];
+	}
+	
+	public boolean helperUni(Node root, int[] count) {
+		if(root == null) return true;
+		if(root.leftNode == null && root.rightNode == null) {
+			count[0]++;
+			return true;
+		}
+		boolean l = helperUni(root.leftNode, count);
+		boolean r = helperUni(root.rightNode, count);
+		if(l && r) {
+			if(root.leftNode == null && root.data == root.rightNode.data ||
+			   root.rightNode == null && root.data == root.leftNode.data ||
+			   root.data == root.leftNode.data && root.data == root.rightNode.data) {
+				count[0]++;
+				return true;
+			}
+		}
+		return false;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Inorder Successor in BST
+Given a binary search tree and a node in it, find the in-order successor of that node in the BST.
+Note: If the given node has no in-order successor in the tree, return null.
+/////////////////////////////////// optimized 
+	public int inOrderSuccessor2(Node root, int val) {
+		if(root == null) return 0;
+		int result = 0;
+		while(root != null) {
+			if(val < root.data) {
+				result = root.data;
+				root = root.leftNode;
+			}
+			else root = root.rightNode;
+		}
+		return result;
+	}
+////////////////////////////////// another
+	public int inOrderSuccessor(Node root,int val) {
+		if(root == null) return 0;
+		Stack<Node> stack = new Stack<Node>();
+		while(root.data != val) {
+			stack.push(root);
+			if(val < root.data) root = root.leftNode;
+			else root = root.rightNode;
+		}
+		if(root.rightNode != null) {
+			root = root.rightNode;
+			while(root.leftNode != null) root = root.leftNode;
+			return root.data;
+		}
+		else {
+			while(!stack.isEmpty() && stack.peek().data < val) stack.pop();
+			return (!stack.isEmpty())?stack.peek().data:0;
+		}
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Find the Celebrity
+
+Suppose you are at a party with n people (labeled from 0 to n - 1) and among them, there may exist one celebrity. The definition of a celebrity is that all the other n - 1 people know him/her but he/she does not know any of them.
+Now you want to find out who the celebrity is or verify that there is not one. The only thing you are allowed to do is to ask questions like: "Hi, A. Do you know B?" to get information of whether A knows B. You need to find out the celebrity (or verify there is not one) by asking as few questions as possible (in the asymptotic sense).
+You are given a helper function bool knows(a, b) which tells you whether A knows B. Implement a function int findCelebrity(n), your function should minimize the number of calls to knows.
+Note: There will be exactly one celebrity if he/she is in the party. Return the celebrity's label if there is a celebrity in the party. If there is no celebrity, return -1.
+
+/////////The first pass is to pick out the candidate. If candidate knows i, then switch candidate. The second pass is to check whether the candidate is real.
+
+public int findCelebrity(int[] array) {
+	int candidate = 0;
+	for(int i = 1; i < array.length; i++) {
+		if(knows(candidate,i)) candidate = i;
+	}
+	for(int i = 0; i < array.length; i++) {
+		if(i != candidate && (knows(candidate,i) || !knows(i,candidate))) return -1;
+	}
+	return candidate;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+[LeetCode] Logger Rate Limiter recording rate limiter
+ 
+
+The Design A Logger System that the receive Stream of messages along the with the ITS timestamps, the each Message SHOULD BE Printed IF and only IF IT IS Not Printed in at The Last 10 seconds The. The Given A Message and A timestamp (in seconds The granularity), return to true IF at The Message Printed in at The BE GIVEN SHOULD timestamp, otherwise Returns to false. It IS Possible messages that arrive Roughly AT 'several' at The Same Time. Example: Logger = Logger new new Logger (); // the logging String "foo" AT timestamp 1 logger.shouldPrintMessage (1 , "foo"); Returns to true; // the logging String "Bar" AT timestamp 2 logger.shouldPrintMessage (2, "Bar"); Returns to true; // the logging String "foo" AT timestamp 3 logger.shouldPrintMessage (3, " foo "); Returns to false; // the logging String" Bar "AT timestamp. 8 logger.shouldPrintMessage (. 8," Bar "); Returns to false; // the logging String" foo "AT timestamp 10 logger.shouldPrintMessage (10," foo " ); Returns to false; // the logging String "foo" AT timestamp. 11 logger.shouldPrintMessage (. 11, "foo"); Returns to true; Credits: Special Thanks to the this problem 
+
+
+import java.util.*;
+class Logger {
+	HashMap<String, Integer> hm;
+	public Logger() {
+		hm = new HashMap<String,Integer>();
+	}
+	public boolean shouldPrintMessage(int timeStamp, String msg) {
+		if(!hm.containsKey(msg)) {
+			hm.put(msg, timeStamp);
+			return true;
+		}
+		else {
+			if(timeStamp < hm.get(msg)+10) return false;
+			else {
+				hm.put(msg, timeStamp);
+				return true;
+			}
+		}
+	}
+}
+public class LoggerMain {
+
+	public static void main(String[] args) {
+		Logger l = new Logger();
+		System.out.println(l.shouldPrintMessage(1,"foo"));
+		System.out.println(l.shouldPrintMessage(2,"Bar"));
+		System.out.println(l.shouldPrintMessage(3,"foo"));
+		System.out.println(l.shouldPrintMessage(8,"Bar"));
+		System.out.println(l.shouldPrintMessage(10,"foo"));
+		System.out.println(l.shouldPrintMessage(11,"foo"));
+	}
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
