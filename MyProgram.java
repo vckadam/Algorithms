@@ -10323,4 +10323,333 @@ public class LoggerMain {
 	}
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+points
+
+group the collinear points form set of points are return max group size
+
+		array[0] = new LinePoint(-6,-5);
+		array[1] = new LinePoint(-3,-3);
+		array[2] = new LinePoint(0,0);
+		array[3] = new LinePoint(3,1);
+		array[4] = new LinePoint(6,3);
+		array[5] = new LinePoint(1,1);
+		array[6] = new LinePoint(2,2);
+		array[7] = new LinePoint(3,3);
+		array[8] = new LinePoint(4,4);
+		System.out.println(isCollinear(array));
+		
+output 
+(3,1)(-6,-5)(-3,-3)(6,3)
+(1,1)(2,2)(0,0)(4,4)(-3,-3)(3,3)
+6
+
+import java.util.*;
+class LinePoint {
+	int x;
+	int y;
+	LinePoint(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
+}
+public class ColinearPointMain {
+	public static boolean collinear(LinePoint p1, LinePoint p2, LinePoint p3) {
+		return (p2.y - p1.y)*(p3.x-p2.x) == (p3.y-p2.y)*(p2.x-p1.x);
+	}
+	public static int isCollinear(LinePoint[] array) {
+		if(array.length == 0 || array.length == 1) return array.length;
+		ArrayList<Set<LinePoint>> resultlist = new ArrayList<Set<LinePoint>>();
+		int result = 2, count;
+		for(int i = 0; i < array.length; i++) {
+			for(int j = i+1; j < array.length; j++) {
+				count = 2;
+				Set<LinePoint> current = new HashSet<LinePoint>();
+				current.add(array[i]);
+				current.add(array[j]);
+				for(int k = 0; k < array.length; k++)  {
+					if(k == i || k == j) continue;
+					if(collinear(array[i],array[j],array[k])) {						
+						current.add(array[k]);
+						count++;
+					}
+				}
+				if(current.size()>2 && !resultlist.contains(current)) resultlist.add(current);
+				result = Math.max(count, result);
+			}
+		}
+		for(int i = 0; i < resultlist.size(); i++) {
+			for(LinePoint p: resultlist.get(i)) {
+				System.out.print("("+p.x+","+p.y+")");
+			}
+			System.out.println();
+		}
+		return result;
+	}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+remove dublicate points 
+
+(2,3),(2,5), (2,2),(2,6),(2,6),(2,5),(2,2),(2,3),(2,2)
+
+output : (2,2)(2,3)(2,5)(2,6)
+
+class LinePoint implements Comparator<LinePoint>{
+	int x;
+	int y;
+	LinePoint() { }
+	LinePoint(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
+	
+	public int compare(LinePoint p1, LinePoint p2) {
+		if(p1.x != p2.x) return p1.x-p2.x;
+		else return p1.y-p2.y;
+	}
+	
+}
+
+	public static LinePoint[] removeDublicate(LinePoint[] array) {
+		Arrays.sort(array, new LinePoint());
+		int i = 0, j = -1;
+		while(i < array.length) {
+			if(i == 0) {
+				array[++j] = array[i++];
+			}
+			else {
+				if(array[j].x == array[i].x && array[j].y == array[i].y) i++;
+				else array[++j] = array[i++];
+			}
+		}
+		LinePoint[] result = new LinePoint[j+1];	
+		for(i = 0; i < result.length;i++) {
+			result[i] = array[i];
+			System.out.print("("+array[i].x+","+array[i].y+")");
+		}
+		return result;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Leetcode: Strobogrammatic Number II
+A strobogrammatic number is a number that looks the same when rotated 180 degrees (looked at upside down).
+Find all strobogrammatic numbers that are of length = n.
+For example,
+Given n = 2, return ["11","69","88","96"].
+
+///////////// optimized iterative
+
+	public static List<String> strobogrammatic(int n) {
+		List<String> l1 = new ArrayList<String>(Arrays.asList(""));
+		List<String> l2 = new ArrayList<String>(Arrays.asList("0","1","8"));
+		if(n == 0) return l1; 
+		if(n == 1) return l2;
+		List<String> curr = (n % 2 == 0)?l1:l2;
+		int i = (n % 2 == 0)?2:3;
+		for(;i<=n; i+=2) {
+			List<String> next = new ArrayList<String>();
+			for(String s: curr) {
+				if(i != n) next.add("0"+s+"0");
+				next.add("1"+s+"1");
+				next.add("8"+s+"8");
+				next.add("6"+s+"9");
+				next.add("9"+s+"6");
+			}
+			curr = next;
+		}
+		return curr;
+	}
+//////////////// another recursive
+
+public static void StrobogrammaticNumber(int n) {
+		List<String> result = helper(n,n);
+		System.out.println(result.toString());
+		return;
+	}
+	public static List<String> helper(int n, int m) {
+		if(n == 0) return new ArrayList<String>(Arrays.asList(""));
+		if(n == 1) return new ArrayList<String>(Arrays.asList("1","8","0"));
+		List<String> temp = helper(n-2,m);
+		List<String> curr = new ArrayList<String>();
+		for(String s: temp) {
+			if(n != m) curr.add("0"+s+"0");
+			curr.add("1"+s+"1");
+			curr.add("8"+s+"8");
+			curr.add("6"+s+"9");
+			curr.add("9"+s+"6");
+		}
+		return curr;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+284. Peeking Iterator
+
+Given an Iterator class interface with methods: next() and hasNext(), design and implement a PeekingIterator that support the peek() operation -- it essentially peek() at the element that will be returned by the next call to next().
+
+Here is an example. Assume that the iterator is initialized to the beginning of the list: [1, 2, 3].
+
+Call next() gets you 1, the first element in the list.
+
+Now you call peek() and it returns 2, the next element. Calling next() after that still return 2.
+
+You call next() the final time and it returns 3, the last element. Calling hasNext() after that should return false.
+
+class PeekingIterator implements Iterator<Integer> {
+    Iterator<Integer> iter;
+    Integer curr = null;
+	public PeekingIterator(Iterator<Integer> iterator) {
+	    // initialize any member here.
+	    iter = iterator;
+	    curr = iter.next();
+	}
+
+    // Returns the next element in the iteration without advancing the iterator.
+	public Integer peek() {
+        return curr;
+	}
+
+	// hasNext() and next() should behave the same as in the Iterator interface.
+	// Override them if needed.
+	@Override
+	public Integer next() {
+	    Integer temp = curr;
+	    curr = (iter.hasNext())?iter.next():null;
+	    return temp;
+	    
+	}
+
+	@Override
+	public boolean hasNext() {
+	    return (curr != null);
+	}
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Sort transformed array
+
+Given a sorted array of integers and integer values a, b and c, apply a function of the form f(x) = ax^2+bx+c to each element x in the array.
+
+The returned array should be sorted.
+
+Example:
+
+Given x = [-4 , -2 , 2 , 4] , a=1 , b=3 , c=5, output should be [3, 9, 15, 33].
+Given x = [-4 , -2 , 2 , 4] , a=-1 , b=3 , c=5, output should be [-23, -5, 1, 7].
+
+Expected time complexity : O(n);
+
+	public static void transformedSort(int[] array, int a, int b, int c) {
+		int left = 0, n = array.length-1, right = n;
+		int[] result = new int[n+1];
+		int index = (a >= 0)?n:0;
+		while(left <= right) {
+			if(a >= 0) {
+				result[index--] = func(array[left],a,b,c) >= func(array[right],a,b,c) ? func(array[left++],a,b,c):func(array[right--],a,b,c);
+			}
+			else {
+				result[index++] = func(array[left],a,b,c) <= func(array[right],a,b,c) ? func(array[left++],a,b,c): func(array[right--],a,b,c);
+			}
+		}
+		for(int num: result) System.out.print(num+" ");
+	}
+	public static int func(int n, int a, int b, int c){
+		return a * n * n + b * n+ c;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Detect Cycle in a an Undirected Graph
+
+A disjoint-set data structure is a data structure that keeps track of a set of elements partitioned into a number of disjoint (non-overlapping) subsets. A union-find algorithm is an algorithm that performs two useful operations on such a data structure:
+
+Find: Determine which subset a particular element is in. This can be used for determining if two elements are in the same subset.
+
+Union: Join two subsets into a single subset.
+
+In this post, we will discuss an application of Disjoint Set Data Structure. The application is to check whether a given graph contains a cycle or not.
+
+Union-Find Algorithm can be used to check whether an undirected graph contains cycle or not. Note that we have discussed an algorithm to detect cycle. This is another method based on Union-Find. This method assumes that graph doesn’t contain any self-loops.
+
+	public static boolean isExistCycle(int n, int[][] edges) {
+		int[] array = new int[n];
+		Arrays.fill(array, -1);
+		for(int i = 0; i < edges.length; i++) {
+			int x = find(array,edges[i][0]);
+			int y = find(array,edges[i][1]);
+			if(x == y) return false;
+			array[x] = y;   // this is union operation.
+		}
+		return true;
+	}
+	public static int find(int[] array, int i) {
+		if(array[i] == -1) return i;
+		return find(array,array[i]);
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: One Edit Distance
+
+Given two strings S and T, determine if they are both one edit distance apart.
+
+/*
+ * There're 3 possibilities to satisfy one edit distance apart: 
+ * 
+ * 1) Replace 1 char:
+      s: a B c
+      t: a D c
+ * 2) Delete 1 char from s: 
+      s: a D  b c
+      t: a    b c
+ * 3) Delete 1 char from t
+      s: a   b c
+      t: a D b c
+ */
+ 
+	public static boolean isOneDistance(String s1, String s2) {
+		int len1 = s1.length(), len2 = s2.length();
+		if(len1 == 0 && len2 == 0 ||Math.abs(len1-len2)>1) return false;
+		for(int i = 0; i < Math.min(len1, len2); i++) {
+			if(s1.charAt(i)!= s2.charAt(i)) {
+				if(len1 == len2) return s1.substring(i+1).equals(s2.substring(i+1));
+				else if(len1 < len2) return s1.substring(i).equals(s2.substring(i+1));
+				else return s1.substring(i+1).equals(s2.substring(i));
+			}
+		}
+		return true; /// if both string's are same
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Reverse Words in a String II
+Given an input string, reverse the string word by word. A word is defined as a sequence of non-space characters.
+The input string does not contain leading or trailing spaces and the words are always separated by a single space.
+For example,
+Given s = "the sky is blue",
+return "blue is sky the".
+Could you do it in-place without allocating extra space?
+
+/////////////////////////// if the input is string 
+
+public static String reverseString(String str) {
+		StringTokenizer st = new StringTokenizer(str);
+		StringBuilder sb = new StringBuilder();
+		while(st.hasMoreTokens()) {
+			sb.insert(0, st.nextToken()+" ");			
+		}
+		return sb.toString().trim();
+	}
+///////////////////////////// if input is an array and operation should perfome in O(n) time
+	public static String reverse(char[] array) {
+		int left = 0, right = array.length-1,i=0;
+		rearrange(array,left,right);
+		for(;i < array.length; i++) {
+			if(array[i] == ' ' ) {
+				rearrange(array,left,i-1);
+				left = i+1;
+			}
+		}
+		rearrange(array,left,i-1);
+		return new String(array);
+	}
+	public static void rearrange(char[] array,int i, int j) {
+		while(i < j) {
+			char temp = array[i];
+			array[i] = array[j];
+			array[j] = temp;
+			i++; j--;
+		}
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
