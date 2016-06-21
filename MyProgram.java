@@ -31,7 +31,14 @@
   methods such as Array.sort(array, new object()) or Collections.sort(list, new Object());
   18. copy one array into another array System.arraycopy(src, srcPos, dest, destPos, length)
   19. sort array in reverse Arrays.sort(nums, Collection.reverseOrder());
-
+  20. When ever we need to find two same array form group of arrays. we can generate hashCode for the each array
+  using Arrays.hashCode(array) this code will be same for two same arrays.
+  21. array creating : 
+  int[] array = new int[3]; array[0] = 1; array[1] = 2; array[2] = 3;
+  int[] array = {1,2,3};
+  int[] array = new int[] {1,2,3};
+  22. in String Builder add = sb.append(anything);
+  and delete sb.deleteCharAt(index); for range sb.delete(start,end+1);
 // Find Maximum size of substring, in which no duplicate characters:
 
 static String findMax2(String s) {
@@ -2608,7 +2615,7 @@ Given 1->1->1->2->3, return 2->3.
 For example,
 Given nums = [1,3,-1,-3,5,3,6,7], and k = 3.
 
-Window position                Max
+Window `position                Max
 ---------------               -----
 [1  3  -1] -3  5  3  6  7       3
  1 [3  -1  -3] 5  3  6  7       3
@@ -3940,7 +3947,7 @@ public int[][] generateMatrix(int n) {
 		 }
 		 return result;
 	}
-	/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 	binary tree closest element
 	public int closestValue(TreeNode root, double target) {
     int ret = root.val;   
@@ -4788,6 +4795,85 @@ public int myAtoi(String str) {
 		}
 		return result;
 	}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+In-place replace multiple occurrences of a pattern substring
+Given a string and a pattern, replace multiple occurrences of a pattern by character ‘X’. The conversion should be in-place and solution should replace multiple consecutive (and non-overlapping) occurrences of a pattern by a single ‘X’.
+
+String – GeeksForGeeks
+Pattern – Geeks
+Output: XforX
+ 
+String – GeeksGeeks
+Pattern – Geeks
+Output: X
+
+String – aaaa
+Pattern – aa
+Output: X
+
+String – aaaaa
+Pattern – aa
+Output: Xa
+
+package Awesome;
+
+public class StingReplaceMain {
+	public static int[] getArray(String str) {
+		int[] ret = new int[str.length()];
+		int j = 0 ,i = 1; 
+		while(i < ret.length) {
+			if(str.charAt(i)==str.charAt(j)){
+				ret[i] = j + 1;
+				i++; j++;
+			}
+			else {
+				if(j == 0) i++;
+				else {
+					j = ret[j-1];
+				}
+			}
+		}
+		return ret;
+	}
+	public static String reArrange(String s, String pat) {
+		int[] pre = getArray(pat);
+		StringBuilder result = new StringBuilder();
+		StringBuilder cur = new StringBuilder();
+		int j = 0, i = 0;
+		while(i < s.length()) {
+			if(s.charAt(i) == pat.charAt(j)) {
+				cur.append(s.charAt(i));
+				i++;
+				j++;
+				if(j == pre.length) {
+					j = 0;
+					if(result.length() == 0|| result.charAt(result.length()-1) != 'X')
+						result.append("X");
+					cur = new StringBuilder();
+				}
+			}
+			else {
+				if(j == 0) {
+					result.append(s.charAt(i));
+					i++;
+				}
+				else {
+					j = pre[j-1];
+					result.append(cur.toString());
+					cur = new StringBuilder(pat.substring(0,j+1));
+				}
+			}			
+		}
+		return result.toString();
+	}
+	public static void main(String[] args) {
+		String s = "abceeabcdabcdklmabcd";
+		System.out.println(reArrange(s,"abcd"));
+
+	}
+
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Check whether a given string consists the substring of type “ab*c”
@@ -7041,6 +7127,24 @@ public String convert(String s, int numRows) {
 Given a sorted integer array without duplicates, return the summary of its ranges.
 
 For example, given [0,1,2,4,5,7], return ["0->2","4->5","7"].
+////////////////////////// again another 
+ public List<String> summaryRanges(int[] nums) {
+        List<String> ret = new ArrayList<String>();
+        if(nums.length == 0) return ret;
+        int i = 1, start = nums[0], end = nums[0];
+        for(; i < nums.length; i++) {
+            if(nums[i] == end+1) end = nums[i];
+            else {
+                ret.add(getRange(start,end));
+                start = end = nums[i];
+            }
+        }
+        ret.add(getRange(start,end));
+        return ret;
+    }
+    public String getRange(int start, int end) {
+        return (start == end)?String.valueOf(start):String.valueOf(start)+"->"+String.valueOf(end);
+    }
 ////////////////////////// optimized 
 public List<String> summaryRanges(int[] nums) {
         List<String> result = new ArrayList<String>();
@@ -7099,6 +7203,7 @@ public List<String> findMissingRange(int[] nums,int lo, int hi) {
 			left = nums[i]+1;
 		}
 	}
+	result.add(left,hi);
 }
 public String getRange(int n1, int n2) {
 	return (n1==n2)?String.valueOf(n1):n1+"->"+n2;
@@ -10323,9 +10428,10 @@ public class LoggerMain {
 	}
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 points
 
+++++++
 group the collinear points form set of points are return max group size
 
 		array[0] = new LinePoint(-6,-5);
@@ -10422,6 +10528,7 @@ class LinePoint implements Comparator<LinePoint>{
 			}
 		}
 		LinePoint[] result = new LinePoint[j+1];	
+		/// System.arraycopy(array,0,result,0,j+1);
 		for(i = 0; i < result.length;i++) {
 			result[i] = array[i];
 			System.out.print("("+array[i].x+","+array[i].y+")");
@@ -10559,7 +10666,7 @@ A disjoint-set data structure is a data structure that keeps track of a set of e
 
 Find: Determine which subset a particular element is in. This can be used for determining if two elements are in the same subset.
 
-Union: Join two subsets into a single subset.
+Union: Join two subsets into a single subset.	
 
 In this post, we will discuss an application of Disjoint Set Data Structure. The application is to check whether a given graph contains a cycle or not.
 
@@ -10580,6 +10687,7 @@ Union-Find Algorithm can be used to check whether an undirected graph contains c
 		if(array[i] == -1) return i;
 		return find(array,array[i]);
 	}
+	Time - O(n2) Space - O(n)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Leetcode: One Edit Distance
 
@@ -10630,7 +10738,8 @@ public static String reverseString(String str) {
 		}
 		return sb.toString().trim();
 	}
-///////////////////////////// if input is an array and operation should perfome in O(n) time
+///////////////////////////// if input is an array and operation should perfome in O(n) space and O(n.m) time
+//// m = average word length
 	public static String reverse(char[] array) {
 		int left = 0, right = array.length-1,i=0;
 		rearrange(array,left,right);
@@ -10652,4 +10761,734 @@ public static String reverseString(String str) {
 		}
 	}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+[LeetCode] Line Reflection linear symmetry
 
+Given n points on a 2D plane, find if there is such a line parallel to y-axis that reflect the given set of points.
+
+Example 1:
+GIVEN Points = [[1,1], [- 1,1]] , return to true .
+
+Example 2:
+GIVEN Points = [[1,1], [- 1, -1]] , return to false .
+
+Up the Follow:
+Could you do of Better Within last O ( N 2 )?
+
+Hint:
+
+Find the smallest and largest x-value for all points.
+If there is a line then it should be at y = (minX + maxX) / 2.
+For each point, make sure that it has a reflected point in the opposite side.
+
+
+The idea is quite simple. If there exists a line reflecting the points, then each pair of symmetric points will have their x coordinates adding up to the same value, including the pair with the maximum and minimum x coordinates. So, in the first pass, I iterate through the array, adding each point to the hash set, and keeping record of the minimum and maximum x coordinates. Then, in the second pass, I check for every point to the left of the reflecting line, if its symmetric point is in the point set or not. If all points pass the test, then there exists a reflecting line. Otherwise, not.
+
+By the way, here, to hash the content of an array, rather than the reference value, I use Arrays.hashCode(int[]) first, and then re-hash this hash code. You can also use Arrays.toString(int[]) to first convey the 2d array to a string, and then hash the string. But the second method is slower.
+
+	public static boolean isReflect(LinePoint[] points) {
+		if(points.length == 0) return false;
+		int maxX = Integer.MIN_VALUE, minX = Integer.MAX_VALUE, sum;
+		Set<Integer> set = new HashSet<Integer>();
+		for(LinePoint p: points) {
+			maxX = Math.max(maxX, p.x);  /// finding min and max we sure that these two are reflecting...
+			minX = Math.min(minX, p.x);
+			set.add(Arrays.hashCode(new int[]{p.x,p.y}));
+		}
+		sum = maxX + minX;
+		for(LinePoint p: points) {
+			if(!set.contains(Arrays.hashCode(new int[]{sum-p.x,p.y}))) return false;
+		}
+		return true;
+	}
+/////////////////// for general case if m and c is also given as input
+public static boolean general(LinePoint[] array, int m, int c) {
+		if(array.length == 0) return false;
+		HashSet<Integer> set = new HashSet<Integer>();
+		for(LinePoint p: array) {
+			set.add(Arrays.hashCode(new double[]{p.x,p.y}));
+		}
+		for(LinePoint p: array) {
+			double[] newp = getReflection(p,m,c);
+			if(!set.contains(Arrays.hashCode(newp))) return false;
+		}
+		return true;
+	}
+	public static double[] getReflection(LinePoint p, int m, int c) {
+		double[] result = new double[2];
+		double d = (p.x + (p.y-c)*m)/(1+Math.pow(m, 2));
+		result[0] = 2*d - p.x;
+		result[1] = 2*d*m - p.y + 2*c;
+		return result;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Closest Binary Search Tree Value II
+
+Given a non-empty binary search tree and a target value, find k values in the BST that are closest to the target.
+Note:
+Given target value is a floating point.
+You may assume k is always valid, that is: k ≤ total nodes.
+You are guaranteed to have only one unique set of k values in the BST that are closest to the target.
+Follow up:
+Assume that the BST is balanced, could you solve it in less than O(n) runtime (where n = total nodes)
+//////////////////// usint two stack
+	public List<Integer> getKClosest2(Node root, int k, double target) {
+		if(root == null) return new ArrayList<Integer>();
+		Stack<Integer> start = new Stack<Integer>();
+		Stack<Integer> last = new Stack<Integer>();
+		helperInorder(root,start,target,false);
+		helperInorder(root,last,target,true);
+		List<Integer> result = new ArrayList<Integer>();
+		while(k-- > 0) {
+			if(last.isEmpty()) result.add(start.pop());
+			else if(start.isEmpty()) result.add(last.pop());
+			else if(Math.abs(target-start.peek()) < Math.abs(target-last.peek())) 
+				result.add(start.pop());
+			else result.add(last.pop());
+		}
+		return result;
+	}
+	public void helperInorder(Node root, Stack<Integer> stack, double target, boolean reverse) {
+		if(root != null) {
+			helperInorder(!reverse?root.leftNode:root.rightNode,stack,target,reverse);
+			if(!reverse && root.data > target || reverse && root.data <= target) return;
+			stack.push(root.data);
+			helperInorder(!reverse?root.rightNode:root.leftNode,stack,target,reverse);
+		}
+	}
+/////////////////// using treeSet
+	public List<Integer> getKClosest(Node root,int k,double target) {
+		if(root == null) return new ArrayList<Integer>();
+	    TreeMap<Double,List<Integer>> hm = new TreeMap<Double,List<Integer>>();
+	    List<Integer> result = new ArrayList<Integer>();
+		helperk(root,hm,target);
+		int i = 1;
+		for(List<Integer> l: hm.values()) {
+			for(Integer val: l) {
+				if(i <= k) {
+					result.add(val);
+					i++;
+				}
+				else break;
+			}
+		}
+		return result;
+	}
+	public void helperk(Node root, TreeMap<Double,List<Integer>> hm, double k){
+		if(root != null) {
+			helperk(root.leftNode,hm,k);
+			double diff = Math.abs(root.data - k);
+			if(!hm.containsKey(diff)) hm.put(diff, new ArrayList<Integer>());
+			hm.get(diff).add(root.data);
+			helperk(root.rightNode,hm,k);
+		}
+	}
+		
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Factor Combinations
+Numbers can be regarded as product of its factors. For example,
+8 = 2 x 2 x 2;
+  = 2 x 4.
+Write a function that takes an integer n and return all possible combinations of its factors.
+Note: 
+Each combination's factors must be sorted ascending, for example: The factors of 2 and 6 is [2, 6], not [6, 2].
+You may assume that n is always positive.
+Factors should be greater than 1 and less than n.
+Examples: 
+input: 1
+output: 
+[]
+input: 37
+output: 
+[]
+input: 12
+output:
+[
+  [2, 6],
+  [2, 2, 3],
+  [3, 4]
+]
+input: 32
+output:
+[
+  [2, 16],
+  [2, 2, 8],
+  [2, 2, 2, 4],
+  [2, 2, 2, 2, 2],
+  [2, 4, 4],
+  [4, 8]
+]
+
+public static List<List<Integer>> getFactorCombo(int n) {
+		List<List<Integer>> result = new ArrayList<List<Integer>>();
+		helper(result,n,2,new ArrayList<Integer>());
+		return result;
+	}
+	public static void helper(List<List<Integer>> result,int n,int start,List<Integer> list){
+		if(n <= 1) {
+			if(list.size() > 1) {
+				result.add(new ArrayList<Integer>(list));
+			}
+			return;
+		}
+		for(int i = start; i <= n; i++) {
+			if(n % i == 0)  {
+				list.add(i);
+				helper(result,n/i,i,list);
+				list.remove(list.size()-1);
+			}
+		}
+	}
+/////////////////////////////////////////// little modification
+
+public static void helper(List<List<Integer>> result,int n,int start,List<Integer> list){
+		if(n <= 1) {
+			if(list.size() > 1) {
+				result.add(new ArrayList<Integer>(list));
+			}
+			return;
+		}
+		for(int i = start; i <= (int)Math.sqrt(n); i++) {
+			if(n % i == 0)  {
+				list.add(i);
+				helper(result,n/i,i,list);
+				list.remove(list.size()-1);
+			}
+		}
+		int i = n;
+		list.add(i);
+		helper(result,n/i,i,list);
+		list.remove(list.size()-1);
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Binary Tree Vertical Order Traversal
+
+Given a binary tree, return the vertical order traversal of its nodes' values. (ie, from top to bottom, column by column).
+If two nodes are in the same row and column, the order should be from left to right.
+Examples:
+Given binary tree [3,9,20,null,null,15,7],
+    3
+   / \
+  9  20
+    /  \
+   15   7
+return its vertical order traversal as:
+[
+  [9],
+  [3,15],
+  [20],
+  [7]
+]
+Given binary tree [3,9,20,4,5,2,7],
+    _3_
+   /   \
+  9    20
+ / \   / \
+4   5 2   7
+return its vertical order traversal as:
+[
+  [4],
+  [9],
+  [3,5,2],
+  [20],
+  [7]
+]
+
+int min1 = 0, max1 = 0;
+	public void getVerticalGroup(Node root) {
+		List<List<Integer>> result = new ArrayList<List<Integer>>();
+		computeRange(root,0);
+		Queue<Node> qNode = new LinkedList<Node>();
+		Queue<Integer> qInd = new LinkedList<Integer>();
+		for(int i = min1; i <= max1; i++) result.add(new ArrayList<Integer>());
+		qNode.offer(root);
+		qInd.offer(-min1);
+		while(!qNode.isEmpty()) {
+			Node currNode = qNode.poll();
+			Integer ind = qInd.poll();
+			result.get(ind).add(currNode.data);
+			if(currNode.leftNode != null) {
+				qNode.offer(currNode.leftNode);
+				qInd.offer(ind-1);
+			}
+			if(currNode.rightNode != null) {
+				qNode.offer(currNode.rightNode);
+				qInd.offer(ind+1);
+			}
+		}
+		for(List<Integer> list: result) System.out.println(list.toString());
+	}
+	public void computeRange(Node root,int col) {
+		if(root == null) return;
+		min1 = Math.min(min1, col);
+		max1 = Math.max(max1, col);
+		computeRange(root.leftNode,col-1);
+		computeRange(root.rightNode,col+1);
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+[LeetCode] Android Unlock Patterns Android unlock pattern
+
+Given an Android 3x3 key lock screen and two integers m and n, where 1 ≤ m ≤ n ≤ 9, count the total number of unlock patterns of the Android lock screen, which consist of minimum of m keys and maximum n keys.
+
+Rules for a valid pattern:
+
+Each pattern must connect at least m keys and at most n keys.
+All the keys must be distinct.
+If the line connecting two consecutive keys in the pattern passes through any other keys, the other keys must have previously selected in the pattern. No jumps through non selected key is allowed.
+The order of keys used matters.
+ 
+
+
+
+Explanation:
+
+| 1 | 2 | 3 |
+| 4 | 5 | 6 |
+| 7 | 8 | 9 |
+ 
+
+The Move Invalid:  4 - 1 - 3 -. 6 
+Line 1 - 3 thepassesproject through Key 2 Which HAD Not been in the Selected at The pattern.
+
+The Move Invalid:  4 - 1 -. 9 - 2
+Line 1 - 5. 9 thepassesproject through Key Not Which HAD been in the Selected at The pattern.
+
+The Move! Valid:  2 - 4 - 1 - 3 -. 6
+Line 1 - 3 IT IS Because Valid through thepassesproject Key 2, Which HAD been at The pattern in the Selected
+
+The Move! Valid:  . 6 - 5 - 4 - 1 -. 9 - 2
+Line 1 - Valid Because IT IS thepassesproject. 9 through Key 5, Which HAD been in the Selected at The pattern.
+
+Example: 
+the Given m = 1, N = 1, return. 9.
+
+public static int numberOfPattern(int m, int n) {
+		/*
+		 * 1 2 3
+		 * 4 5 6
+		 * 7 8 9
+		 * 
+		 */
+		 // Skip array represents number to skip between two pairs
+		int[][] skip = new int[10][10];
+		boolean[] visited = new boolean[10];
+		skip[1][3] = skip[3][1] = 2;
+		skip[1][7] = skip[7][1] = 4;
+		skip[3][9] = skip[9][3] = 6;
+		skip[7][9] = skip[9][7] = 8;
+		skip[1][9] = skip[9][1] = skip[3][7] = skip[7][3] = skip[2][8] = skip[8][2] = skip[4][6] = skip[6][4] = 5;
+		int ret = 0;
+		// DFS search each length from m to n
+		for(int i = m; i <= n; i++) {
+			ret += DFS(skip,visited,1,i-1)*4;   // 1, 3, 7, 9 are symmetric
+			ret += DFS(skip,visited,2,i-1)*4;	// 2, 4, 6, 8 are symmetric
+			ret += DFS(skip,visited,5,i-1);		// 5
+		}
+		return ret;
+	}
+	public static int DFS(int[][] skip, boolean[] visited, int i, int k) {
+		//if(k < 0) return 0;
+		if(k == 0) return 1;
+		visited[i] = true;
+		int ret = 0;
+		for(int j = 1; j <= 9; j++) {
+			// If visited[j] is not visited and (two numbers are adjacent or skip number is already visited)
+			if(!visited[j] && (skip[j][i] == 0 || visited[skip[j][i]])) {
+				ret+=DFS(skip,visited,j,k-1);
+			}
+		}
+		visited[i] = false;
+		return ret;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+11. Container With Most Water
+
+Given n non-negative integers a1, a2, ..., an, where each represents a point at coordinate (i, ai). n vertical lines are drawn such that the two endpoints of line i is at (i, ai) and (i, 0). Find two lines, which together with x-axis forms a container, such that the container contains the most water. 
+
+Note: You may not slant the container. 
+
+public int maxArea(int[] height) {
+        if(height.length == 0) return 0;
+        int maxArea = 0, left = 0, right = height.length-1;
+        while(left < right) {
+            maxArea = Math.max(maxArea, (right-left)*Math.min(height[left],height[right]));
+            if(height[left] < height[right]) left++;
+            else right--;
+        }
+        return maxArea;
+    }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+84. Largest Rectangle in Histogram
+
+Given n non-negative integers representing the histogram's bar height where the width of each bar is 1, find the area of largest rectangle in the histogram. 
+/*
+http://www.geeksforgeeks.org/largest-rectangle-under-histogram/
+*/
+Above is a histogram where width of each bar is 1, given height = [2,1,5,6,2,3].
+
+The largest rectangle is shown in the shaded area, which has area = 10 unit.
+
+
+For example,
+ Given heights = [2,1,5,6,2,3],
+ return 10
+
+ public int largestRectangleArea(int[] heights) {
+        if(heights.length == 0) return 0;
+        int maxArea = 0,h;
+        Stack<Integer> s = new Stack<Integer>();
+        for(int i = 0; i <= heights.length; i++) {
+            h = (i == heights.length)?0:heights[i];
+            if(s.isEmpty() || h >= heights[s.peek()]) s.push(i);
+            else {
+                int ind = s.pop();
+                maxArea = Math.max(maxArea, heights[ind]*(s.isEmpty()?i:i-s.peek()-1));
+                i--;
+            }
+        }
+        return maxArea;
+    }
+ ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ 201. Bitwise AND of Numbers Range
+ 
+ Given a range [m, n] where 0 <= m <= n <= 2147483647, return the bitwise AND of all numbers in this range, inclusive.
+
+For example, given the range [5, 7], you should return 4. 
+
+ public int rangeBitwiseAnd(int m, int n) {
+        while(m < n) n &= (n-1);
+        return n;
+    }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Find the largest BST subtree in a given Binary Tree
+ 
+
+Given a Binary Tree, write a function that returns the size of the largest subtree which is also a Binary Search Tree (BST). If the complete Binary Tree is BST, then return the size of whole tree.
+
+Input: 
+      5
+    /  \
+   2    4
+ /  \
+1    3
+
+Output: 3 
+The following subtree is the maximum size BST subtree 
+   2  
+ /  \
+1    3
+
+
+Input: 
+       50
+     /    \
+  30       60
+ /  \     /  \ 
+5   20   45    70
+              /  \
+            65    80
+Output: 5
+The following subtree is the maximum size BST subtree 
+      60
+     /  \ 
+   45    70
+        /  \
+      65    80
+
+	/// array[0]  - size array[1] - min, array[2] - max;
+	static int maxSize = 0;
+
+	public static int largestBST(Node root) {
+
+	    if(root == null) return 0;
+
+        helper(root,null);
+
+		return maxSize;
+
+	}
+
+	public static int[] helper(Node root,Node parent) {
+
+	    if(root == null) return new int[]{0,parent.data,parent.data};
+
+	    int[] left = helper(root.left,root);
+
+	    int[] right = helper(root.right,root);
+
+	    if(left[0] == -1 || right[0] == -1 || root.data < left[2] || root.data > right[1]) {
+
+	        left[0] = -1; left[1] = 0; left[2] = 0; 
+
+	        return left;
+
+	    }
+
+	    int size = left[0]+right[0]+1;
+
+	    maxSize = Math.max(maxSize,size);
+
+	    left[0] = size; left[2] = right[2];
+
+	    return left;
+
+	}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Geek for Geek
+
+Count the invesion in the array 
+
+	public static int countInversion(int[] array) {
+		if(array.length <= 1) return 0;	
+		int[] temp = new int[array.length];
+		return helper(array,temp,0,array.length-1);
+	}
+	public static int helper(int[] array,int[] temp, int left, int right) {	
+		if(left >= right) return 0;
+		int mid , count = 0;		
+		mid = left + (right - left)/2;
+		count += helper(array,temp,left,mid);
+		count += helper(array,temp,mid+1,right);
+		count += merge(array,temp,left, mid+1,right);		
+		return count;
+	}
+	public static int merge(int[] array, int[] temp, int left, int mid, int right) {
+		int i = left, j = mid, k = left, count = 0;
+		while(i <= mid-1 && j <= right) {
+			if(array[i] <= array[j]) temp[k++] = array[i++];
+			else {
+				temp[k++] = array[j++];
+				count += mid - i;				
+			}
+		}
+		while(i <= mid-1) temp[k++] = array[i++];
+		while(j <= right) temp[k++] = array[j++];
+		for(i = left; i <= right; i++) array[i] = temp[i];
+		return count;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Geek for Geek 
+
+Given two Binary Search Trees, find common nodes in them. In other words, find intersection of two BSTs
+
+/*			5
+		   /\
+		  1  10
+		 /\  /
+		0  4 7
+		      \
+			   9
+			   
+			10
+			/\
+		   7  20
+          /\ 
+         4  9   		  
+*/
+
+public static void countCommonNode2(Node root1, Node root2) {
+		Stack<Node> s1 = new Stack<Node>();
+		Stack<Node> s2 = new Stack<Node>();
+		while(true) {
+			if(root1 != null) {
+				s1.push(root1);
+				root1 = root1.leftNode;
+			}
+			else if(root2 != null) {
+				s2.push(root2);
+				root2 = root2.leftNode;
+			}
+			else if(!s1.isEmpty() && !s2.isEmpty()) {
+				root1 = s1.peek();
+				root2 = s2.peek();
+				if(root1.data == root2.data) {
+					System.out.print(root1.data+" ");
+					s1.pop();
+					s2.pop();
+					root1 = root1.rightNode;
+					root2 = root2.rightNode;
+				}
+				else if(root1.data < root2.data){
+					s1.pop();
+					root1 = root1.rightNode;
+					root2 = null;
+				}
+				else {
+					s2.pop();
+					root2 = root2.rightNode;
+					root1 = null;
+				}
+			}
+			else break;
+		}
+	}
+	////////////// another solution
+	
+	public static List<Integer> countCommonNode(Node root1, Node root2) {
+		List<Integer> result = new ArrayList<Integer>();
+		helper(root1,root2,result);
+		return result;
+	}
+	public static void helper(Node root1, Node root2, List<Integer> result){
+		if(root1 == null || root2 == null) return;
+		if(root1.data == root2.data) {
+			if(!result.contains(root1.data)) 
+			result.add(root1.data);
+			helper(root1.leftNode,root2.leftNode,result);
+			helper(root1.rightNode,root2.rightNode,result);
+		}
+		else if(root1.data < root2.data) {
+			helper(root1,root2.leftNode,result);
+			helper(root1.rightNode,root2,result);
+		}
+		else {
+			helper(root1.leftNode,root2,result);
+			helper(root1,root2.rightNode,result);
+		}
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Print the corner node of the tree.  IMP
+
+/*			5
+		   /\
+		  1  10
+		 /\  /
+		0  4 7
+		      \
+			   9
+			   
+			10
+			/\
+		   7  20
+          /\ 
+         4  9   		  
+*/
+output 1: 5 1 10 0 7 9 
+output 2: 10 7 20 4 9 
+
+public void printCornerNode(Node root) {
+		if(root == null) return;
+		boolean first = true, isOne = true;
+		Node temp = null, prev = null;
+		Queue<Node> q = new LinkedList<Node>();
+		q.offer(root); q.offer(null);		
+		while(!q.isEmpty()) {
+			prev = temp;
+			temp = q.poll();
+			if(temp != null) {
+				if(first) {
+					System.out.print(temp.data+" ");
+					first = false; isOne = true;
+				}
+				else {
+					isOne = false;
+				}
+				if(temp.leftNode != null) q.offer(temp.leftNode);
+				if(temp.rightNode != null) q.offer(temp.rightNode);
+			}
+			else {
+				if(!isOne) System.out.print(prev.data+" ");
+				first = true;
+				if(!q.isEmpty()) q.offer(null);
+			}
+		}
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Pangram Checking
+Given a string check if it is Pangram or not. A pangram is a sentence containing every letter in the English Alphabet.
+
+Examples : The quick brown fox jumps over the lazy dog ” is a Pangram [Contains all the characters from ‘a’ to ‘z’]
+“The quick brown fox jumps over the dog” is not a Pangram [Doesn’t contains all the characters from ‘a’ to ‘z’, as ‘l’, ‘z’, ‘y’ are missing]
+
+	public static boolean isPanagram(String str) {
+		boolean[] flag = new boolean[26];
+		for(int i = 0; i < str.length(); i++) {
+			if(str.charAt(i) >= 'A' && str.charAt(i) <= 'Z') flag[str.charAt(i)-'A']= true;
+			if(str.charAt(i) >= 'a' && str.charAt(i) <= 'z') flag[str.charAt(i)-'a'] = true;
+		}
+		for(boolean b: flag) if(!b) return false;
+		return true;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+K’th Non-repeating Character
+Given a string and a number k, find the k’th non-repeating character in the string. Consider a large input string with lacs of characters and a small character set. How to find the character by only doing only one traversal of input string?
+
+Examples:
+
+Input : str = geeksforgeeks, k = 3
+Output : r
+First non-repeating character is f,
+second is o and third is r.
+
+Input : str = geeksforgeeks, k = 2
+Output : o
+
+Input : str = geeksforgeeks, k = 4
+Output : Less than k non-repeating
+         characters in input.
+		 
+	public static char kthNonRepeating(String str, int k) {
+		Set<Character> all = new HashSet<Character>();
+		Set<Character> repeat = new HashSet<Character>();
+		for(char ch: str.toCharArray()) {
+			if(!all.add(ch)) repeat.add(ch);
+		}
+		int i = 0;
+		for(char ch: str.toCharArray()) {
+			if(!repeat.contains(ch)) {
+				i++;
+				if(i == k) return ch;
+			}
+		}
+		return '\0';
+	}
+/////////////////////////////////////////////////// if length > 256 
+
+	public static char kthNonRepeating2(String str, int k) {
+		int[] count = new int[256];
+		int[] index = new int[256];
+		Arrays.fill(index, str.length());
+		for(int i = 0; i < str.length(); i++) {
+			count[str.charAt(i)]++;
+			if(count[str.charAt(i)] == 1) index[str.charAt(i)] = i;
+			else index[str.charAt(i)] = str.length();
+		}
+		Arrays.sort(index);
+		return (index[k-1] != str.length())?str.charAt(index[k-1]):'\0';
+	}
+	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Generate all binary strings from given pattern
+Given a string containing of ‘0’, ‘1’ and ‘?’ wildcard characters, generate all binary strings that can be formed by replacing each wildcard character by ‘0’ or ‘1’.
+
+Input str = "1??0?101"
+Output: 
+        10000101
+        10001101
+        10100101
+        10101101
+        11000101
+        11001101
+        11100101
+        11101101
+		
+		
+	public static void printAllBinaryPatter(String str) {
+		List<String> ret = new ArrayList<String>();
+		StringBuilder sb = new StringBuilder();
+		helper(str,ret,sb,0);
+		System.out.println(ret.toString());
+		return;
+	}
+	public static void helper(String str, List<String> ret, StringBuilder sb, int start) {
+		while(start < str.length() && str.charAt(start) != '?') sb.append(str.charAt(start++));
+		if(start == str.length()) {
+			System.out.println(sb.toString());
+			ret.add(new String(sb.toString()));
+			return;
+		}
+		helper(str,ret,sb.append('0'),start+1);
+		sb.delete(start, sb.length());
+		helper(str,ret,sb.append('1'),start+1);	
+	}
