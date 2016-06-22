@@ -11492,3 +11492,247 @@ Output:
 		sb.delete(start, sb.length());
 		helper(str,ret,sb.append('1'),start+1);	
 	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Find three closest elements from given three sorted arrays
+Given three sorted arrays A[], B[] and C[], find 3 elements i, j and k from A, B and C respectively such that max(abs(A[i] – B[j]), abs(B[j] – C[k]), abs(C[k] – A[i])) is minimized. Here abs() indicates absolute value.
+
+Example :
+
+Input: A[] = {1, 4, 10}
+       B[] = {2, 15, 20}
+       C[] = {10, 12}
+Output: 10 15 10
+10 from A, 15 from B and 10 from C
+
+Input: A[] = {20, 24, 100}
+       B[] = {2, 19, 22, 79, 800}
+       C[] = {10, 12, 23, 24, 119}
+Output: 24 22 23
+24 from A, 22 from B and 23 from C
+
+	public static void getClosestNumber(int[] a1, int[] a2, int[] a3) {
+		if(a1.length == 0|| a2.length == 0|| a3.length == 0) {
+			System.out.println("Not possible");
+			return;
+		}
+		int i = 0, j = 0, k = 0, eleA = 0, eleB = 0, eleC = 0, diff = Integer.MAX_VALUE;
+		while(i < a1.length && j < a2.length && k < a3.length) {
+			int min = Math.min(a1[i], Math.min(a2[j],a3[k]));
+			int max = Math.max(a1[i], Math.max(a2[j], a3[k]));
+			if(max - min < diff) {
+				diff = max - min;
+				eleA = a1[i]; eleB = a2[j]; eleC = a3[k];
+			}
+			if(min == a1[i]) i++;
+			else if(min == a2[j]) j++;
+			else k++;
+		}
+		System.out.println("Array 1:"+eleA+" Array 2:"+eleB+" Array 3:"+eleC);
+		return;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Find the element before which all the elements are smaller than it, and after which all are greater
+Given an array, find an element before which all elements are smaller than it, and after which all are greater than it. Return index of the element if there is such an element, otherwise return -1.
+
+Examples:
+
+Input:   arr[] = {5, 1, 4, 3, 6, 8, 10, 7, 9};
+Output:  Index of element is 4
+All elements on left of arr[4] are smaller than it
+and all elements on right are greater.
+ 
+Input:   arr[] = {5, 1, 4, 4};
+Output:  Index of element is -1
+Expected time complexity is O(n).
+/////////////////////////////////// optimized
+	public static int getIndex(int[] array) {
+		if(array.length == 0) return -1;
+		if(array.length == 1) return array[0];
+		int n = array.length-1;
+		int[] beforeMax = new int[array.length];
+		int afterMin = Integer.MAX_VALUE;
+		beforeMax[0] = Integer.MIN_VALUE;
+		for(int i = 1; i < array.length; i++) {
+			beforeMax[i] = Math.max(beforeMax[i-1], array[i-1]);
+		}
+		for(int i = n; i >= 0; i--) {
+			if(array[i] > beforeMax[i] && array[i] < afterMin) return i;
+			afterMin = Math.min(array[i], afterMin);
+		}
+		return -1;
+	}
+/////////////////////////////////// another two array 
+	public static int getIndex(int[] array) {
+		if(array.length == 0) return -1;
+		if(array.length == 1) return array[0];
+		int n = array.length-1;
+		int[] beforeMax = new int[array.length];
+		int[] afterMin = new int[array.length];
+		beforeMax[0] = array[0];
+		afterMin[n] = array[n];
+		for(int i = 1; i < array.length; i++) {
+			beforeMax[i] = Math.max(beforeMax[i-1], array[i]);
+			afterMin[n-i] = Math.min(afterMin[n-i+1], array[n-i]);
+		}
+		for(int i = 0; i < array.length; i++) {
+			if(array[i] >= beforeMax[i] && array[i] <= afterMin[i]) return i;
+		}
+		return -1;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Search an element in an array where difference between adjacent elements is 1
+Given an array where difference between adjacent elements is 1, write an algorithm to search for an element in the array and return the position of the element (return the first occurrence).
+
+Examples:
+
+Let element to be searched be x
+
+Input: arr[] = {8, 7, 6, 7, 6, 5, 4, 3, 2, 3, 4, 3} 	
+       x = 3
+Output: Element 3 found at index 7
+
+Input: arr[] =  {1, 2, 3, 4, 5, 4}
+       x = 5
+Output: Element 5 found at index 4
+
+	public static int getIndex(int[] array, int num) {
+		int i = 0; 
+		while(i < array.length) {
+			if(array[i] == num) return i;
+			i += Math.abs(array[i]-num);
+		}
+		return -1;
+	}
+	public static void main(String[] args) {
+		int[] array = {1, 2, 3, 4, 5, 4};
+		System.out.println(getIndex(array,5));
+
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Find the odd appearing element in O(Log n) time
+Given an array where all elements appear even number of times except one. All repeating occurrences of elements appear in pairs and these pairs are not adjacent (there cannot be more than two consecutive occurrences of any element). Find the element that appears odd number of times.
+
+Note that input like {2, 2, 1, 2, 2, 1, 1} is valid as all repeating occurrences occur in pairs and these pairs are not adjacent. Input like {2, 1, 2} is invalid as repeating elements don’t appear in pairs. Also, input like {1, 2, 2, 2, 2} is invalid as two pairs of 2 are adjacent. Input like {2, 2, 2, 1} is also invalid as there are three consecutive occurrences of 2.
+
+Example:
+
+Input: arr[] = {1, 1, 2, 2, 1, 1, 2, 2, 13, 1, 1, 40, 40, 13, 13}
+Output: 13
+
+Input: arr[] = {1, 1, 2, 2, 3, 3, 4, 4, 3, 600, 600, 4, 4}
+Output: 3
+
+public static int oddOccurance(int[] array) {
+		if(array.length <= 1) return -1;
+		int left = 0, right = array.length-1, mid;
+		while(left < right) {
+			mid = left + (right - left)/2;
+			if(mid % 2 == 0) {
+				if(array[mid] == array[mid+1]) left = mid + 2;
+				else right = mid;
+			}
+			else {
+				if(array[mid] == array[mid-1]) left = mid + 1;
+				else right = mid - 1;
+			}
+		}
+		return array[left];
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+above algorithm also works for 
+Find the element that appears once in a sorted array
+Given a sorted array in which all elements appear twice (one after one) and one element appears only once. Find that element in O(log n) complexity.
+
+Example:
+
+Input:   arr[] = {1, 1, 3, 3, 4, 5, 5, 7, 7, 8, 8}
+Output:  4
+
+Input:   arr[] = {1, 1, 3, 3, 4, 4, 5, 5, 7, 7, 8}
+Output:  8
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Find a pair with maximum product in array of Integers
+Given an array with both +ive and -ive integers, return a pair with highest product.
+
+Examples:
+
+Input: arr[] = {1, 4, 3, 6, 7, 0}  
+Output: {6,7}  
+
+Input: arr[] = {-1, -3, -4, 2, 0, -5} 
+Output: {-4,-5} 
+
+	public static void printPair(int[] array) {
+		int posMax = Integer.MIN_VALUE, posMax2 = Integer.MIN_VALUE;
+		int nevMin = Integer.MAX_VALUE, nevMin2 = Integer.MAX_VALUE;
+		for(int n: array) {
+			if(n > posMax) {
+				posMax2 = posMax;
+				posMax = n;				
+			}
+			else if(n > posMax2) posMax2 = n;
+			if(n < nevMin) {
+				nevMin2 = nevMin;
+				nevMin = n;
+			}
+			else if(n < nevMin2) nevMin2 = n;
+		}
+		if(posMax*posMax2 >= nevMin*nevMin2)System.out.println(posMax+" "+posMax2);
+		else System.out.println(nevMin+" "+nevMin2);
+	}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+131. Palindrome Partitioning 
+
+Given a string s, partition s such that every substring of the partition is a palindrome.
+
+Return all possible palindrome partitioning of s.
+
+For example, given s = "aab",
+Return
+
+[
+  ["aa","b"],
+  ["a","a","b"]
+]
+
+ public List<List<String>> partition(String s) {
+        List<List<String>> result = new ArrayList<List<String>>();
+        if(s.length() == 0) return result;
+        List<String> current = new ArrayList<String>();
+        helper(s,result,current,0);
+        return result;
+    }
+    public void helper(String s, List<List<String>> result, List<String> current, int start) {
+        if(start == s.length()) {
+            result.add(new ArrayList<String>(current));
+            return;
+        }
+        for(int i = start; i < s.length(); i++) {
+            if(isPalindrome(s,start,i)) {
+                current.add(s.substring(start,i+1));
+                helper(s,result,current,i+1);
+                current.remove(current.size()-1);
+            }
+        }
+    }
+    public boolean isPalindrome(String s, int left, int right) {
+        if(left == right) return true;
+        while(left < right) {
+            if(s.charAt(left) != s.charAt(right)) return false;
+            left++; right--;
+        }
+        return true;
+    }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Palindrome Permutation
+Given a string, determine if a permutation of the string could form a palindrome.
+For example,
+"code" -> False, "aab" -> True, "carerac" -> True.
+
+	public static boolean isPossible(String str) {
+		if(str.length() == 0) return false;
+		Set<Character> set = new HashSet<Character>();
+		for(char ch:str.toCharArray()) if(!set.add(ch)) set.remove(ch);
+		return (set.size() <= 1);
+	}
