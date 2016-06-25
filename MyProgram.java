@@ -39,6 +39,7 @@
   int[] array = new int[] {1,2,3};
   22. in String Builder add = sb.append(anything);
   and delete sb.deleteCharAt(index); for range sb.delete(start,end+1);
+  23. to conver a string to lower case letter str = str.toLowerCase();
 // Find Maximum size of substring, in which no duplicate characters:
 
 static String findMax2(String s) {
@@ -2674,7 +2675,29 @@ Therefore, return the max sliding window as [3,3,5,5,6,7].
 			al.remove(al.size()-1);
 		}
 	}
-	
+////////////////////////////////////////another
+
+public List<List<Integer>> combine(int n, int k) {
+        List<List<Integer>> ret = new ArrayList<List<Integer>>();
+        if(n == 0 || k == 0 || k > n) return ret;
+        List<Integer> curr = new ArrayList<Integer>();
+        helper(ret, curr, n , k, 0);
+        return ret;
+    }
+    public void helper(List<List<Integer>> ret, List<Integer> curr, int n, int k, int counter) {
+        if(counter > n) return;
+        if(curr.size() == k) {
+            ret.add(new ArrayList<Integer>(curr));
+            return;
+        }
+        for(int i = counter; i < n; i++) {
+            curr.add(i+1);
+            helper(ret,curr,n,k,i+1);
+            curr.remove(curr.size()-1);
+        }
+    } 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///// sum of three element 0 find all in O(n^2)
 	/// lesson : for the dublicate we use the contains method on the arraylist 
 	/// for decreasing time we add while loop in the if avoid the same 
@@ -7704,6 +7727,34 @@ Given word1 = "makes", word2 = "makes", return 3.
 		String[] strArray = {"practice","practice", "makes", "perfect", "coding", "makes","makes","practice"};
 		System.out.println(minDistance(strArray,"practice","practice"));
 	}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+max Distance between two words
+
+public static int maxDistance(char[] chars, char ch1, char ch2) {
+		int min1 = chars.length, min2 = chars.length, max1 = -1, max2 = -1;
+		boolean flag1 = false, flag2 = false;
+		for(int i = 0; i < chars.length; i++) {
+			if(chars[i] == ch1) {
+				min1 = Math.min(min1, i);
+				max1 = Math.max(max1, i);
+				flag1 = true;
+			}
+			if(chars[i] == ch2) {
+				min2 = Math.min(min2, i);
+				max2 = Math.max(max2, i);
+				flag2 = true;
+			}
+		}
+		if(ch1 == ch2) return max1-min1;
+		if(flag1 && flag2) return Math.max(max2-min1, max1-min2);
+		else return -1;
+		
+	}
+	public static void main(String[] args) {
+		char[] array = {'a','b','c','d','e','b','b','e','m','l','a',};
+		System.out.println(maxDistance(array,'a','b'));
+
+	}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8581,6 +8632,53 @@ Note: If there are several possible values for h, the maximum one is taken as th
         }
         return 0;
     }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Maximum value K such that array has at-least K elements that are >= K
+Given an array of positive integers, find maximum possible value K such that the array has at-least K elements that are greater than or equal to K. The array is unsorted and may contain duplicate values.
+
+Examples :
+
+Input: [2, 3, 4, 5, 6, 7]
+Output: 4
+Explanation : 4 elements [4, 5, 6, 7] 
+            are greater than equal to 4
+
+Input: [1, 2, 3, 4]
+Output: 2
+Explanation : 3 elements [2, 3, 4] are 
+               greater than equal to 2
+
+Input: [4, 7, 2, 3, 8]
+Output: 3 
+Explanation : 4 elements [4, 7, 3, 8] 
+          are greater than equal to 3
+ 
+
+Input: [6, 7, 9, 8, 10]
+Output: 5
+Explanation : All 5 elements are greater
+              than equal to 5 
+			  
+	public static void printElement(int[] array) {
+		if(array.length == 0) {
+			System.out.println("Not Possible");
+			return;
+		}
+		int n = array.length,i,total = 0;
+		int[] count = new int[n+1];
+		for(i = 0; i < n; i++) {
+			if(array[i] < n) {
+				count[array[i]]++;
+			}
+			else count[n]++;
+		}
+		
+		for(i = n; i>=0; i--) if((total+=count[i]) >= i) break;
+		if(i >= 0) System.out.println(i);
+		else System.out.println("Not possible");
+		
+	}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 275. H-Index II
 
@@ -11736,3 +11834,1254 @@ For example,
 		for(char ch:str.toCharArray()) if(!set.add(ch)) set.remove(ch);
 		return (set.size() <= 1);
 	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Palindrome Permutation II
+Given a string s, return all the palindromic permutations (without duplicates) of it. Return an empty list if no palindromic permutation could be form.
+For example:
+Given s = "aabb", return ["abba", "baab"].
+Given s = "abc", return [].
+
+import java.util.*;
+public class PalindromPermutationAllMain {
+	public static void printAllPelindrome(String str) {
+		Map<Character,Integer> map = new HashMap<>();
+		int odd = 0;
+		String mid = "";
+		for(char ch:str.toCharArray()) {
+			map.put(ch,map.getOrDefault(ch, 0)+1);
+			odd+=(map.get(ch)%2==0)?-1:1;
+		}
+		if(odd > 1) return;
+		List<Character> charList = new ArrayList<Character>();
+		List<Integer> count = new ArrayList<Integer>();
+		for(Character key: map.keySet()) {
+			int value = map.get(key);
+			if(value % 2 != 0) {
+				mid+=key;
+				if(value > 1) {
+					charList.add(key);
+					count.add((value-1)/2);
+				}
+			}
+			else {
+				charList.add(key);
+				count.add(value/2);
+			}
+		}
+		int[] countArray = count.stream().mapToInt(i->i).toArray();
+		List<String> result = new ArrayList<String>();
+		helper(result,charList,countArray,new StringBuilder(),0,mid);
+		System.out.println(result.toString());
+		return;	
+			
+	}
+	public static void helper(List<String> result, List<Character> list,int[] count,StringBuilder sb,int counter,String mid) {
+		if(sb.length() == list.size()) {
+			result.add(sb.toString()+mid+sb.reverse().toString());
+			sb.reverse();
+			return;
+		}
+		for(int i = 0; i < list.size(); i++) {			
+			if(count[i]==0) continue;
+			count[i]--;
+			sb.append(list.get(i));
+			helper(result,list,count,sb,counter+1,mid);
+			sb.deleteCharAt(sb.length()-1);
+			count[i]++;			
+		}
+	}
+	public static void main(String[] args) {
+		String str = "aabbccc";
+		printAllPelindrome(str);
+	}
+
+}
+output :- [abcccba, acbcbca, bacccab, bcacacb, cabcbac, cbacabc]
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+String subset or string combination
+String = "AABC";
+output:-  [, A, AA, B, AB, AAB, C, AC, AAC, BC, ABC, AABC]
+public static void getAllSubset(String str) {
+		List<String> ret = new ArrayList<String>();
+		ret.add("");
+		for(char ch: str.toCharArray()) {
+			int n = ret.size();
+			for(int i = 0; i < n; i++) {
+				if(!ret.contains(ret.get(i)+Character.toString(ch)))ret.add(ret.get(i)+Character.toString(ch));
+			}
+		}
+		System.out.println(ret.toString());
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Leetcode: Encode and Decode Strings
+Design an algorithm to encode a list of strings to a string. The encoded string is then sent over the network and is decoded back to the original list of strings.
+
+
+	public static String encode(String[] sArray) {
+		if(sArray.length == 0) return "";
+		StringBuilder sb = new StringBuilder();
+		for(String s: sArray) {
+			sb.append(s.length()+"#");
+			sb.append(s);
+		}
+		return sb.toString();
+	}
+////3#abc3#cde4#45nu7#dkljfoh0#11#aierkbfsadf
+	public static List<String> decode(String s) {
+		if(s.length() == 0) return new ArrayList<String>();
+		List<String> ret = new ArrayList<String>();
+		int i = 0;
+		while(i < s.length()) {
+			int hashInd = s.indexOf('#',i);
+			int size = Integer.valueOf(s.substring(i,hashInd));
+			ret.add(s.substring(hashInd+1,hashInd+size+1));
+			i = hashInd+size+1;
+		}
+		return ret;
+	}
+////[abc, cde, 45nu, dkljfoh, , aierkbfsadf]
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+310. Minimum Height Trees
+
+For a undirected graph with tree characteristics, we can choose any node as the root. The result graph is then a rooted tree. Among all possible rooted trees, those with minimum height are called minimum height trees (MHTs). Given such a graph, write a function to find all the MHTs and return a list of their root labels.
+
+Format
+The graph contains n nodes which are labeled from 0 to n - 1. You will be given the number n and a list of undirected edges (each edge is a pair of labels).
+
+You can assume that no duplicate edges will appear in edges. Since all edges are undirected, [0, 1] is the same as [1, 0] and thus will not appear together in edges.
+
+Example 1:
+
+Given n = 4, edges = [[1, 0], [1, 2], [1, 3]]
+
+        0
+        |
+        1
+       / \
+      2   3
+return [1]
+
+Example 2:
+
+Given n = 6, edges = [[0, 3], [1, 3], [2, 3], [4, 3], [5, 4]]
+
+     0  1  2
+      \ | /
+        3
+        |
+        4
+        |
+        5
+return [3, 4]
+
+Show Hint 
+Note:
+
+(1) According to the definition of tree on Wikipedia: “a tree is an undirected graph in which any two vertices are connected by exactly one path. In other words, any connected graph without simple cycles is a tree.”
+
+(2) The height of a rooted tree is the number of edges on the longest downward path between the root and a leaf.
+
+	public List<Integer> findMinHeightTrees(int n, int[][] edges) {
+        if(n == 1) return Collections.singletonList(0);
+        ArrayList[] list = new ArrayList[n];
+        for(int i = 0; i < n; i++) list[i] = new ArrayList<Integer>();
+        for(int i = 0; i < edges.length; i++) {
+            list[edges[i][0]].add(edges[i][1]);
+            list[edges[i][1]].add(edges[i][0]);
+        }
+        List<Integer> leaves = new ArrayList<Integer>();
+        for(int i = 0; i < n; i++) if(list[i].size() == 1) leaves.add(i);
+        while(n > 2) {
+            n-=leaves.size();
+            List<Integer> next = new ArrayList<Integer>();
+            for(int i: leaves) {
+                int j = (int)list[i].iterator().next();
+                list[j].remove(list[j].indexOf(i));
+                if(list[j].size() == 1) next.add(j);
+            }
+            leaves = next;
+        }
+        return leaves;
+    }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Keypad typing
+
+ou are given N strings of alphabet characters and the task is to find their matching decimal representation as on the shown keypad. Output the decimal representation corresponding to the string. For ex: if you are given “amazon” then its corresponding decimal representation will be 262966.
+
+
+
+Input:
+
+The first line of input contains an integer T denoting the number of test cases. Then T test cases follow. Each test case consists of a single line containing a string.
+
+Output:
+
+For each test case, print in a new line, the corresponding decimal representation of the given string.
+
+Constraints:
+
+1 ≤ T ≤ 100
+1 ≤ length of String ≤ 100
+
+Example:
+
+Input
+2
+geeksforgeeks
+geeksquiz
+
+Output
+4335736743357
+433577849
+
+class GFG {
+    public static void printNumber(String str) {
+        if(str.length() == 0) System.out.println("");
+        StringBuilder sb = new StringBuilder();
+        str = str.toLowerCase();
+        for(char ch: str.toCharArray()) {
+            if(ch >= 'a' && ch <= 'r') {
+                int k = ch-'a';
+                sb.append(k/3+2);
+            }
+            else if(ch == 's') sb.append(7);
+            else if(ch >= 't' && ch <= 'v') sb.append(8);
+            else if(Character.isLetter(ch)) sb.append(9);
+            else {
+                System.out.println("Not possible"); break;
+            }
+        }
+        System.out.println(sb.toString());
+    }
+	public static void main (String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int n = Integer.valueOf(br.readLine().trim().toString());
+		for(int i = 0; i < n; i++) {
+		    printNumber(br.readLine().trim());
+		}
+		
+	}
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Angle between hour and minute hand
+Calculate the angle between hour hand and minute hand.
+
+There can be two angles between hands, we need to print minimum of two. Also, we need to print floor of final result angle. For example, if the final angle is 10.61, we need to print 10.
+
+ 
+
+Input:
+
+The first line of input contains a single integer T denoting the number of test cases. Then T test cases follow. Each test case consists of one line conatining two space separated numbers h and m where h is hour and m is minute.
+
+Output:
+Coresponding to each test case, print the angle b/w hour and min hand in a separate line.
+
+Constraints:
+
+1 ≤ T ≤ 100
+1 ≤ N ≤ 12
+1 ≤ A[i] ≤ 60
+
+Example:
+
+Input
+2
+9 60
+3 30
+
+Output
+90
+75
+
+	public static void printAngle(double hour, double minute) {
+        minute %= 60;
+        double hAngle = hour*30 + minute/2;
+        double mAngle = minute*6;
+        double ret = Math.abs(hAngle-mAngle);
+        if(ret > 180) ret = 360 - ret;
+        System.out.println((int)Math.floor(ret));
+    }
+	public static void main (String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int n  = Integer.valueOf(br.readLine().trim());
+		for(int i = 0; i < n; i++) {
+		    String[] str = br.readLine().split(" ");
+		    printAngle(Double.valueOf(str[0]),Double.valueOf(str[1]));
+		}
+	    
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Generate Binary Numbers
+
+Given a number n, Write a program that generates and prints all binary numbers with decimal values from 1 to n.
+
+Input:
+
+The first line of input contains an integer T denoting the number of test cases.
+The first line of each test case is N.
+
+Output:
+
+Print all binary numbers with decimal values from 1 to n in a single line.
+
+Constraints:
+
+1 ≤ T ≤ 100
+1 ≤ N ≤ 500
+
+Example:
+
+Input
+2
+2
+5
+
+Output
+1 10
+1 10 11 100 101
+ 
+ 
+ public static void printBinary(int n) {
+        if(n == 0) System.out.println(0);
+        StringBuilder sb = new StringBuilder();
+        sb.append(1);
+        System.out.print(sb.toString());
+        for(int i = 2; i <=n ; i++) {
+            sb = new StringBuilder(helper(sb.toString()));
+            System.out.print(" "+sb.toString());
+        }
+        System.out.println();
+    }
+    public static String helper(String str) {
+        int count = 1, i = str.length()-1;
+        StringBuilder sb = new StringBuilder();
+        while(i >= 0) {
+            if(str.charAt(i) == '1' && count == 1) {
+                sb.insert(0,0); count = 1;
+            }
+            else if(str.charAt(i) == '0' && count == 1) {
+                sb.insert(0,1); break;
+            }
+            i--;
+        }
+        return (i >= 0)?sb.insert(0,str.substring(0,i)).toString():sb.insert(0,1).toString();
+    }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+287. Find the Duplicate Number
+
+Given an array nums containing n + 1 integers where each integer is between 1 and n (inclusive), prove that at least one duplicate number must exist. Assume that there is only one duplicate number, find the duplicate one.
+
+Note:
+You must not modify the array (assume the array is read only).
+You must use only constant, O(1) extra space.
+Your runtime complexity should be less than O(n2).
+There is only one duplicate number in the array, but it could be repeated more than once.
+////////////////////// optimized 
+public int findDuplicate(int[] nums) {
+        if(nums.length <= 1) return -1;
+        int slow = nums[0], fast = nums[nums[0]];
+        while(slow != fast) {
+            slow = nums[slow];
+            fast = nums[nums[fast]];
+        }
+        fast = 0;
+        while(slow != fast) {
+            slow = nums[slow];
+            fast = nums[fast];
+        }
+        return slow;
+    }
+////////////////////// another 
+
+public int findDuplicate(int[] nums) {
+        if(nums.length == 0) return 0;
+        Arrays.sort(nums);
+        for(int i = 1; i < nums.length; i++) if((nums[i]^nums[i-1]) == 0) return nums[i];
+        return -1;
+    }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+public static void isItCorrect(char[][] chars, int row, int col, int guess) {
+        boolean flag = false;
+        for(int i = 0; i < row; i++) {
+            for(int j = 0; j < col; j++) {
+                if(chars[i][j] == 'M') {
+                    flag = dfs(chars,i-1,j,guess,1,0) ||
+                       dfs(chars,i+1,j,guess,1,0) ||
+                       dfs(chars,i,j-1,guess,1,1) ||
+                       dfs(chars,i,j+1,guess,1,1);
+                }
+            }
+        }
+        if(flag) System.out.println("Impressed"); else System.out.println("Oops!");
+    }  
+    public static boolean dfs(char[][] chars, int i, int j, int guess, int count, int dir) {
+        if(i < 0 || j < 0 || i == chars.length || j == chars[0].length || chars[i][j] == 'X' || chars[i][j] = '#') return false;
+        if(chars[i][j] == '*' && count == guess) return true;
+        char temp = chars[i][j];
+        chars[i][j] = '#';
+        if(dfs(chars, i-1,j,guess,(dir == 0)?count:count+1,(dir == 0)?0:1) ||
+        dfs(chars, i+1,j,guess,(dir == 0)?count:count+1,(dir == 0)?0:1) ||
+        dfs(chars, i,j-1,guess,(dir == 1)?count:count+1,(dir == 1)?1:0) ||
+        dfs(chars, i,j+1,guess,(dir == 1)?count:count+1,(dir == 1)?1:0)) return true;
+        chars[i][j] = temp;
+        return false; 
+    }
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int l = Integer.valueOf(br.readLine().trim());
+        for(int j = 0; j < l; j++) {
+            String[] s = br.readLine().trim().split(" ");
+            int n = Integer.valueOf(s[0]);
+            int m = Integer.valueOf(s[1]);
+            char[][] chars = new char[n][m];
+            for(int i = 0; i < n; i++) {
+                chars[i] = br.readLine().trim().toCharArray();
+            }
+            int guess = Integer.valueOf(br.readLine().trim());
+            isItCorrect(chars,n,m,guess);
+        }
+    }	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Longest Common Prefix | Set 2 (Character by Character Matching)
+Given a set of strings, find the longest common prefix.
+
+Input  : {“geeksforgeeks”, “geeks”, “geek”, “geezer”}
+Output : "gee"
+
+Input  : {"apple", "ape", "april"}
+Output : "ap"
+
+public static String printPrefix(String[] array) {
+		String temp = array[0];
+		int l = 0;
+		boolean flag = true;
+		while(flag && l < temp.length()) {
+			for(int i = 1; i < array.length; i++) {
+				if(l == array[i].length()|| array[i].charAt(l)!=temp.charAt(l)) return temp.substring(0,l);
+			}
+			l++;
+		}
+		return temp;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Count pairs with given sum
+Given an array of integers, and a number ‘sum’, find the number of pairs of integers in the array whose sum is equal to ‘sum’.
+
+Examples:
+Input  :  arr[] = {1, 5, 7, -1}, 
+          sum = 6
+Output :  2
+Pairs with sum 6 are (1, 5) and (7, -1)
+
+Input  :  arr[] = {1, 5, 7, -1, 5}, 
+          sum = 6
+Output :  3
+Pairs with sum 6 are (1, 5), (7, -1) &
+                     (1, 5)         
+
+Input  :  arr[] = {1, 1, 1, 1}, 
+          sum = 2
+Output :  6
+There are 3! pairs with sum 2.
+
+Input  :  arr[] = {10, 12, 10, 15, -1, 7, 6, 
+                   5, 4, 2, 1, 1, 1}, 
+          sum = 11
+Output :  9
+Expected time complexity O(n)
+
+
+	public static int countPair(int[] array, int sum) {
+		if(array.length <= 1) return 0;
+		HashMap<Integer,Integer> hm = new HashMap<Integer,Integer>();
+		int count = 0;
+		for(int i = 0;i < array.length; i++) {
+			if(hm.containsKey(sum-array[i])) count+= hm.get(sum-array[i]);
+			hm.put(array[i], hm.getOrDefault(array[i],0)+1);
+		}
+		return count;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Largest Sum Contiguous Subarray
+Write an efficient C program to find the sum of contiguous subarray within a one-dimensional array of numbers which has the largest sum. 
+
+Kadane’s Algorithm:
+{-2, -3, 4, -1, -2, 1, 5, -3}
+output : 7
+public static int kadeneMaxSubarraySum(int[] array) {
+		int currSum = array[0], ret = array[0];
+		for(int n: array) {
+			currSum = Math.max(n,currSum+n);
+			ret = Math.max(ret, currSum);
+		}
+		return ret;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+little modification in above algorithm to find lowest sum contiguous subArray
+{-2, -3, 4, -1, -2, 1, 5, -3}
+output : -5
+/// first invert the intire array 
+/// then find the max sum subArray using kandene and store result in the temp array
+/// then invert this temp array and find minimum in this array and return it
+/// we can modify it by making sum changes
+
+	public static int kadeneMinSubarraySum(int[] array) {
+		int currSum = -array[0], ret = -array[0];
+		for(int i = 1; i < array.length; i++) {
+			currSum = Math.max(-array[i],currSum-array[i]);
+			ret = Math.max(ret, currSum);
+		}
+		return -ret;
+	}
+	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Maximum absolute difference between sum of two contiguous sub-arrays
+Given an array of integers, find two non-overlapping contiguous sub-arrays such that the absolute difference between the sum of two sub-arrays is maximum.
+
+For example,
+
+Input: [-2, -3, 4, -1, -2, 1, 5, -3]
+Output: 12
+Two subarrays are [-2, -3] and [4, -1, -2, 1, 5]
+
+Input: [2, -1, -2, 1, -4, 2, 8]
+Output: 16
+Two subarrays are [-1, -2, 1, -4] and [2, 8] 
+
+public static int[] getLeftMax(int[] array) {
+		int[] ret = new int[array.length];
+		int maxCurr = ret[0] = array[0],  maxSoFar = array[0];
+		for(int i = 1; i < array.length; i++) {
+			maxCurr = Math.max(array[i], maxCurr+array[i]);
+			maxSoFar = Math.max(maxSoFar, maxCurr);
+			ret[i] = maxSoFar; 
+		}
+		return ret;
+	}
+	public static int[] getRightMax(int[] array) {
+		int n = array.length-1;
+		int[] ret = new int[array.length];
+		int maxCurr = ret[n] = array[n], maxSoFar = array[n];
+		for(int i = n-1; i >= 0; i--) {
+			maxCurr = Math.max(array[i], maxCurr+array[i]);
+			maxSoFar = Math.max(maxSoFar, maxCurr);
+			ret[i] = maxSoFar;
+		}
+		return ret;
+	}
+	public static int twoSubArrayMaxSum(int[] array) {
+		int[] leftMax = getLeftMax(array);
+		int[] rightMax = getRightMax(array);
+		for(int i = 0; i < array.length; i++) array[i] = -array[i];
+		int[] leftMin = getLeftMax(array);
+		int[] rightMin = getRightMax(array);
+		for(int i = 0; i < array.length; i++) array[i] = -array[i];
+		for(int i = 0; i < array.length; i++) leftMin[i] = -leftMin[i];
+		for(int i = 0; i < array.length; i++) rightMin[i] = -rightMin[i];
+		int ret = Integer.MIN_VALUE;
+		for(int i = 0; i < array.length-1; i++) {
+			ret = Math.max(ret, Math.abs(rightMax[i+1]-leftMin[i]));
+			ret = Math.max(ret, Math.abs(leftMax[i]-rightMin[i+1]));
+		}
+		return ret;
+	}
+//////////////////// little modification combined two methods in one
+	public static int[] getSum(int[] array, boolean f) {
+		int[] ret = new int[array.length];
+		int n = array.length-1,i;
+		int maxCurr = ret[(f)?0:n]= array[(f)?0:n],  maxSoFar = array[(f)?0:n];
+		for(i = (f)?1:n-1; (f)?i < array.length:i>=0;) {
+			maxCurr = Math.max(array[i], maxCurr+array[i]);
+			maxSoFar = Math.max(maxSoFar, maxCurr);
+			ret[i] = maxSoFar; 
+			if(f)i++; else i--;
+		}
+		return ret;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Maximum circular subarray sum
+Given n numbers (both +ve and -ve), arranged in a circle, fnd the maximum sum of consecutive number.
+
+Examples:
+
+Input: a[] = {8, -8, 9, -9, 10, -11, 12}
+Output: 22 (12 + 8 - 8 + 9 - 9 + 10)
+
+Input: a[] = {10, -3, -4, 7, 6, 5, -4, -1} 
+Output:  23 (7 + 6 + 5 - 4 -1 + 10) 
+
+Input: a[] = {-1, 40, -14, 7, 6, 5, -4, -1}
+Output: 52 (7 + 6 + 5 - 4 - 1 - 1 + 40)
+There can be two cases for the maximum sum:
+
+Case 1: The elements that contribute to the maximum sum are arranged such that no wrapping is there. Examples: {-10, 2, -1, 5}, {-2, 4, -1, 4, -1}. In this case, Kadane’s algorithm will produce the result.
+
+Case 2: The elements which contribute to the maximum sum are arranged such that wrapping is there. Examples: {10, -12, 11}, {12, -5, 4, -8, 11}. In this case, we change wrapping to non-wrapping. Let us see how. Wrapping of contributing elements implies non wrapping of non contributing elements, so find out the sum of non contributing elements and subtract this sum from the total sum. To find out the sum of non contributing, invert sign of each element and then run Kadane’s algorithm.
+Our array is like a ring and we have to eliminate the maximum continuous negative that implies maximum continuous positive in the inverted arrays.
+
+	public static int getMaxSubArray(int[] array) {
+		int maxCurr = array[0], maxSoFar = array[0];
+		for(int i = 1; i < array.length; i++) {
+			maxCurr = Math.max(array[i], maxCurr+array[i]);
+			maxSoFar = Math.max(maxSoFar, maxCurr);
+		}
+		return maxSoFar;
+	}
+	public static int cirCularSum(int[] array) {
+		int sum1 = getMaxSubArray(array);
+		int sum2 = 0;
+		for(int i = 0; i < array.length; i++) {
+			sum2 += array[i];
+			array[i] = -array[i];
+		}
+		sum2 += getMaxSubArray(array);
+		return Math.max(sum1, sum2);
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Dynamic Programming | Set 14 (Maximum Sum Increasing Subsequence)
+Given an array of n positive integers. Write a program to find the sum of maximum sum subsequence of the given array such that the intgers in the subsequence are sorted in increasing order. For example, if input is {1, 101, 2, 3, 100, 4, 5}, then output should be 106 (1 + 2 + 3 + 100), if the input array is {3, 4, 5, 10}, then output should be 22 (3 + 4 + 5 + 10) and if the input array is {10, 5, 4, 3}, then output should be 10
+
+	public static int getSum(int[] array) {
+		if(array.length == 0) return 0;
+		int[] dp = new int[array.length];
+		int ret = array[0];
+		Arrays.fill(dp,Integer.MIN_VALUE);
+		dp[0] = array[0];
+		for(int i = 1; i < array.length; i++) {
+			for(int j = 0; j < i; j++) {
+				if(array[i] > array[j] && array[i]+dp[j] > dp[i]) {
+					dp[i] = array[i]+dp[j];
+					ret = Math.max(dp[i], ret);
+				}
+			}
+		}
+		return ret;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Find if string is K-Palindrome or not
+Given a string, find out if the string is K-Palindrome or not. A k-palindrome string transforms into a palindrome on removing at most k characters from it.
+
+Examples :
+
+Input : String - abcdecba, k = 1
+Output : Yes
+String can become palindrome by remo-
+-ving 1 character i.e. either d or e)
+
+
+Input  : String - abcdeca, K = 2
+Output : Yes
+Can become palindrome by removing
+2 characters b and e.
+
+Input : String - acdcb, K = 1
+Output : No
+String can not become palindrome by
+removing only one character.
+//////////////// dynamic programming for this
+public static int helper2(String s1, String s2) {
+		int n = s1.length();
+		int[][] dp = new int[n+1][n+1];
+		for(int i = 0; i < n; i++) {
+			dp[i][0] = i;
+			dp[0][i] = i;
+		}
+		for(int i = 1; i <= n; i++) {
+			for(int j = 1; j <= n; j++) {
+				if(s1.charAt(i-1) == s2.charAt(j-1)) {
+					dp[i][j] = dp[i-1][j-1];
+				}
+				else {
+					dp[i][j] = 1 + Math.min(dp[i-1][j], dp[i][j-1]);
+				}
+			}
+		}
+		return dp[n][n];
+	}
+//////////////////////////////// with recurrsion
+public static boolean isKPalindrom(String str, int k) {
+		if(str.length() == 0) return false;
+		int n = str.length();
+		StringBuilder sb = new StringBuilder(str);
+		int count = helper(str, sb.reverse().toString(),n,n);
+		return count <= k*2;
+	}
+	public static int helper(String s1, String s2, int n, int m) {
+		if(n == 0) return m;
+		if(m == 0) return n;
+		if(s1.charAt(n-1) == s2.charAt(m-1)) return helper(s1,s2,n-1,m-1);
+		else return 1 + Math.min(helper(s1,s2,n-1,m),helper(s1,s2,n,m-1));
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Dynamic Programming | Set 5 (Edit Distance)
+Given two strings str1 and str2 and below operations that can performed on str1. Find minimum number of edits (operations) required to convert ‘str1′ into ‘str2′.
+
+Insert
+Remove
+Replace
+All of the above operations are of equal cost.
+
+Examples:
+
+Input:   str1 = "geek", str2 = "gesek"
+Output:  1
+We can convert str1 into str2 by inserting a 's'.
+
+Input:   str1 = "cat", str2 = "cut"
+Output:  1
+We can convert str1 into str2 by replacing 'a' with 'u'.
+
+Input:   str1 = "sunday", str2 = "saturday"
+Output:  3
+Last three and first characters are same.  We basically
+need to convert "un" to "atur".  This can be done using
+below three operations. 
+Replace 'n' with 'r', insert t, insert a
+
+public static int editDistanceDP(String s1, String s2) {
+		int n = s1.length(), m = s2.length();
+		int[][] dp = new int[n+1][m+1];
+		for(int i = 0; i <= n; i++) dp[i][0] = i;
+		for(int j = 0; j <= m; j++) dp[0][j] = j;
+		for(int i = 1; i <= n; i++) {
+			for(int j = 1; j <= m; j++) {
+				if(s1.charAt(i-1) == s2.charAt(j-1)) dp[i][j] = dp[i-1][j-1];
+				else {
+					dp[i][j] = 1 + Math.min(Math.min(dp[i][j-1], dp[i-1][j]),dp[i-1][j-1]);
+				}				
+			}
+		}
+		return dp[n][m];
+	}
+/////////////////////////////////// recurssive
+	public static int editDistance(String s1, String s2) {
+		if(s1.length() == 0 && s2.length() == 0) return 0;
+		return helper(s1,s2,s1.length(),s2.length());
+	}
+	public static int helper(String s1, String s2, int n, int m) {
+		if(m == 0) return n;
+		if(n == 0) return m;
+		if(s1.charAt(n-1) == s2.charAt(m-1)) return helper(s1, s2, n-1, m-1);
+		else return 1 + Math.min(helper(s1,s2,n-1,m), 
+						Math.min(helper(s1,s2,n,m-1), 
+						helper(s1,s2,n-1,m-1)));
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Find maximum length Snake sequence
+Given a grid of numbers, find maximum length Snake sequence and print it. If multiple snake sequences exists with the maximum length, print any one of them.
+
+A snake sequence is made up of adjacent numbers in the grid such that for each number, the number on the right or the number below it is +1 or -1 its value. For example, if you are at location (x, y) in the grid, you can either move right i.e. (x, y+1) if that number is ± 1 or move down i.e. (x+1, y) if that number is ± 1.
+
+For example,
+
+9, 6, 5, 2
+8, 7, 6, 5
+7, 3, 1, 6
+1, 1, 1, 7
+
+In above grid, the longest snake sequence is: (9, 8, 7, 6, 5, 6, 7)
+/////////////////////// optimal using dynamic programming
+public static List<Integer> snakeSeq(int[][] array) {
+		List<Integer> ret = new ArrayList<Integer>();
+		int maxLen = 0, maxI = 0, maxJ = 0;
+		int n = array.length, m = array[0].length;
+		int[][] dp = new int[n][m];
+		for(int i = 0; i < n; i++) {
+			for(int j = 0; j < m; j++) {
+				if(i == 0 && j == 0) continue;
+				if(i > 0 && Math.abs(array[i-1][j] - array[i][j]) == 1){
+					dp[i][j] = Math.max(dp[i][j],dp[i-1][j] + 1);
+					if(dp[i][j] > maxLen) {
+						maxLen = dp[i][j];
+						maxI = i; maxJ = j;
+					}
+				}
+				if(j > 0 && Math.abs(array[i][j-1] - array[i][j]) == 1) {
+					dp[i][j] = Math.max(dp[i][j],dp[1][j-1] + 1);
+					if(dp[i][j] > maxLen) {
+						maxLen = dp[i][j];
+						maxI = i; maxJ = j;
+					}
+				}
+			}
+		}
+		ret.add(0,array[maxI][maxJ]);
+		while(dp[maxI][maxJ] != 0) {
+			if(maxI > 0 && dp[maxI][maxJ] - 1 == dp[maxI-1][maxJ]) {
+				ret.add(0,array[maxI-1][maxJ]);
+				maxI--;
+			}
+			else if(maxJ > 0 && dp[maxI][maxJ] - 1 == dp[maxI][maxJ-1]) {
+				ret.add(0,array[maxI][maxJ-1]);
+				maxJ--;
+			}
+		}
+		return ret;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Minimum time to finish tasks without skipping two consecutive
+Given time taken by n tasks. Find the minimum time needed to finish the tasks such that skipping of tasks is allowed, but can not skip two consecutive tasks.
+
+Examples :
+
+Input : arr[] = {10, 5, 7, 10}
+Output : 12
+We can skip first and last task and
+finish these task in 12 min.
+
+Input : arr[] = {10}
+Output : 0
+There is only one task and we can
+skip it.
+
+Input : arr[] = {10, 30}
+Output : 10
+
+Input : arr[] = {10, 5, 2, 4, 8, 6, 7, 10}
+Output : 22
+Expected Time Complexity is O(n) and extra space is O(1).
+
+public static int getMinTime(int[] array) {
+		if(array.length <= 1) return 0;
+		int take = array[0], avoid = 0;
+		for(int i = 1; i < array.length; i++) {
+			int temp = Math.min(take, avoid);
+			avoid = take;
+			take = temp + array[i];
+		}
+		return Math.min(take, avoid);
+	}
+
+/////////////////////// another dfs
+
+public static List<Integer> getSnakeSequence(int[][] array) {
+		List<List<Integer>> ret = new ArrayList<List<Integer>>();
+		List<Integer> curr = new ArrayList<Integer>();
+		for(int i = 0; i < array.length; i++) {
+			for(int j = 0; j < array[0].length; j++) {
+				curr.add(array[i][j]);
+				dfs(array,ret,curr,i+1,j,array[i][j]);
+				dfs(array,ret,curr,i,j-1,array[i][j]);
+				curr.remove(curr.size()-1);
+			}
+		}
+		return ret.get(0);
+	}
+	public static void dfs(int[][] array,List<List<Integer>> ret, List<Integer> curr, int i, int j, int prev) {
+		if(i < 0 || j < 0 || i == array.length || j == array[0].length || Math.abs(array[i][j]-prev)!=1) return;
+		curr.add(array[i][j]);
+		if(curr.size() > ret.size()) ret.add(0,new ArrayList<Integer>(curr));
+		dfs(array,ret,curr,i+1,j,array[i][j]);
+		dfs(array,ret,curr,i,j+1,array[i][j]);
+		curr.remove(curr.size()-1);
+	}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Pair with given product | Set 1 (Find if any pair exists)
+Given an array and a number x, find if there is a pair with product equal to x.
+
+Examples :
+
+Input : arr[] = {10, 20, 9, 40};
+        int x = 400;
+Output : Yes
+
+Input : arr[] = {10, 20, 9, 40};
+        int x = 190;
+Output : No
+
+Input : arr[] = {-10, 20, 9, -40};
+        int x = 400;
+Output : Yes
+
+Input : arr[] = {-10, 20, 9, 40};
+        int x = -400;
+Output : Yes
+
+Input : arr[] = {0, 20, 9, 40};
+        int x = 0;
+Output : Yes
+///////////////////////////////// optimized
+public static boolean isExistPair(int[] array, int x) {
+		if(array.length <= 1) return false;
+		Set<Integer> set = new HashSet<Integer>();
+		for(int n: array) {
+			if(n == 0) {
+				if(n == x) return true;
+				continue;
+			}
+			if(x % n == 0 && set.contains(x/n)) return true;
+			set.add(n);
+		}
+		return false;
+	}
+//////////////////////////////// another
+public static boolean isExistPair(int[] array, int x) {
+		if(array.length <= 1) return false;
+		Set<Double> set = new HashSet<Double>();
+		for(int n: array) {
+			if(n == 0) {
+				if(n == x) return true;
+				continue;
+			}
+			if(set.contains((double)x/n)) return true;
+			set.add((double)n);
+		}
+		return false;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Find maximum product of a triplet in array
+Given an integer array, find a maximum product of a triplet in array.
+
+Examples:
+
+Input:  [10, 3, 5, 6, 20]
+Output: 1200
+Multiplication of 10, 6 and 20
+ 
+Input:  [-10, -3, -5, -6, -20]
+Output: -90
+
+Input:  [1, -4, 3, -6, 7, 0]
+Output: 168
+
+	public static int getMaxTripletProduct(int[] array) {
+		if(array.length <= 2) return 0;
+		int max1, max2, max3, min1, min2;
+		max1 = max2 = max3 = Integer.MIN_VALUE;
+		min1 = min2 = Integer.MAX_VALUE;
+		for(int n : array) {
+			if(n > max1) { max3 = max2; max2 = max1; max1 = n; }
+			else if(n > max2) { max3 = max2; max2 = n; }
+			else if(n > max3) { max3 = n; }
+			if(n < min1) { min2 = min1; min1 = n; }
+			else if(n < min2) { min2 = n; }
+		}
+		return Math.max(max1*max2*max3, max1*min1*min2);
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Count pairs formed by distinct element sub-arrays
+Given an array, count number of pairs that can be formed from all possible contiguous sub-arrays containing distinct numbers. The array contains positive numbers between 0 to n-1 where n is the size of the array.
+
+Examples:
+
+Input:  [1, 4, 2, 4, 3, 2]
+Output: 8
+The subarrays with distinct elements 
+are [1, 4, 2], [2, 4, 3] and [4, 3, 2].
+There are 8 pairs that can be formed 
+from above array.
+(1, 4), (1, 2), (4, 2), (2, 4), (2, 3),
+(4, 3), (4, 2), (3, 2)
+
+
+Input:  [1, 2, 2, 3]
+Output: 2
+There are 2 pairs that can be formed
+from above array.
+(1, 2), (2, 3)
+///////
+The idea is to use Sliding Window for the given array. Let us use a window covering from index left to index right and an Boolean array visited to mark elements in current window. The window invariant is that all elements inside the window are distinct. We keep on expanding the window to the right and if a duplicate is found, we shrink the window from left till all elements are distinct again. We update the count of pairs in current window along the way. An observation showed that in an expanding window, number of pairs can be incremented by value equal to window size – 1. For example,
+
+Expanding Window   Count
+  
+[1]              Count = 0
+
+[1, 2]           Count += 1 pair  
+                 i.e. (1, 2)
+
+[1, 2, 3]        Count += 2 pairs 
+                 i.e. (1, 3) and (2, 3)
+
+[1, 2, 3, 4]     Count += 3 pairs 
+                 i.e. (1, 4), (2, 4) 
+                 and (3, 4)
+So, total Count for above window of size 4 containing distinct elements is 6. Nothing need to be done when the window is shrinking.
+	public static int countPair2(int[] array) {
+		if(array.length <= 1) return 0;
+		int count = 0,i = 0; 
+		Map<Integer, Integer> hm = new HashMap<Integer,Integer>();
+		List<Integer> list = new ArrayList<Integer>();
+		while(i < array.length) {
+			if(!hm.containsKey(array[i])) {
+				list.add(array[i]);
+				count+=(list.size()-1);
+				hm.put(array[i], i++);
+			}
+			else {
+				list = new ArrayList<Integer>();
+				i = hm.get(array[i])+1;
+				hm.remove(array[i]);
+			}
+		}
+		return count;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Absolute distinct count in a sorted array
+Given a sorted array of integers, return the number of distinct absolute values among the elements of the array. The input can contain duplicates values.
+
+Input: [-3, -2, 0, 3, 4, 5]
+Output: 5
+There are 5 distinct absolute values
+among the elements of this array, i.e.
+0, 2, 3, 4 and 5)
+
+Input:  [-1, -1, -1, -1, 0, 1, 1, 1, 1]
+Output: 2
+
+Input:  [-1, -1, -1, -1, 0]
+Output: 2
+
+Input:  [0, 0, 0]
+Output: 1 
+The solution should do only one scan of the input array and should not use any extra space. i.e. expected time complexity is O(n) and auxiliary space is O(1).
+////////////////// optimize time - O(n)  space - O(1);
+public static void countAbsolute2(int[] array) {
+		if(array.length == 0) System.out.println(0);
+		int left = 0, right = array.length - 1;
+		int count = 0;
+		while(left <= right) {
+			while(left < array.length-1 && Math.abs(array[left]) == Math.abs(array[left+1])) left++;
+			while(right > 0 && Math.abs(array[right]) == Math.abs(array[right-1])) right--;
+			count+=1;
+			if(left > right) break;
+			if(Math.abs(array[left]) == Math.abs(array[right])) {
+				left++; right--;
+			}
+			else if(Math.abs(array[left]) > Math.abs(array[right])) left++;
+			else right--;
+		}
+		System.out.println(count);
+	}
+//////////////////////// another time - O(n) space - O(1)
+
+public static void countAbsolute(int[] array) {
+		if(array.length == 0) System.out.println(0);
+		Set<Integer> set = new HashSet<Integer>();
+		for(int n: array) set.add(Math.abs(n));
+		System.out.println(set.size());
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Rearrange array in alternating positive & negative items with O(1) extra space | Set 2
+Given an array of positive and negative numbers, arrange them in an alternate fashion such that every positive number is followed by negative and vice-versa. Order of elements in output doesn’t matter. Extra positive or negative elements should be moved to end.
+
+Examples
+
+Input :
+arr[] = {-2, 3, 4, -1}
+Output :
+arr[] = {-2, 3, -1, 4} OR {-1, 3, -2, 4} OR ..
+
+Input :
+arr[] = {-2, 3, 1}
+Output :
+arr[] = {-2, 3, 1} OR {-2, 1, 3} 
+
+Input : 
+arr[] = {-5, 3, 4, 5, -6, -2, 8, 9, -1, -4}
+Output :
+arr[] = {-5, 3, -2, 5, -6, 4, -4, 9, -1, 8}
+
+	public static void reArrange(int[] array) {
+		if(array.length <= 1) return;
+		int left = 0, right = 0;
+		while(right < array.length) {
+			if(array[right] < 0) swap(array, left++, right++);
+			else right++;
+		}
+		right = left;
+		left = 1;
+		while(left < array.length && right < array.length) {
+			swap(array,left,right);
+			right++;
+			left+=2;
+		}
+	}
+	public static void swap(int[] array, int left, int right) {
+		if(left == right) return;
+		int temp = array[left];
+		array[left] = array[right];
+		array[right] = temp;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Find subarray with given sum
+Given an unsorted array of nonnegative integers, find a continous subarray which adds to a given number.
+
+Examples:
+
+Input: arr[] = {1, 4, 20, 3, 10, 5}, sum = 33
+Ouptut: Sum found between indexes 2 and 4
+
+Input: arr[] = {1, 4, 0, 0, 3, 10, 5}, sum = 7
+Ouptut: Sum found between indexes 1 and 4
+
+Input: arr[] = {1, 4}, sum = 0
+Output: No subarray found
+There may be more than one subarrays with sum as the given sum. The following solutions print first such subarray.
+
+Source: Google Interview Question
+
+public static void printIndex(int[] array, int sum) {
+		if(array.length == 0) return;
+		int curr_sum = array[0],start = 0;
+		for(int i = 1; i <= array.length; i++) {
+			while(start < i-1 && curr_sum > sum) curr_sum -= array[start++];
+			if(sum == curr_sum){
+				System.out.println(""+start+" "+(i-1));
+				return;
+			}
+			if(i < array.length) curr_sum += array[i];
+		}
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+You are given an array of characters which is basically a sentence. However there is no space between different words and the first letter of every word is in uppercase. You need to put a single space between these words and convert the uppercase letters to lowercase. There are some extra spaces available in the array at the end.
+
+Eg. “MyNameIsRam ” , you need to convert this to “my name is ram”
+
+public static void arrangeIt(char[] array) {
+		if(array.length == 0) return;
+		int r = array.length-1, l = array.length-1;
+		while(array[l] == '\0') l--;
+		while(l >= 0) {
+			if(Character.isLowerCase(array[l])) array[r--] = array[l--];
+			else {
+				array[r--] = Character.toLowerCase(array[l--]);
+				if(l >= 0) array[r--] = ' ';
+			}
+		}
+		System.out.println(new String(array));
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Find minimum number of merge operations to make an array palindrome
+Given an array of positive integers. We need to make the given array a ‘Palindrome’. Only allowed operation on array is merge. Merging two adjacent elements means replacing them with their sum. The task is to find minimum number of merge operations required to make given array a ‘Palindrome’.
+
+To make an array a palindromic we can simply apply merging operations n-1 times where n is the size of array (Note a single element array is alway palindrome similar to single character string). In that case, size of array will be reduced to 1. But in this problem we are asked to do it in minimum number of operations.
+
+Example:
+
+Input : arr[] = {15, 4, 15}
+Output : 0
+Array is already a palindrome. So we
+do not need any merge operation.
+
+Input : arr[] = {1, 4, 5, 1}
+Output : 1
+We can make given array palindrome with
+minimum one merging (merging 4 and 5 to
+make 9)
+
+Input : arr[] = {11, 14, 15, 99}
+Output : 3
+We need to merge all elements to make
+a palindrome.
+
+public static int mergeOperation(int[] array) {
+		if(array.length <= 1) return 0;
+		int left = 0, right = array.length-1, count = 0;
+		while(left <= right) {
+			if(array[left] == array[right]) {
+				left++;
+				right--;
+			}
+			else if(left + 1 < right && array[left]+array[left+1] == array[right]){
+				left+=2; right--; 
+				count++;
+			}
+			else if(left + 1 < right && array[right]+array[right-1] == array[left]) {
+				left++; right-=2; count++;
+			}
+			else if(array[left] < array[right]) {
+				array[left+1] += array[left];
+				count++; left++;
+			}
+			else {
+				array[right-1] += array[right];
+				count++; right--;
+			}
+		}
+		return count;
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Count minimum steps to get the given desired array
+Consider an array with n elements and value of all the elements is zero. We can perform following operations on the array.
+
+Incremental operations:Choose 1 element from the array and increment its value by 1.
+Doubling operation: Double the values of all the elements of array.
+We are given desired array target[] containing n elements. Compute and return the smallest possible number of the operations needed to change the array from all zeros to desired array.
+
+Sample test cases:
+
+Input: target[] = {2, 3}
+Output: 4
+To get the target array from {0, 0}, we 
+first increment both elements by 1 (2 
+operations), then double the array (1 
+operation). Finally increment second
+element (1 more operation)
+
+Input: target[] = {2, 1}
+Output: 3
+One of the optimal solution is to apply the 
+incremental operation 2 times to first and 
+once on second element.
+
+Input: target[] = {16, 16, 16}
+Output: 7
+The output solution looks as follows. First 
+apply an incremental operation to each element. 
+Then apply the doubling operation four times. 
+Total number of operations is 3+4 = 7
+////////////////// idea
+The idea is to follow reverse steps, i.e. to convert target to array of zeros. Below are steps.
+
+Take the target array first. 
+
+Initialize result as 0. 
+
+If all are even, divide all elements by 2 
+and increment result by 1. 
+
+Find all odd elements, make them even by 
+reducing them by 1. and for every reduction,
+increment result by 1.
+
+Finally we get all zeros in target array.
+////////////////////////////
+public static int desiredOperation(int[] array) {
+		if(array.length == 0) return 0;
+		int ret = 0;
+		while(true) {
+			int zero = 0,i;
+			for(i = 0; i < array.length; i++) {
+				if(array[i] % 2 != 0) break;				
+				if(array[i] == 0)zero++;
+			}
+			if(zero == array.length) return ret;
+			else if(i < array.length){
+				for(int j = i; j < array.length; j++) {
+					if(array[j] % 2 != 0) {
+						array[j]--; ret++;
+					}
+				}
+			}
+			else {
+				for(int j = 0; j < array.length; j++) array[j] /= 2;
+				ret++;
+			}
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+
+
