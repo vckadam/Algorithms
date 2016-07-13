@@ -13074,9 +13074,93 @@ public static int desiredOperation(int[] array) {
 		}
 	}
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+374. Guess Number Higher or Lower
 
+We are playing the Guess Game. The game is as follows:
 
+I pick a number from 1 to n. You have to guess which number I picked.
+
+Every time you guess wrong, I'll tell you whether the number is higher or lower.
+
+You call a pre-defined API guess(int num) which returns 3 possible results (-1, 1, or 0):
+
+-1 : My number is lower
+1 : My number is higher
+0 : Congrats! You got it!
+Example:
+n = 10, I pick 6.
+
+Return 6.
+
+public int guessNumber(int n) {
+int left = 1, right = n, mid = 0;
+while(left <= right) {
+mid = left + (right - left)/2;
+if(guess(mid) == 0) return mid;
+else if(guess(mid) < 0) right = mid - 1;
+else left = mid + 1;
+}
+return mid;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+371. Sum of Two Integers
+
+Calculate the sum of two integers a and b, but you are not allowed to use the operator + and -.
+
+Example:
+Given a = 1 and b = 2, return 3.
+/////////////////// optimized 
+public int getSum(int a, int b) {
+        int carray = 0, ret = 0, curr = 0, i = 0;
+        while(i <  32) {
+            int sum = (a&1) + (b&1) + carray;
+            curr = (sum % 2 == 0)?0:1;
+            carray = (sum <= 1)?0:1;
+            ret|=(curr<<=i);
+            a >>= 1;
+            b >>= 1;
+            i++;
+        }
+        return ret;
+        
+    }
+///////////////////// another 
+public int getSum(int a, int b) {
+int carray = 0, ret = 0, curr = 0;
+StringBuilder sb = new StringBuilder();
+int i = 32;
+while(i-- >  0) {
+int a0 = a & 1;
+int b0 = b & 1;
+int sum = a0 + b0 + carray;
+if(sum == 0) {
+curr = 0;
+carray = 0;
+}
+else if(sum == 1) {
+curr = 1;
+carray = 0;
+}
+else if(sum == 2) {
+curr = 0;
+carray = 1;
+}
+else if(sum == 3) {
+curr = 1;
+carray = 1;
+}
+curr <<= (32-i-1);
+ret|=curr;
+a >>= 1;
+b >>= 1;
+}
+return ret;
+
+}
 
 
 
