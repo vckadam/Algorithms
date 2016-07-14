@@ -13162,9 +13162,129 @@ return ret;
 
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+373. Find K Pairs with Smallest Sums  QuestionEditorial Solution  My Submissions
+Total Accepted: 3021
+Total Submissions: 12312
+Difficulty: Medium
+You are given two integer arrays nums1 and nums2 sorted in ascending order and an integer k.
 
+Define a pair (u,v) which consists of one element from the first array and one element from the second array.
 
+Find the k pairs (u1,v1),(u2,v2) ...(uk,vk) with the smallest sums.
+
+Example 1:
+Given nums1 = [1,7,11], nums2 = [2,4,6],  k = 3
+
+Return: [1,2],[1,4],[1,6]
+
+The first 3 pairs are returned from the sequence:
+[1,2],[1,4],[1,6],[7,2],[7,4],[11,2],[7,6],[11,4],[11,6]
+Example 2:
+Given nums1 = [1,1,2], nums2 = [1,2,3],  k = 2
+
+Return: [1,1],[1,1]
+
+The first 2 pairs are returned from the sequence:
+[1,1],[1,1],[1,2],[2,1],[1,2],[2,2],[1,3],[1,3],[2,3]
+Example 3:
+Given nums1 = [1,2], nums2 = [3],  k = 3
+
+Return: [1,3],[2,3]
+
+All possible pairs are returned from the sequence:
+[1,3],[2,3]
+
+public class Solution {
+    class arrange implements Comparator<int[]> {
+        public int compare(int[] array1, int[] array2) {
+            return (array1[0]+array1[1]) - (array2[0]+array2[1]);
+        }
+    }
+    public List<int[]> kSmallestPairs(int[] nums1, int[] nums2, int k) {
+        if(nums1.length == 0 || nums2.length == 0) return new ArrayList<int[]>();
+        PriorityQueue<int[]> pq = new PriorityQueue<int[]>(new arrange());
+        for(int i = 0; i < nums1.length; i++) {
+            for(int j = 0; j < nums2.length; j++){
+                int[] newArray = new int[2];
+                newArray[0] = nums1[i];
+                newArray[1] = nums2[j];
+                pq.add(newArray);
+            }
+        }
+        List<int[]> ret = new ArrayList<int[]>();
+        for(int i = 0; i < k; i++) {
+            if(!pq.isEmpty()) ret.add(pq.poll());
+        }
+        return ret;
+        
+    }
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+
+345. Reverse Vowels of a String
+
+345. Reverse Vowels of a String  QuestionEditorial Solution  My Submissions
+Total Accepted: 28938
+Total Submissions: 80354
+Difficulty: Easy
+Write a function that takes a string as input and reverse only the vowels of a string.
+
+Example 1:
+Given s = "hello", return "holle".
+
+Example 2:
+Given s = "leetcode", return "leotcede".
+
+public String reverseVowels(String s) {
+        if(s.length() < 2) return s;
+        StringBuilder sb = new StringBuilder(s);
+        int left = 0, right = s.length()-1;
+        while(left < right){
+            while(left < right && Character.toLowerCase(sb.charAt(left)) != 'a' && Character.toLowerCase(sb.charAt(left)) != 'e' && Character.toLowerCase(sb.charAt(left)) != 'i' && Character.toLowerCase(sb.charAt(left)) != 'o' && Character.toLowerCase(sb.charAt(left)) != 'u') left++;
+            while(left < right && Character.toLowerCase(sb.charAt(right)) != 'a' && Character.toLowerCase(sb.charAt(right)) != 'e' && Character.toLowerCase(sb.charAt(right)) != 'i' && Character.toLowerCase(sb.charAt(right)) != 'o' && Character.toLowerCase(sb.charAt(right)) != 'u') right--;
+            if(left < right) {
+                char temp = sb.charAt(left);
+                sb.setCharAt(left, sb.charAt(right));
+                sb.setCharAt(right,temp);
+                left++;right--;
+            }
+            
+        }
+        return sb.toString();
+    }
+
+///////////////////////////////////////////////////////////////////////////////////////////
+
+6. ZigZag Conversion
+
+The string "PAYPALISHIRING" is written in a zigzag pattern on a given number of rows like this: (you may want to display this pattern in a fixed font for better legibility)
+
+P   A   H   N
+A P L S I I G
+Y   I   R
+And then read line by line: "PAHNAPLSIIGYIR"
+Write the code that will take a string and make this conversion given a number of rows:
+
+string convert(string text, int nRows);
+convert("PAYPALISHIRING", 3) should return "PAHNAPLSIIGYIR".
+
+ public String convert(String s, int numRows) {
+        if(s.length() == 0) return s;
+        StringBuilder[] sb= new StringBuilder[numRows];
+        for(int i = 0; i < sb.length; i++) sb[i] = new StringBuilder();
+        int k = 0;
+        while(k < s.length()) {
+            int i = 0; 
+            while(k < s.length() && i < numRows) sb[i++].append(s.charAt(k++));
+            i = numRows-2;
+            while(k < s.length() && i > 0) sb[i--].append(s.charAt(k++));
+        }
+        for(int i = 1; i < sb.length; i++) sb[0].append(sb[i].toString());
+        return sb[0].toString();
+    }
+//////////////////////////////////////////////////////////////////////////////////////////
 
 
 
