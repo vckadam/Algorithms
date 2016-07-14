@@ -482,5 +482,323 @@ OOO...O
        
         
     }
-    
-    
+/////////////////////////////////////////////////////////////////////////////////////////
+Super Reduced String
+
+Shil has a string, , consisting of  lowercase English letters. In one operation, he can delete any pair of adjacent letters with same value. For example, string "" would become either "" or "" after  operation.
+
+Shil wants to reduce  as much as possible. To do this, he will repeat the above operation as many times as it can be performed. Help Shil out by finding and printing 's non-reducible form!
+
+Note: If the final string is empty, print .
+
+Input Format
+
+A single string, .
+
+Constraints
+
+Output Format
+
+If the final string is empty, print ; otherwise, print the final non-reducible string.
+
+Sample Input 0
+
+aaabccddd
+Sample Output 0
+
+abd
+Sample Input 1
+
+baab
+Sample Output 1
+
+Empty String
+Sample Input 2
+
+aa
+Sample Output 2
+
+Empty String
+Explanation
+
+Sample Case 0: 
+Shil can perform the following sequence of operations to get the final string:
+
+Thus, we print .
+
+Sample Case 1: 
+Shil can perform the following sequence of operations to get the final string:
+
+
+public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder(br.readLine().trim());
+        int ptr = -1, i = 0;
+        while(i < sb.length()) {
+            if(ptr == -1 || sb.charAt(ptr) != sb.charAt(i)) {
+                sb.setCharAt(++ptr, sb.charAt(i++));
+            }
+            else {
+                i++; ptr--;
+            }
+        }
+        System.out.println((ptr == -1)?"Empty String":sb.substring(0,ptr+1));
+    }	
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+Beautiful Binary String
+
+Alice has a binary string, , of length . She thinks a binary string is beautiful if and only if it doesn't contain the substring .
+
+In one step, Alice can change a  to a  (or vice-versa). Count and print the minimum number of steps needed to make Alice see the string as beautiful.
+
+Input Format
+
+The first line contains an integer,  (the length of binary string ). 
+The second line contains a single binary string, , of length .
+
+Constraints
+
+Each character in .
+Output Format
+
+Print the minimum number of steps needed to make the string beautiful.
+
+Sample Input 0
+
+7
+0101010
+Sample Output 0
+
+2
+Sample Input 1
+
+5
+01100
+Sample Output 1
+
+0
+Sample Input 2
+
+10
+0100101010
+Sample Output 2
+
+3
+
+public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        int n = in.nextInt();
+        String sb = in.next();
+        int i = 0,count = 0;
+        while(i <= sb.length()-3) {
+            if(sb.substring(i,i+3).equals("010")) {
+                count++;
+                i+=3;
+            }
+            else i++;
+        }
+        System.out.println(count);
+    }
+////////////////////////////////////////////////////////////////////////////////////////// 
+
+The Love-Letter Mystery
+
+ames found a love letter his friend Harry has written for his girlfriend. James is a prankster, so he decides to meddle with the letter. He changes all the words in the letter into palindromes.
+
+To do this, he follows two rules:
+
+He can reduce the value of a letter, e.g. he can change d to c, but he cannot change c to d.
+In order to form a palindrome, if he has to repeatedly reduce the value of a letter, he can do it until the letter becomes a. Once a letter has been changed to a, it can no longer be changed.
+Each reduction in the value of any letter is counted as a single operation. Find the minimum number of operations required to convert a given string into a palindrome.
+
+Input Format
+
+The first line contains an integer , i.e., the number of test cases. 
+The next  lines will contain a string each. The strings do not contain any spaces.
+
+Constraints 
+ 
+ length of string  
+All characters are lower case English letters.
+
+Output Format
+
+A single line containing the number of minimum operations corresponding to each test case.
+
+Sample Input
+
+4
+abc
+abcba
+abcd
+cba
+Sample Output
+
+2
+0
+4
+2
+Explanation
+
+For the first test case, abc -> abb -> aba.
+For the second test case, abcba is already a palindromic string.
+For the third test case, abcd -> abcc -> abcb -> abca = abca -> abba.
+For the fourth test case, cba -> bba -> aba.
+
+public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n= sc.nextInt();
+        for(int i = 0; i < n; i++) {
+            String str = sc.next();
+            int count = 0, left = 0, right = str.length()-1;
+            while(left < right) {
+               count+=Math.abs(str.charAt(left++)-str.charAt(right--));
+            }
+            System.out.println(count);
+        }
+    }
+/////////////////////////////////////////////////////////////////////////////////////
+Richie Rich
+
+Sandy likes palindromes. A palindrome is a word, phrase, number, or other sequence of characters which reads the same backward as it does forward. For example, madam is a palindrome.
+
+On her  birthday, Sandy's uncle, Richie Rich, offered her an -digit check which she refused because the number was not a palindrome. Richie then challenged Sandy to make the number palindromic by changing no more than  digits. Sandy can only change  digit at a time, and cannot add digits to (or remove digits from) the number.
+
+Given  and an -digit number, help Sandy determine the largest possible number she can make by changing digits.
+
+Note: Treat the integers as numeric strings. Leading zeros are permitted and can't be ignored (So 0011 is not a palindrome, 0110 is a valid palindrome). A digit can be modified more than once.
+
+Input Format
+
+The first line contains two space-separated integers,  (the number of digits in the number) and  (the maximum number of digits that can be altered), respectively. 
+The second line contains an -digit string of numbers that Sandy must attempt to make palindromic.
+
+Constraints
+
+Each character  in the number is an integer where .
+Output Format
+
+Print a single line with the largest number that can be made by changing no more than  digits; if this is not possible, print -1.
+
+Sample Input 0
+
+4 1
+3943
+Sample Output 0
+
+3993
+Sample Input 1
+
+6 3
+092282
+Sample Output 1
+
+992299
+Sample Input 2
+
+4 1
+0011
+Sample Output 2
+
+-1
+
+public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        int n = in.nextInt();
+        int k = in.nextInt();
+        String number = in.next();
+        StringBuilder sb = new StringBuilder(number);
+        int left = 0, right = number.length()-1;
+        while(left < right) {
+            if(sb.charAt(left) != sb.charAt(right)) {
+                if(k == 0) {
+                    System.out.println(-1); return;
+                }
+                else {
+                    k--;
+                    if(sb.charAt(left) > sb.charAt(right)) sb.setCharAt(right, sb.charAt(left));
+                    else sb.setCharAt(left, sb.charAt(right));
+                }
+            }
+            left++; right--;
+        }
+        left = 0; right = number.length()-1;
+        while(left < right) {
+            if(k == 0) break;
+            if(sb.charAt(left) == '9'){
+                left++; right--;
+                continue;
+            }
+            if(number.charAt(left) != number.charAt(right)) k++;
+            if(k >= 2) {
+                sb.setCharAt(left, '9');
+                sb.setCharAt(right, '9');
+                k-=2;
+            }
+            left++;
+            right--;
+        }
+        if(k > 0) sb.setCharAt(left,'9');
+        System.out.println(sb.toString());
+    }
+//////////////////////////////////////////////////////////////////////////////////////////
+
+Palindrome Index
+
+Given a string, , of lowercase letters, determine the index of the character whose removal will make  a palindrome. If  is already a palindrome or no such character exists, then print . There will always be a valid solution, and any correct answer is acceptable. For example, if  "bcbc", we can either remove 'b' at index  or 'c' at index .
+
+Input Format
+
+The first line contains an integer, , denoting the number of test cases. 
+Each line  of the  subsequent lines (where ) describes a test case in the form of a single string, .
+
+Constraints
+
+All characters are lowercase English letters.
+Output Format
+
+Print an integer denoting the zero-indexed position of the character that makes  not a palindrome; if  is already a palindrome or no such character exists, print .
+
+Sample Input
+
+3
+aaab
+baa
+aaa
+Sample Output
+
+3
+0
+-1
+
+public static boolean isPalindrome(String str) {
+        int left = 0, right = str.length()-1;
+        while(left < right) if(str.charAt(left++) != str.charAt(right--)) return false;
+        return true;
+    }
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        for(int i = 0; i < n; i++) {
+            String str = sc.next();
+            if(str.length() <= 1) {
+                System.out.println("-1"); continue;
+            }
+            int left = 0, right = str.length()-1;
+            while(left < right) {
+                if(str.charAt(left) == str.charAt(right)) {
+                    left++; right--;
+                }
+                else {
+                    if(str.charAt(left+1)== str.charAt(right)) {
+                        System.out.println(left); break;
+                    }
+                    else if(str.charAt(right-1) == str.charAt(left)) {System.out.println(right); break;}
+                    else {
+                        System.out.println("-1"); break;
+                    }
+                }
+            }
+            if(left >= right) System.out.println("-1");
+        }
+    }   
