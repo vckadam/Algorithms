@@ -13285,7 +13285,533 @@ convert("PAYPALISHIRING", 3) should return "PAHNAPLSIIGYIR".
         return sb[0].toString();
     }
 //////////////////////////////////////////////////////////////////////////////////////////
+longest palindromic sub seqence 
+
+stirng = "agbdba"  output: "abdba"
+
+public class LongestPalindromicSubsequence {
+	public static String longestsubsequence(String str) {
+		int[][] dp = new int[str.length()][str.length()];
+		for(int j = 0; j < str.length(); j++) {
+			for(int i = j; i >= 0; i--) {
+				if(i == j) dp[i][j] = 1;
+				else if(str.charAt(i) == str.charAt(j)) dp[i][j]=dp[i+1][j-1]+2;
+				else dp[i][j] = Math.max(dp[i][j-1], dp[i+1][j]);
+			}
+		}
+		//return dp[0][str.length()-1];
+		char[] array = new char[(dp[0][str.length()-1])];
+		int i = 0, j = str.length()-1;
+		int k = 0;
+		while(i != j) {
+			if(dp[i][j] == dp[i+1][j-1] + 2) {
+				array[k] = array[array.length-k-1] = str.charAt(j);
+				k++; i++; j--;
+			}
+			else if(dp[i][j] == dp[i+1][j]){
+				i++;
+			}
+			else j--;
+		}
+		array[k] = str.charAt(i);
+		return new String(array);
+		
+	}
+	public static void main(String[] args) {
+		String str ="agbdbga";
+		System.out.println(longestsubsequence(str));
+
+	}
+
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+
+0-1 knapsack problem
+
+public class O_1KnapSack {
+	public static int pickMax(int[][] array,int maxW) {
+		int[][] dp = new int[array.length][maxW+1];
+		for(int j = 1; j < dp[0].length; j++) {
+			if(j >= array[0][0]) dp[0][j] = array[0][1];
+		}
+		for(int i = 1; i < dp.length; i++) {
+			for(int j = 1; j < dp[0].length; j++) {
+				if(j < array[i][0]) dp[i][j] = dp[i-1][j];
+				else dp[i][j] = Math.max(dp[i-1][j], array[i][1]+dp[i-1][j-array[i][0]]);
+			}
+		}
+		//return dp[dp.length-1][dp[0].length-1];
+		List<Integer> al = new ArrayList<Integer>();
+		int totVal = dp[dp.length-1][dp[0].length-1];
+		int i = dp.length-1, j = dp[0].length-1;
+		while(i > 0 && j >= 0 && totVal != 0) {
+			if(totVal == dp[i-1][j]) i--;
+			else {
+				al.add(array[i][0]);
+				totVal -= array[i][1];
+				i--; j--;
+			}
+		}
+		if(dp[i][j] != 0 && totVal != 0) al.add(array[i][0]);
+		System.out.println(al.toString());
+		return dp[dp.length-1][dp[0].length-1];
+	}
+	public static void main(String[] args) {
+		int[][] array = {{1,1},{3,4},{4,5},{5,7}};
+		System.out.println(pickMax(array,7));
+
+	}
+
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+Given a rod of length n inches and an array of prices that contains prices of all pieces of size smaller than n. Determine the maximum value obtainable by cutting up the rod and selling the pieces. For example, if length of the rod is 8 and the values of different pieces are given as following, then the maximum obtainable value is 22 (by cutting in two pieces of lengths 2 and 6)
 
 
+length   | 1   2   3   4   5   6   7   8  
+--------------------------------------------
+price    | 1   5   8   9  10  17  17  20
+And if the prices are as following, then the maximum obtainable value is 24 (by cutting in eight pieces of length 1)
 
+length   | 1   2   3   4   5   6   7   8  
+--------------------------------------------
+price    | 3   5   8   9  10  17  17  20
+The naive solution for this problem is to generate all configurations of different pieces and find the highest priced configuration. This solution is exponential in term of time complexity. Let us see how this problem possesses both important properties of a Dynamic Programming (DP) Problem and can efficiently solved using Dynamic Programming.
 
+1) Optimal Substructure: 
+We can get the best price by making a cut at different positions and comparing the values obtained after a cut. We can recursively call the same function for a piece obtained after a cut.
+
+Let cutRoad(n) be the required (best possible price) value for a rod of lenght n. cutRod(n) can be written as following.
+
+cutRod(n) = max(price[i] + cutRod(n-i-1)) for all i in {0, 1 .. n-1}
+
+2) Overlapping Subproblems
+Following is simple recursive implementation of the Rod Cutting problem. The implementation simply follows the recursive structure mentioned above.
+
+public class cuttingRod {
+	public static int getMax(int[] array) {
+		int[] dp = new int[array.length+1];
+		for(int i = 1; i <= array.length; i++) dp[i] = array[i-1];
+		for(int i = 1; i <= array.length; i++) {
+			for(int j = 1; j < i; j++) {
+				dp[i] = Math.max(dp[i], dp[i-j]+dp[j]);
+			}
+		}
+		return dp[array.length];
+	}
+	public static void main(String[] args) {
+		int[] value = {1,5,8,9,10,17,17,20};
+		System.out.println(getMax(value));
+
+	}
+	
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+368. Largest Divisible Subset  QuestionEditorial Solution  My Submissions
+Total Accepted: 4740
+Total Submissions: 15534
+Difficulty: Medium
+Given a set of distinct positive integers, find the largest subset such that every pair (Si, Sj) of elements in this subset satisfies: Si % Sj = 0 or Sj % Si = 0.
+
+If there are multiple solutions, return any subset is fine.
+
+Example 1:
+
+nums: [1,2,3]
+
+Result: [1,2] (of course, [1,3] will also be ok)
+Example 2:
+
+nums: [1,2,4,8]
+
+Result: [1,2,4,8]
+/////////////// optimized solution
+public List<Integer> largestDivisibleSubset(int[] nums) {
+        List<Integer> ret = new ArrayList<Integer>();
+        if(nums.length == 0) return ret;
+        Arrays.sort(nums);
+        int[] count = new int[nums.length];
+        int[] parent = new int[nums.length];
+        int maxLen = -1, maxInd = 0;
+        for(int i = nums.length-1; i >= 0; i--) {
+            for(int j = i; j < nums.length; j++) {
+                if(nums[j] % nums[i] == 0 && count[j]+1 > count[i]) {
+                    count[i] = count[j] + 1;
+                    parent[i] = j;
+                    if(count[i] > maxLen) {
+                        maxLen = count[i];
+                        maxInd = i;
+                    }
+                }
+            }
+        }
+        for(int i = 0; i < maxLen; i++) {
+            ret.add(nums[maxInd]);
+            maxInd = parent[maxInd];
+        }
+        return ret;
+    }
+
+////////// intial solution
+
+public List<Integer> largestDivisibleSubset(int[] nums) {
+        List<Integer> al = new ArrayList<Integer>();
+        if(nums.length == 0) return al;
+        int size = Integer.MIN_VALUE;
+        List<List<Integer>> subset = getSubset(nums);
+        for(int i = subset.size()-1; i >= 0; i--) {
+            if(isValid(subset.get(i)) && size < subset.get(i).size()) {
+                al = new ArrayList(subset.get(i));
+                size = subset.get(i).size();
+            }
+        }
+        return al;
+    }
+    public boolean isValid(List<Integer> list) {
+        if(list.size() == 0) return false;
+        Collections.sort(list);
+        for(int j = 1; j < list.size(); j++) {
+            for(int i = 0; i < j; i++) {
+                if(list.get(j)%list.get(i) != 0) return false;
+            }
+        }
+        return true;
+    }
+    public List<List<Integer>> getSubset(int[] nums) {
+        List<List<Integer>> ret = new ArrayList<List<Integer>>();
+        List<Integer> al = new ArrayList<Integer>();
+        ret.add(al);
+        for(int i = 0; i < nums.length; i++) {
+            int len = ret.size();
+            for(int j = 0; j < len; j++) {
+                al = new ArrayList<Integer>(ret.get(j));
+                al.add(nums[i]);
+                ret.add(al);
+            }
+        }
+        return ret;
+    }
+    
+////////////////////////////////////////////////////////////////////////////////////////
+367. Valid Perfect Square  QuestionEditorial Solution  My Submissions
+Total Accepted: 8574
+Total Submissions: 23403
+Difficulty: Medium
+Given a positive integer num, write a function which returns True if num is a perfect square else False.
+
+Note: Do not use any built-in library function such as sqrt.
+
+Example 1:
+
+Input: 16
+Returns: True
+Example 2:
+
+Input: 14
+Returns: False
+
+public boolean isPerfectSquare(int num) {
+        if(num <= 1) return true;
+        int left = 2, right = num/2;
+        long mid = 0;
+        while(left <= right) {
+            mid = left + (right -left)/2;
+            if(mid * mid == num) return true;
+            if(mid * mid > num) right = (int)mid - 1;
+            else left = (int)mid + 1;
+        }
+        return false;
+    }
+/////////////////////////////////////////////////////////////////////////////////////
+365. Water and Jug Problem  QuestionEditorial Solution  My Submissions
+Total Accepted: 3365
+Total Submissions: 15540
+Difficulty: Medium
+You are given two jugs with capacities x and y litres. There is an infinite amount of water supply available. You need to determine whether it is possible to measure exactly z litres using these two jugs.
+
+If z liters of water is measurable, you must have z liters of water contained within one or both buckets by the end.
+
+Operations allowed:
+
+Fill any of the jugs completely with water.
+Empty any of the jugs.
+Pour water from one jug into another till the other jug is completely full or the first jug itself is empty.
+Example 1: (From the famous "Die Hard" example)
+
+Input: x = 3, y = 5, z = 4
+Output: True
+Example 2:
+
+Input: x = 2, y = 6, z = 5
+Output: False
+
+public boolean canMeasureWater(int x, int y, int z) {
+        if(x + y < z) return false;
+        if(x == z || y == z || x + y == z) return true;
+        return z % GCD(x,y) == 0; 
+    }
+    public int GCD(int x, int y) {
+        while(x != 0) {
+            int temp = x;
+            x = y % x;
+            y = temp;
+        }
+        return y;
+    }
+/////////////////////////////////////////////////////////////////////////////////////////
+two missing numbers
+
+public static void printMissingNumber(int[] array, int n) {
+		int sum = 0,totSum = 0;
+		for(int num: array) sum += num;
+		for(int i = 1; i <= n; i++) totSum += i;
+		int requried = (totSum - sum)/2;
+		int small= 0, large = 0;
+		for(int num: array) {
+			if(num <= requried) small ^= num;
+			else large ^= num;
+		}
+		for(int i = 1; i <=n; i++) {
+			if(i <= requried) small ^= i;
+			else large ^= i;
+		}
+		System.out.println(small+" "+large);
+	}
+	public static void main(String[] args) {
+		int[] array = {1,3,4,5,6,8,9};
+		printMissingNumber(array,9);
+
+	}
+////////////////////////////////////////////////////////////////////////////////////////
+subset sum
+
+public static boolean isExist(int[] array, int num) {
+		boolean[][] dp = new boolean[array.length][num+1];
+		for(int i = 0; i < array.length;i++) dp[i][0] = true;
+		for(int j = 1; j <= num; j++) if(array[0] == j) dp[0][j] = true;
+		for(int i = 1; i < array.length; i++) {
+			for(int j = 1; j <= num; j++) {
+				if(j < array[i]) dp[i][j] = dp[i-1][j];
+				else {
+//					if(dp[i-1][j] == true) dp[i][j] = true;
+//					else dp[i][j] = dp[i-1][j-array[i]];
+					dp[i][j] = dp[i-1][j] || dp[i-1][j-array[i]];
+				}
+			}
+		}
+		///// to print
+		List<Integer> al = new ArrayList<Integer>();
+		int i = array.length-1, j = num;
+		while(i >= 0 && j >= 0) {
+			if(i > 0 && dp[i-1][j] == true) i--;
+			else {
+				al.add(0,array[i]);
+				j -= array[i]; i--;
+			}
+		}
+		System.out.println(al.toString());
+		return dp[array.length-1][num];
+	}
+	public static void main(String[] args) {
+		int[] array = {2,7,8,10,4,3};
+		System.out.println(isExist(array,9));
+
+	}
+////////////////////////////////////////////////////////////////////////////////////////
+interleaving strings
+
+true for "aaxaby" false for "abaaxy"
+public class Integerleaving {
+	public static boolean isInterleaving(String s1, String s2, String s3) {
+		boolean[][] array = new boolean[s1.length()+1][s2.length()+1];
+		for(int i = 1; i <= s1.length(); i++) array[i][0] = (s1.charAt(i-1) == s3.charAt(i-1));
+		for(int j = 1; j <= s2.length(); j++) array[0][j] = (s2.charAt(j-1) == s3.charAt(j-1));
+		for(int i = 1; i <= s1.length(); i++) {
+			for(int j = 1; j <= s2.length(); j++) {
+				if(s3.charAt(i+j-1) == s1.charAt(i-1)) array[i][j] = array[i-1][j];
+				else if(s3.charAt(i+j-1) == s2.charAt(j-1)) array[i][j] = array[i][j-1];
+			}
+		}
+		return array[s1.length()][s2.length()];
+	}
+	public static void main(String[] args) {
+		String s1 = "aab", s2 = "axy", s3 = "abaaxy";
+		System.out.println(isInterleaving(s1,s2,s3));
+
+	}
+
+}////////////////////////////////////////////////////////////////////////////////////////
+
+maximum sub square matrix
+
+public class MaximumSubSquareMat {
+    public static int findMat(int[][] mat) {
+    	int ret = 0;
+    	int[][] array = new int[mat.length+1][mat[0].length+1];
+    	for(int i = 1; i <= mat.length; i++){
+    		for(int j =1; j <= mat[0].length; j++) {
+    			if(mat[i-1][j-1] == 1) array[i][j] = 1+ Math.min(array[i-1][j-1], Math.min(array[i][j-1], array[i-1][j]));
+    			if(array[i][j] > ret) ret = array[i][j];
+    		}
+    	}
+    	return ret;
+    }
+	public static void main(String[] args) {
+		int[][] mat = {{0,1,1,1,1},{1,1,1,1,1},{0,1,1,1,1},{1,1,1,1,1}};
+		System.out.println(findMat(mat));
+
+	}
+
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+[LeetCode] Design Hit Counter 
+
+Design a hit counter which counts the number of hits received in the past 5 minutes.
+
+Each function accepts a timestamp parameter (in seconds granularity) and you may assume that calls are being made to the system in chronological order (ie, the timestamp is monotonically increasing). You may assume that the earliest timestamp starts at 1.
+
+It is possible that several hits arrive roughly at the same time.
+
+Example:
+HitCounter counter = new HitCounter();
+
+// hit at timestamp 1.
+counter.hit(1);
+
+// hit at timestamp 2.
+counter.hit(2);
+
+// hit at timestamp 3.
+counter.hit(3);
+
+// get hits at timestamp 4, should return 3.
+counter.getHits(4);
+
+// hit at timestamp 300.
+counter.hit(300);
+
+// get hits at timestamp 300, should return 4.
+counter.getHits(300);
+
+// get hits at timestamp 301, should return 3.
+counter.getHits(301); 
+
+////////////////////////// optimized 
+
+class Count2 {
+	int[] hit, time;
+	Count2() {
+		hit = new int[300];
+		time = new int[300];
+	}
+	public void hit(int timeStamp) {
+		int index = timeStamp % 300;
+		if(timeStamp != time[index]) {
+			time[index] = timeStamp;
+			hit[index] = 1;
+		}
+		else hit[index]++;
+	}
+	public void getHit(int timeStamp) {
+		int count = 0;
+		for(int i = 0; i < 300; i++) {
+			if(timeStamp - time[i] < 300) count+=hit[i];
+		}
+		System.out.println(count);
+	}
+}
+
+///////////////////////// another
+class Counter {
+	HashMap<Integer,Integer> hm;
+	
+	Counter() {
+		hm = new HashMap<>();
+	}
+	public void hit(int i) {
+		hm.put(i, hm.getOrDefault(i, 0)+1);
+	}
+	public void getHit(int i) {
+		int count = 0, start = ((i-300)+1 <= 0)?1:i-300+1;
+		for(int key: hm.keySet()) {
+			if(key >= start && key <= i) count+=hm.get(key);
+		}
+		System.out.println(count);
+	}
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+
+Boundary Traversal of binary tree
+
+Given a binary tree, print boundary nodes of the binary tree Anti-Clockwise starting from the root. For example, boundary traversal of the following tree is “20 8 4 10 14 25 22″
+
+class Node {
+	int data;
+	Node left, right;
+	Node(int data) {
+		this.data = data;
+		left = null;
+		right = null;
+	}
+}
+class BinaryTree {
+	Node root;
+	public List<Integer> getBoundaryTree(Node root) {
+		List<Integer> al = new ArrayList<Integer>();
+		if(root == null) return al;
+		al.add(root.data);
+		Node temp = root.left;
+		while(temp != null && (temp.left != null || temp.right != null)) {
+			al.add(temp.data);
+			temp = temp.left;
+		}
+		al.addAll(getLeafNode(root));
+		temp = root.right;
+		List<Integer> tempList = new ArrayList<>();
+		while(temp != null && (temp.left != null || temp.right != null)) {
+			tempList.add(0,temp.data);
+			temp = temp.right;
+		}
+		al.addAll(tempList);
+		return al;
+	}
+	public List<Integer> getLeafNode(Node root) {
+		List<Integer> temp = new ArrayList<Integer>();
+		helper(root,temp);
+		return temp;
+	}
+	public void helper(Node root, List<Integer> al) {
+		if(root == null) return;
+		helper(root.left, al);
+		if(root.left == null && root.right == null) al.add(root.data);
+		helper(root.right,al);
+	}
+	
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+Print extreme nodes of each level of Binary Tree in alternate order
+Given a binary tree, print nodes of extreme corners of each level but in alternate order.
+
+public void getExtreme(Node root) {
+		if(root == null) return;
+		Queue<Node> q = new LinkedList<Node>();
+		boolean isFirst = true,toggle= true;
+		Node prev = null, temp = null;
+		q.offer(root);
+		q.offer(null);
+		while(!q.isEmpty()) {
+			prev = temp;
+			temp = q.poll();
+			if(temp != null) {
+				if(isFirst && toggle) System.out.print(temp.data+" ");
+				isFirst = false; 
+				if(temp.left != null) q.offer(temp.left);
+				if(temp.right != null) q.offer(temp.right);
+			}
+			else {
+				if(prev != root && !toggle) System.out.print(prev.data+" ");
+				if(!q.isEmpty()) q.offer(null);
+				toggle = !toggle;
+				isFirst = true;
+			}
+		}
+	}

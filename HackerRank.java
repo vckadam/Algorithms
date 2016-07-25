@@ -801,4 +801,373 @@ public static boolean isPalindrome(String str) {
             }
             if(left >= right) System.out.println("-1");
         }
-    }   
+    }
+/////////////////////////////////////////////////////////////////////////////////////////
+
+Two Strings
+
+Given two strings,  and , determine if they share a common substring.
+
+Input Format
+
+The first line contains a single integer, , denoting the number of  pairs you must check. 
+Each pair is defined over two lines:
+
+The first line contains string .
+The second line contains string .
+Constraints
+
+ and  consist of lowercase English letters only.
+Output Format
+
+For each  pair of strings, print YES on a new line if the two strings share a common substring; if no such common substring exists, print NO on a new line.
+
+Sample Input
+
+2
+hello
+world
+hi
+world
+Sample Output
+
+YES
+NO
+
+public static void main(String[] args) {
+       Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        for(int k = 0; k < n; k++) {
+            String str1 = sc.next(), str2 = sc.next();
+            int[] array = new int[26];
+            int i = 0, j = 0;
+            while(i < str1.length() || j < str2.length()) {
+                if(i < str1.length()) {
+                    if(array[str1.charAt(i)-'a'] < 0){
+                        System.out.println("YES"); break;
+                    }
+                    array[str1.charAt(i)-'a']++;
+                    i++; 
+                }
+                if(j < str2.length()) {
+                    if(array[str2.charAt(j)-'a'] > 0) {
+                        System.out.println("YES"); break;
+                    }
+                    array[str2.charAt(j)-'a']--;
+                    j++;
+                }
+                
+            }
+            if(i == str1.length() && j == str2.length()) System.out.println("NO");
+        }
+    }
+//////////////////////////////////////////////////////////////////////////////////////////
+Game of Thrones - I
+
+Dothraki are planning an attack to usurp King Robert's throne. King Robert learns of this conspiracy from Raven and plans to lock the single door through which the enemy can enter his kingdom.
+
+door
+
+But, to lock the door he needs a key that is an anagram of a certain palindrome string.
+
+The king has a string composed of lowercase English letters. Help him figure out whether any anagram of the string can be a palindrome or not.
+
+Input Format 
+A single line which contains the input string.
+
+Constraints 
+ length of string  
+Each character of the string is a lowercase English letter.
+
+Output Format 
+A single line which contains YES or NO in uppercase.
+
+Sample Input : 01
+
+aaabbbb
+Sample Output : 01
+
+YES
+Explanation 
+A palindrome permutation of the given string is bbaaabb. 
+
+Sample Input : 02
+
+cdefghmnopqrstuvw
+Sample Output : 02
+
+NO
+Explanation 
+You can verify that the given string has no palindrome permutation. 
+
+Sample Input : 03
+
+cdcdcdcdeeeef
+Sample Output : 03
+
+YES
+
+public static void main(String[] args) {
+        Scanner myScan = new Scanner(System.in);
+        String inputString = myScan.nextLine();
+        String ans;
+        int count = 0;
+        int[] array = new int[26];
+        for(char ch: inputString.toCharArray()) array[ch-'a']++;
+        for(int num: array) if(num%2 != 0) count++;
+        ans = (count > 1)?"NO":"YES";
+        System.out.println(ans);
+        myScan.close();
+    }
+//////////////////////////////////////////////////////////////////////////////////////////
+Making Anagrams
+
+Alice is taking a cryptography class and finding anagrams to be very useful. We consider two strings to be anagrams of each other if the first string's letters can be rearranged to form the second string. In other words, both strings must contain the same exact letters in the same exact frequency For example, bacdc and dcbac are anagrams, but bacdc and dcbad are not.
+
+Alice decides on an encryption scheme involving two large strings where encryption is dependent on the minimum number of character deletions required to make the two strings anagrams. Can you help her find this number?
+
+Given two strings,  and , that may or may not be of the same length, determine the minimum number of character deletions required to make  and  anagrams. Any characters can be deleted from either of the strings.
+
+This challenge is also available in the following translations:
+
+Chinese
+Russian
+Input Format
+
+The first line contains a single string, . 
+The second line contains a single string, .
+
+Constraints
+
+It is guaranteed that  and  consist of lowercase English letters.
+Output Format
+
+Print a single integer denoting the number of characters which must be deleted to make the two strings anagrams of each other.
+
+Sample Input
+
+cde
+abc
+Sample Output
+
+4
+
+public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        String str1 = sc.next(), str2 = sc.next();
+        int i = 0, j = 0,count = 0;
+        int[] array = new int[26];
+        for(; i < str1.length()|| j < str2.length(); i++,j++) {
+            if(i < str1.length()) array[str1.charAt(i)-'a']++;
+            if(j < str2.length()) array[str2.charAt(j)-'a']--;
+        }
+        for(int num:array) count+=Math.abs(num);
+        System.out.println(count);
+    }
+///////////////////////////////////////////////////////////////////////////////////////////
+Bear and Steady Gene
+
+A gene is represented as a string of length  (where  is divisible by ), composed of the letters , , , and . It is considered to be steady if each of the four letters occurs exactly  times. For example,  and  are both steady genes.
+
+Bear Limak is a famous biotechnology scientist who specializes in modifying bear DNA to make it steady. Right now, he is examining a gene represented as a string . It is not necessarily steady. Fortunately, Limak can choose one (maybe empty) substring of  and replace it with any substring of the same length.
+
+Modifying a large substring of bear genes can be dangerous. Given a string , can you help Limak find the length of the smallest possible substring that he can replace to make  a steady gene?
+
+Note: A substring of a string  is a subsequence made up of zero or more consecutive characters of .
+
+Input Format
+
+The first line contains an interger  divisible by , denoting the length of a string . 
+The second line contains a string  of length . Each character is one of the four: , , , .
+
+Constraints
+
+ is divisible by 
+Subtask
+
+ in tests worth  points.
+Output Format
+
+On a new line, print the minimum length of the substring replaced to make  stable.
+
+Sample Input
+
+8  
+GAAATAAA
+Sample Output
+
+5
+
+
+public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        int A = 0, T= 0, C= 0, G= 0, ret = 0;
+        String str = sc.next();
+        for(char ch:str.toCharArray()) {
+            switch(ch) {
+                case 'G': G++; break;
+                case 'A': A++; break;
+                case 'C': C++; break;
+                case 'T': T++; break;
+            }
+        }
+        int stedy = str.length()/4;
+        if(A != stedy || C != stedy || G != stedy || T != stedy) {
+            ret = str.length()+1;
+            for(int left = 0, right = 0; right < str.length(); right++) {
+                switch(str.charAt(right)) {
+                    case 'G': G--; break;
+                    case 'A': A--; break;
+                    case 'C': C--; break;
+                    case 'T': T--; break;
+                }
+                while(left <= right && A <= stedy && G <= stedy && C <= stedy && T <= stedy) {
+                    ret = Math.min(ret, right-left+1);
+                    switch(str.charAt(left)) {
+                        case 'G': G++; break;
+                        case 'A': A++; break;
+                        case 'C': C++; break;
+                        case 'T': T++; break;
+                    }
+                    left++;
+                }
+            }
+        }
+        System.out.println(ret);
+    }
+///////////////////////////////////////////////////////////////////////////////////////////
+Sherlock and Anagrams
+
+Given a string , find the number of "unordered anagrammatic pairs" of substrings.
+
+Input Format 
+First line contains , the number of testcases. Each testcase consists of string  in one line.
+
+Constraints 
+ 
+ 
+String  contains only the lowercase letters of the English alphabet.
+
+Output Format 
+For each testcase, print the required answer in one line.
+
+Sample Input#00
+
+2
+abba
+abcd
+Sample Output#00
+
+4
+0
+Sample Input#01
+
+5
+ifailuhkqq
+hucpoltgty
+ovarjsnrbf
+pvmupwjjjf
+iwwhrlkpek
+Sample Output#01
+
+3
+2
+2
+6
+3
+
+public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        for(int l = 0; l < n; l++) {
+            String str = sc.next();
+            HashMap<String,Integer> hm = new HashMap<String,Integer>();
+            for(int i = 0; i < str.length(); i++) {
+                for(int j = i+1; j <= str.length(); j++) {
+                    String s = str.substring(i,j);
+                    char[] array = s.toCharArray();
+                    Arrays.sort(array);
+                    s = new String(array);
+                    hm.put(s,hm.containsKey(s)?hm.get(s)+1:1);
+                }
+            }
+            int ret = 0;
+            for(int val: hm.values()) {
+                ret += val*(val-1)/2;
+            }
+            System.out.println(ret);
+        }
+    }
+//////////////////////////////////////////////////////////////////////////////////////////
+Common Child
+
+Given two strings  and  of equal length, what's the longest string () that can be constructed such that it is a child of both? 
+
+A string  is said to be a child of a string  if  can be formed by deleting 0 or more characters from . 
+
+For example, ABCD and ABDC has two children with maximum length 3, ABC and ABD. Note that we will not consider ABCD as a common child because C doesn't occur before D in the second string.
+
+Input format
+
+Two strings,  and , with a newline separating them.
+
+Constraints
+
+All characters are upper cased and lie between ASCII values 65-90. The maximum length of the strings is 5000.
+
+Output format
+
+Length of string .
+
+Sample Input #0
+
+HARRY
+SALLY
+Sample Output #0
+
+2
+The longest possible subset of characters that is possible by deleting zero or more characters from HARRY and SALLY is AY, whose length is 2.
+
+Sample Input #1
+
+AA
+BB
+Sample Output #1
+
+0
+AA and BB has no characters in common and hence the output is 0.
+
+Sample Input #2
+
+SHINCHAN
+NOHARAAA
+Sample Output #2
+
+3
+The largest set of characters, in order, between SHINCHAN and NOHARAAA is NHA.
+
+Sample Input #3
+
+ABCDEF
+FBDAMN
+Sample Output #3
+
+2
+BD is the longest child of these strings.
+
+public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        String s1 = sc.next().trim(), s2 = sc.next().trim();
+        int[][] mat = new int[s1.length()+1][s2.length()+1];
+        int ret = 0,i = 1,j = 1 ;
+        for(; i <= s1.length(); i++) {
+            for(j = 1; j <= s2.length(); j++) {
+                if(s1.charAt(i-1)==s2.charAt(j-1)) mat[i][j] = mat[i-1][j-1] + 1;
+                else mat[i][j] = Math.max(mat[i-1][j], mat[i][j-1]);
+            }
+        }
+        System.out.println(mat[i-1][j-1]);
+    }
+////////////////////////////////////////////////////////////////////////////////////////
+   
