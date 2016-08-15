@@ -13815,3 +13815,354 @@ public void getExtreme(Node root) {
 			}
 		}
 	}
+////////////////////////////////////////////////////////////////////////////////////////
+
+Print cousins of a given node in Binary Tree
+Given a binary tree and a node, print all cousins of given node. Note that siblings should not be printed.
+
+public void printCousins(Node root, Node node) {
+		int level = getLevel(root,node,0)-1,curLevel = 0;
+		Queue<Node> q = new LinkedList<Node>();
+		q.offer(root);
+		q.offer(null);
+		while(!q.isEmpty()) {
+			Node temp = q.poll();
+			if(temp != null) {
+				if(level == curLevel && temp.left != node && temp.right != node) {
+					if(temp.left != null) System.out.print(temp.left.data+" ");
+					if(temp.right != null) System.out.print(temp.right.data+" ");
+				}
+				if(temp.left != null) q.offer(temp.left);
+				if(temp.right != null) q.offer(temp.right);
+			}
+			else {
+				if(!q.isEmpty()) q.offer(null);
+				curLevel++;
+			}
+		}
+		
+	}
+	public int getLevel(Node root,Node node, int level) {		
+		if(root == null) return 0;
+		if(root == node) return level;
+		int curLevel;
+		if((curLevel = getLevel(root.left,node,level+1)) != 0) return curLevel;
+		return getLevel(root.right,node,level+1);
+	}
+	public int getLevel(Node root,Node node) {
+		Queue<Node> q = new LinkedList<Node>();
+		int level = 0;
+		q.offer(root);
+		q.offer(null);
+		while(!q.isEmpty()) {
+			Node temp = q.poll();
+			if(temp == node) break;
+			if(temp != null) {
+				if(temp.left != null) q.offer(temp.left);
+				if(temp.right != null) q.offer(temp.right);
+			}
+			else {
+				if(!q.isEmpty()) q.offer(null);
+				level++;
+			}
+		}
+		return level;
+	}
+//////////////////////////////////////////////////////////////////////////////////////////
+
+Print all possible strings that can be made by placing spaces
+Given a string you need to print all possible strings that can be made by placing spaces (zero or one) in between them.
+
+public class PrintStringSpace {
+	public static void printStringSpaceMethod(String str) {
+		List<String> current = new ArrayList<String>();
+		List<String> next = new ArrayList<String>();
+		current.add(String.valueOf(str.charAt(0)));
+		current.add(str.charAt(0)+" ");
+		int i = 1;
+		while(i < str.length()) {
+			for(String string: current) {
+				next.add(string+str.charAt(i));
+				if(i != str.length()-1) next.add(string+str.charAt(i)+" ");
+			}
+			current = next;
+			next = new ArrayList<String>();
+			i++;
+		}
+		System.out.println(current.toString());
+	}
+	public static void main(String[] args) {
+		String str = "ABCD";
+		printStringSpaceMethod(str);
+	}
+
+}
+////////////////////////////////////////////////////////////
+
+Remove extra spaces from a string
+Given a string containing many consecutive spaces, trim all spaces so that all words should contain only a single space between them. The conversion should be done in-place and solution should handle trailing and leading spaces and also remove preceding spaces before common punctuation like full stop, comma and a question mark.
+
+Examples:
+
+Input: 
+str = "   Hello Geeks . Welcome   to  GeeksforGeeks   .    ";
+Output: 
+"Hello Geeks. Welcome to GeeksforGeeks."
+
+Input: 
+str = "GeeksforGeeks";
+Output: 
+"GeeksforGeeks"
+(No change is needed)
+
+public static void removeExtraSpace(String str) {
+		str = str.trim();
+		StringBuilder sb = new StringBuilder(String.valueOf(str.charAt(0)));
+		int j = 1;
+		for(int i = 1; i < str.length(); i++) {
+			if(str.charAt(i) == ' ' && sb.charAt(sb.length()-1) == ' ') continue;
+			if((str.charAt(i) == '.'||str.charAt(i)==',' || str.charAt(i)=='?') && sb.charAt(sb.length()-1) == ' ') {
+				sb.setCharAt(sb.length()-1, str.charAt(i)); continue;
+			}
+			sb.append(str.charAt(i));
+			j++;
+		}
+		System.out.println(sb.toString());
+	}
+/////////////////////////////////////////////////////////////////////////////////
+Print shortest path to print a string on screen
+Given a screen containing alphabets from A-Z, we can go from one character to another characters using a remote. The remote contains left, right, top and bottom keys.
+
+Input: “GEEK”
+Output: 
+Move Down
+Move Right
+Press OK
+Move Up
+Move Right
+Move Right
+Move Right
+Press OK
+Press OK
+Move Left
+Move Left
+Move Left
+Move Left
+Move Down
+Move Down
+Press OK
+
+public static void remotePath(String str) {
+		int row = 0, coloum = 0;
+		for(int i = 0; i < str.length(); i++) {
+			int current = str.charAt(i) - 'A';
+			int nextRow = current / 5;
+			int nextColoum = current%5;
+			while(row != nextRow) {
+				if(row < nextRow) {
+					row++;
+					System.out.println("Go Down");
+				}
+				else {
+					row--;
+					System.out.println("Go Up");
+				}
+			}
+			while(coloum != nextColoum) {
+				if(coloum < nextColoum) {
+					coloum++;
+					System.out.println("Go Right");
+				}
+				else {
+					coloum--;
+					System.out.println("Go Left");
+				}
+			}
+			System.out.println("Press Ok");
+		}
+	}
+///////////////////////////////////////////////////////////////////////////////////////
+Possible words from Phone digits
+Given a keypad as shown in diagram, and a n digit number, list all words which are possible by pressing these numbers.
+
+
+
+Input:
+
+The first line of input contains an integer T denoting the number of test cases.
+The first line of each test case is N,N is the number of digits.
+The second line of each test case contains D[i], N number of digits. 
+
+Output:
+
+Print all possible words from phone digits with single space.
+
+Constraints:
+
+1 ≤ T ≤ 10
+1 ≤ N ≤ 5
+2 ≤ D[i] ≤ 9
+
+Example:
+
+Input
+1
+3
+2 3 4
+
+Output
+adg adh adi aeg aeh aei afg afh afi bdg bdh bdi beg beh bei bfg bfh bfi cdg cdh cdi ceg ceh cei cfg cfh cfi
+
+
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+
+class GFG {
+	public static void main (String[] args) {
+		Scanner sc = new Scanner(System.in);
+		int n = sc.nextInt();
+		for(int i = 0; i < n; i++) {
+		    int len = sc.nextInt();
+		    int[] array = new int[len];
+		    for(int j = 0; j < len; j++) array[j] = sc.nextInt();
+		    printStringFromNumber(array);
+		}
+	}
+	public static void printStringFromNumber(int[] array) {
+	    String[] strArray = {"","","abc","def","ghi","jkl","mno","pqrs","tuv","wxyz"};
+	    List<String> current = new ArrayList<String>();
+	    current.add("");
+	    List<String> next = new ArrayList<String>();
+	    for(int i = 0; i < array.length; i++) {
+	        String str = strArray[array[i]];
+	        for(int j = 0; j < current.size(); j++) {
+	            for(int k = 0; k < str.length(); k++) {
+	                next.add(current.get(j)+String.valueOf(str.charAt(k)));
+	            }
+	        }
+	        current = next;
+	        next = new ArrayList<String>();
+	    }
+	    for(String s: current) System.out.print(s+" ");
+	    System.out.println();
+	}
+}
+////////////////////////////////////////////////////////////////////////////////////////
+373. Find K Pairs with Smallest Sums
+
+You are given two integer arrays nums1 and nums2 sorted in ascending order and an integer k.
+
+Define a pair (u,v) which consists of one element from the first array and one element from the second array.
+
+Find the k pairs (u1,v1),(u2,v2) ...(uk,vk) with the smallest sums.
+
+Example 1:
+Given nums1 = [1,7,11], nums2 = [2,4,6],  k = 3
+
+Return: [1,2],[1,4],[1,6]
+
+The first 3 pairs are returned from the sequence:
+[1,2],[1,4],[1,6],[7,2],[7,4],[11,2],[7,6],[11,4],[11,6]
+Example 2:
+Given nums1 = [1,1,2], nums2 = [1,2,3],  k = 2
+
+Return: [1,1],[1,1]
+
+The first 2 pairs are returned from the sequence:
+[1,1],[1,1],[1,2],[2,1],[1,2],[2,2],[1,3],[1,3],[2,3]
+Example 3:
+Given nums1 = [1,2], nums2 = [3],  k = 3 
+
+Return: [1,3],[2,3]
+
+All possible pairs are returned from the sequence:
+[1,3],[2,3]
+
+ class Solution {
+    class Node {
+        int index;
+        int[] array;
+        Node(int index, int[] array) {
+            this.index = index;
+            this.array = array;
+        }
+    }
+    class ListComparator implements Comparator<Node> {
+        public int compare(Node node1, Node node2) {
+            return (node1.array[0] + node1.array[1]) - (node2.array[0] + node2.array[1]);
+        }
+    }
+    public List<int[]> kSmallestPairs(int[] nums1, int[] nums2, int k) {
+        List<int[]> ret = new ArrayList<int[]>();
+        if(nums1.length == 0 || nums2.length == 0) return ret;
+        PriorityQueue<Node> pq = new PriorityQueue<>(k,new ListComparator());
+        for(int i = 0; i < nums1.length && i < k; i++) {
+            int[] array = {nums1[i],nums2[0]};
+            Node newNode = new Node(0,array);
+            pq.add(newNode);
+        }
+        for(int i = 0; i < k && !pq.isEmpty(); i++) {
+            Node current = pq.remove();
+            ret.add(current.array);
+            if(current.index < nums2.length - 1) {
+                int[] temp = {current.array[0], nums2[current.index+1]};
+                Node newNode = new Node(current.index+1,temp);
+                pq.add(newNode);
+            }
+        }
+        return ret;
+    }
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+
+378. Kth Smallest Element in a Sorted Matrix  QuestionEditorial Solution
+
+Given a n x n matrix where each of the rows and columns are sorted in ascending order, find the kth smallest element in the matrix.
+
+Note that it is the kth smallest element in the sorted order, not the kth distinct element.
+
+Example:
+
+matrix = [
+   [ 1,  5,  9],
+   [10, 11, 13],
+   [12, 13, 15]
+],
+k = 8,
+
+return 13.
+Note: 
+You may assume k is always valid, 1 ≤ k ≤ n2.
+
+ class Solution {
+    class Node {
+        int num, row, col;
+        Node(int num, int row, int col) {
+            this.num = num;
+            this.row = row;
+            this.col = col;
+        }
+    }
+    class NodeComparator implements Comparator<Node> {
+        public int compare(Node node1, Node node2) {
+            return node1.num - node2.num;
+        }
+    }
+    public int kthSmallest(int[][] matrix, int k) {
+        PriorityQueue<Node> pq = new PriorityQueue<>(k,new NodeComparator());
+        for(int j = 0; j < matrix.length && j < k; j++) {
+            Node newNode = new Node(matrix[0][j],0,j);
+            pq.add(newNode);
+        }
+        Node temp = new Node(0,0,0);
+        for(int i = 0; i < k && !pq.isEmpty(); i++) {
+            temp = pq.remove();
+            if(temp.row+1 < matrix.length) {
+                Node newNode = new Node(matrix[temp.row+1][temp.col], temp.row+1,temp.col);
+                pq.add(newNode);
+            } 
+        }
+        return temp.num;
+    }
+}
