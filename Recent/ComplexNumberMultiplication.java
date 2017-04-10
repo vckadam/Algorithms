@@ -30,7 +30,7 @@ public class Solution {
         String[] strA = str.split("\\+");
         int[] ret = new int[2];
         ret[0] = Integer.parseInt(strA[0]);
-        ret[1] = (strA[1].charAt(0)=='-')?Integer.parseInt(strA[1].substring(1,strA[1].length()-1)):Integer.parseInt(strA[1].substring(0,strA[1].length()-1));
+        ret[1] = (strA[1].charAt(0)=='-')?Integer.parseInt(strA[1].substring(0,strA[1].length()-1)):Integer.parseInt(strA[1].substring(0,strA[1].length()-1));
         System.out.println(Arrays.toString(ret));
         return ret;
     }
