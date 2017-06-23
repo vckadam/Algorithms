@@ -17,6 +17,22 @@ The total number of the integers in all the m arrays will be in the range of [2,
 The integers in the m arrays will be in the range of [-10000, 10000].
 
 */
+// Optimized 
+public class Solution {
+    public int maxDistance(List<List<Integer>> arrays) {
+        int ret = Integer.MIN_VALUE;
+        int min = arrays.get(0).get(0), max = arrays.get(0).get(arrays.get(0).size()-1);
+        for(int i = 1; i < arrays.size(); i++) {
+            ret = Math.max(ret, Math.abs(min - arrays.get(i).get(arrays.get(i).size()-1)));
+            ret = Math.max(ret, Math.abs(max - arrays.get(i).get(0)));
+            min = Math.min(min, arrays.get(i).get(0));
+            max = Math.max(max, arrays.get(i).get(arrays.get(i).size()-1));
+        }
+        return ret;
+    }
+}
+
+// another solution
 public class Solution {
     public int maxDistance(List<List<Integer>> arrays) {
         int[] min1 = new int[2], min2 = new int[2], max1 = new int[2], max2 = new int[2];
@@ -48,3 +64,4 @@ public class Solution {
         return min1[1] != max1[1] ? max1[0] - min1[0] : Math.max(max1[0] - min2[0], max2[0] - min1[0]);
     }
 }
+
