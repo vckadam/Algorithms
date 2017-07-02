@@ -45,4 +45,18 @@ public class TopologicalSortTest {
 		assertTrue(set.contains(tp.getTopologicalSort(edges).toString()));
 		assertTrue(set.contains(tp.getTopologicalSort(edges).toString()));
 	}
+	
+	@Test
+	public void getTopologicalSortTest1() {
+		int[][] edges = {{5,11},{7,11},{7,8},{3,8},{3,10},{11,2},{11,9},{11,10},{8,9},{9,3}};
+		//System.out.println(tp.getTopologicalSort(edges).toString());
+		assertTrue(tp.getTopologicalSort(edges) == null);
+	}
+	
+	@Test
+	public void getTopologicalSortTest2() {
+		int[][] edges = {{5,11},{7,11},{7,8},{3,8},{3,10},{11,2},{11,9},{11,10},{8,9},{9,9}};
+		//System.out.println(tp.getTopologicalSort(edges).toString());
+		assertTrue(tp.getTopologicalSort(edges) == null);
+	}
 }
