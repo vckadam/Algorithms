@@ -51,8 +51,8 @@ public class Solution {
         for(int i = 0; i < special.size(); i++) {
             if(isPossibleToTake(special.get(i),needs)) {
                 int lastInd = special.get(i).size()-1;
-                amount += (special.get(i).get(lastInd));
-                List<Integer> newNeeds = new ArrayList<Integer>(needs);
+                amount += (special.get(i).get(lastInd)); // Change it back after call.
+                List<Integer> newNeeds = new ArrayList<Integer>(needs); // Always create anoter for ref variable
                 for(int j = 0; j < needs.size(); j++) {
                     int val = needs.get(j) - special.get(i).get(j);
                     newNeeds.set(j, val);
