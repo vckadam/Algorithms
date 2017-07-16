@@ -30,7 +30,6 @@ public class MissingTwoNumbersTest {
 		int[] actual = obj.getMissingNumbers(array, 6);
 		Set<Integer> actualSet = new HashSet<Integer>();
 		for(int i = 0; i < actual.length; i++) actualSet.add(actual[i]);
-		
 		Set<Integer> expectedSet = new HashSet<Integer>(Arrays.asList(3,5));
 		
 		assertEquals(expectedSet.size(), actual.length);

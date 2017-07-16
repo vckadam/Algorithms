@@ -2,13 +2,17 @@ package search;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class OperationOfTwoInArray {
 	public List<List<Integer>> sumOfTwoInArray(int[] array) {
 		List<List<Integer>> ret = new ArrayList<List<Integer>>();
+		Set<List<Integer>> set = new HashSet<List<Integer>>();
 		if(array == null || array.length <= 2) return ret;
 		Map<Integer,List<Integer>> hm = new HashMap<Integer,List<Integer>>();
 		for(int i = 0; i < array.length; i++) {
@@ -22,7 +26,12 @@ public class OperationOfTwoInArray {
 				List<Integer> currInds = hm.get(currSum);
 				for(Integer ind : currInds) {
 					if(ind != i && ind != j) {
-						ret.add(new ArrayList<Integer>(Arrays.asList(i,j,ind)));
+						List<Integer> currList = new ArrayList<Integer>(Arrays.asList(i,j,ind));
+						Collections.sort(currList);
+						if(!set.contains(currList)) {
+							set.add(currList);
+							ret.add(currList);
+						}
 					}
 				}
 			}
@@ -40,7 +49,7 @@ public class OperationOfTwoInArray {
 			hm.get(sqr).add(i);
 		}
 		for(int i = 0; i < array.length-1; i++) {
-			for(int j = 0; j < array.length; j++) {
+			for(int j = i+1; j < array.length; j++) {
 				int sumOfSqr = array[i]*array[i] + array[j]*array[j];
 				if(!hm.containsKey(sumOfSqr)) continue;
 				List<Integer> currInds = hm.get(sumOfSqr);
