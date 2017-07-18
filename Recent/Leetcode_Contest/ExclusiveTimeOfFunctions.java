@@ -54,6 +54,26 @@ public class Solution {
         }
         return list.stream().mapToInt(i->i).toArray();
     }
+	
+	
+	//Another implementation
+	public int[] exclusiveTimeOptimized(int n, List<String> logs) {
+        int[] ret = new int[n];
+        int[] prev = parseString(logs.get(0));
+        Stack<Integer> stack = new Stack<Integer>();
+        for(int i = 1; i < logs.size(); i++) {
+            int[] curr = parseString(logs.get(i));
+            if(prev[1] == 0 && curr[1] == 0) stack.push(curr[2]-prev[2]);
+            else if(prev[1] == 0 && curr[1] == 1) ret[curr[0]] += (curr[2]-prev[2]+1);
+            else if(prev[1] == 1 && curr[1] == 0) {
+                int temp = (!stack.isEmpty())?stack.pop():0;
+                stack.push(curr[2]-prev[2]-1+temp);
+            }
+            else ret[curr[0]] += (curr[2]-prev[2]+stack.pop());
+            prev = curr;
+        }
+        return ret;
+    }
     
     public int[] parseString(String str) {
         int[] ret = new int[3];
