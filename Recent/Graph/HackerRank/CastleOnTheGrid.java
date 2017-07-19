@@ -117,7 +117,7 @@ public class Solution {
                         set.add(temp[0]+"#"+col);
                         queue.offer(new int[]{temp[0],col});
                     }
-                }
+                } 
             }
             if(!isFound) level++;
         }
