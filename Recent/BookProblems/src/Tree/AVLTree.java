@@ -25,7 +25,7 @@ public class AVLTree {
 		} else {
 			root.left = insertHelper(root.left, val);
 		}
-		root.height = Math.max(getHeight(root.left), getHeight(root.right)) + 1;
+		
 		int diff = Math.abs(getHeight(root.left)-getHeight(root.right));
 		if(diff > 1) {
 			int countLeft = getHeight(root.left);
@@ -50,34 +50,35 @@ public class AVLTree {
 				}
 			}
 		}
+		root.height = setHeight(root);
 		return root;
+	}
+	
+	public int setHeight(AVLTreeNode root) {
+		if(root == null) return 0;
+	    return  1 + Math.max((root.left != null ? root.left.height : 0), (root.right != null ? root.right.height: 0));
 	}
 	
 	public AVLTreeNode rotateLeft(AVLTreeNode root) {
 		AVLTreeNode temp = root.right;
 		root.right = temp.left;
-		root.height = (temp.left == null) ? 0 : temp.left.height+1;
+		root.height = setHeight(temp);
 		temp.left = root;
 		root = temp;
-		root.height = (root.left == null ? 0 : root.left.height) + (root.right == null ? 0 : root.right.height)+1;
+		root.height = setHeight(root);
 		return root;
 	}
 	
 	public AVLTreeNode rotateRight(AVLTreeNode root) {
 		AVLTreeNode temp = root.left;
 		root.left = temp.right;
-		root.height = (temp.right == null) ? 0 : temp.right.height+1;
+		root.height = setHeight(temp);
 		temp.right = root;
 		root = temp;
-		root.height = (root.left == null ? 0 : root.left.height) + (root.right == null ? 0 : root.right.height)+1;
+		root.height = setHeight(root);
 		return root;
 	}
 	
-	public int getDifference(AVLTreeNode root1, AVLTreeNode root2) {
-		int num1 = root1 == null ? 0 : root1.height;
-		int num2 = root2 == null ? 0 : root2.height;
-		return Math.abs(num2-num1);
-	}
 	
 	public int getHeight(AVLTreeNode root) {
 		return root != null ? root.height : -1;
