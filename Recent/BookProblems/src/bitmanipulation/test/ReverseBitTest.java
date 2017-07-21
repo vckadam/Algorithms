@@ -25,12 +25,11 @@ public class ReverseBitTest {
 	@Test
 	public void getReversedBitNumberTest1() {
 		int actualNumber = this.reverseBit.getReversedBitNumber(1);
-		StringBuilder sb = new StringBuilder();
+		StringBuilder actual = new StringBuilder();
 		for(int i = 0; i < 32; i++) {
-			sb.insert(0, (actualNumber&(1<<i)) == 0 ? 0 : 1);
+			actual.insert(0, (actualNumber&(1<<i)) == 0 ? 0 : 1);
 		}
-		//System.out.println(sb.toString());
-		assertEquals("10000000000000000000000000000000", sb.toString());
+		assertEquals("10000000000000000000000000000000", actual.toString());
 	}
 	
 	@Test
@@ -42,10 +41,20 @@ public class ReverseBitTest {
 	@Test
 	public void getReversedBitNumberTest3() {
 		int actualNumber = this.reverseBit.getReversedBitNumber(2);
-		StringBuilder sb = new StringBuilder();
+		StringBuilder actual = new StringBuilder();
 		for(int i = 0; i < 32; i++) {
-			sb.insert(0, (actualNumber&(1<<i)) == 0 ? 0 : 1);
+			actual.insert(0, (actualNumber&(1<<i)) == 0 ? 0 : 1);
 		}
-		assertEquals("01000000000000000000000000000000", sb.toString());
+		assertEquals("01000000000000000000000000000000", actual.toString());
+	}
+	
+	@Test
+	public void getReversedBitNumberTest4() {
+		int actualNumber = this.reverseBit.getReversedBitNumber(7);
+		StringBuilder actual = new StringBuilder();
+		for(int i = 0; i < 32; i++) {
+			actual.insert(0, (actualNumber&(1<<i)) == 0 ? 0 : 1);
+		}
+		assertEquals("11100000000000000000000000000000", actual.toString());
 	}
 }
