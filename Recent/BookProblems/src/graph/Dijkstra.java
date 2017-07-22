@@ -36,7 +36,7 @@ public class Dijkstra {
 				List<Integer> neighbours = adjList.get(curr[0]);
 				for(Integer neighbour : neighbours) {
 					if(distance[neighbour] == -1) {
-						distance[neighbour] = curr[1] + weight[curr[0]][neighbour];
+						distance[neighbour] = distance[curr[0]] + weight[curr[0]][neighbour];
 						parent[neighbour] = curr[0];
 						pq.add(new int[]{neighbour,distance[neighbour]});
 						hm.put(neighbour, new int[]{neighbour, distance[neighbour]});
@@ -44,9 +44,9 @@ public class Dijkstra {
 					} else {
 						if(hm.containsKey(neighbour)) {
 							int[] val = hm.get(neighbour);
-							if(curr[1] + weight[curr[0]][neighbour] < val[1]) {
+							if(distance[curr[0]] + weight[curr[0]][neighbour] < val[1]) {
 								pq.remove(val);
-								val[1] = curr[1] + weight[curr[0]][neighbour];
+								val[1] = distance[curr[0]] + weight[curr[0]][neighbour];
 								distance[neighbour] = val[1];
 								parent[neighbour] = curr[0];
 								pq.add(val);
