@@ -97,5 +97,12 @@ public class ConsecutiveArrayElementsTest {
 		Integer[] array = {1,2,3,4,4,7,7};
 		assertEquals(false, this.consecutiveArrayElements.isConsecutive(array));
 	}
+	
+	/** Tests an array with values.*/
+	@Test
+	public void test12IsConsecutive() {
+		Integer[] array = {1,9};
+		assertEquals(false, this.consecutiveArrayElements.isConsecutive(array));
+	}
 
 }
