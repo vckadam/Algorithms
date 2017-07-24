@@ -35,7 +35,7 @@ public class ConsecutiveArrayElementsTest {
 		assertEquals(false, this.consecutiveArrayElements.isConsecutive(array));
 	}
 	
-	/** Tests an array with consecutive values containing negative as well as negative.*/
+	/** Tests an array with consecutive values containing positive as well as negative.*/
 	@Test
 	public void test3IsConsecutive() {
 		Integer[] array = {-1,-2,-3,0,1,2,3};
@@ -89,6 +89,13 @@ public class ConsecutiveArrayElementsTest {
 	public void test10IsConsecutive() {
 		Integer[] array = {1};
 		assertEquals(true, this.consecutiveArrayElements.isConsecutive(array));
+	}
+	
+	/** Tests an array with duplicate values.*/
+	@Test
+	public void test11IsConsecutive() {
+		Integer[] array = {1,2,3,4,4,7,7};
+		assertEquals(false, this.consecutiveArrayElements.isConsecutive(array));
 	}
 
 }
