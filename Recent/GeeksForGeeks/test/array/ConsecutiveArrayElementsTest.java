@@ -11,7 +11,7 @@ import array.ConsecutiveArrayElements;
 public class ConsecutiveArrayElementsTest {
 
 	ConsecutiveArrayElements consecutiveArrayElements;
-	@Before
+	@Before 
 	public void setUp() throws Exception {
 		this.consecutiveArrayElements = new ConsecutiveArrayElements();
 	}
