@@ -104,7 +104,70 @@ public class AllElementsInRangeTest {
 	}
 	
 	@Test
-	public void testAreInRangePosNeg() {
+	public void testAreInRangePosNeg_AllInRange() {
+		Integer[] array = {1,2,0,-1,-2};
+		assertEquals(true, this.allElementsInRange.areInRangePosNeg(array, -2, 2));
 	}
+	
+	@Test
+	public void testAreInRangePosNeg_NotAllInRange() {
+		Integer[] array = {1,2,0,-1,-2};
+		assertEquals(true, this.allElementsInRange.areInRangePosNeg(array, 0, 2));
+	}
+	
+	@Test
+	public void testAreInRangePosNeg_AllInRangeWithDuplicate() {
+		Integer[] array = {1,2,0,-1,-2,-2,-2,-1,-1,0,1,2};
+		assertEquals(true, this.allElementsInRange.areInRangePosNeg(array, -2, 2));
+	}
+	
+	@Test
+	public void testAreInRangePosNeg_AllInRangeWithExtra() {
+		Integer[] array = {1,2,0,-1,-2,-2,-2,-1,-1,0,1,2,3,4,5,6,7,8};
+		assertEquals(true, this.allElementsInRange.areInRangePosNeg(array, -2, 2));
+	}
+	
+	@Test
+	public void testAreInRangePosNeg_NullA() {
+		Integer[] array = {1,2,0,-1,-2,-2,-2,-1,-1,0,1,2,3,4,5,6,7,8};
+		assertEquals(false, this.allElementsInRange.areInRangePosNeg(array, null, 2));
+	}
+	
+	@Test
+	public void testAreInRangePosNeg_NullB() {
+		Integer[] array = {1,2,0,-1,-2,-2,-2,-1,-1,0,1,2,3,4,5,6,7,8};
+		assertEquals(false, this.allElementsInRange.areInRangePosNeg(array, -2, null));
+	}
+	
+	@Test
+	public void testAreInRangePosNeg_NullA_B() {
+		Integer[] array = {1,2,0,-1,-2,-2,-2,-1,-1,0,1,2,3,4,5,6,7,8};
+		assertEquals(false, this.allElementsInRange.areInRangePosNeg(array, null, null));
+	}
+	
+	@Test
+	public void testAreInRangePosNeg_NullArray() {
+		Integer[] array = null;
+		assertEquals(false, this.allElementsInRange.areInRangePosNeg(array, null, null));
+	}
+	
+	@Test
+	public void testAreInRangePosNeg_NullArrayElement() {
+		Integer[] array = {null,1,2,0,-1,-2,null,null,-2,-2,null,-1,-1,0,1,2,3,4,5,6,7,8};
+		assertEquals(true, this.allElementsInRange.areInRangePosNeg(array, -2, 2));
+	}
+	
+	@Test
+	public void testAreInRangePosNeg_LargeArrayElement() {
+		Integer[] array = {null,1,2,0,-1,-2,null,null,-2,-2,null,-1,-1,0,1,2,3,4,5,6,7,8,2147483647, 2147483647, -2147483648};
+		assertEquals(true, this.allElementsInRange.areInRangePosNeg(array, -2, 2));
+	}
+	
+	@Test
+	public void testAreInRangePosNeg_LargeA_B() {
+		Integer[] array = {null,1,2,0,-1,-2,null,null,-2,-2,null,-1,-1,0,1,2,3,4,5,6,7,8,2147483647, 2147483647, -2147483648};
+		assertEquals(false, this.allElementsInRange.areInRangePosNeg(array, -2147483648, 2147483647));
+	}
+	
 
 }
