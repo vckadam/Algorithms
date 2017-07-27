@@ -20,10 +20,18 @@ public class BellmanFordTest {
 	}
 
 	@Test
-	public void testGetShortestDistance() {
+	public void testGetShortestDistance_PositiveScenario() {
 		int[][] edges = {{0,1,4},{0,3,8},{0,2,5},{1,2,-3},{2,4,4},{4,3,1},{3,4,2}};
 		int[] actual = this.bellmanFord.getShortestDistance(5, edges);
 		int[] expected = {0,4,1,6,5};
+		assertArrayEquals(expected, actual);
+	}
+	
+	@Test
+	public void testGetShortestDistance_NegativeWeightCycle() {
+		int[][] edges = {{0,1,1},{1,2,3},{2,3,2},{3,1,-6}};
+		int[] actual = this.bellmanFord.getShortestDistance(5, edges);
+		int[] expected = null;
 		assertArrayEquals(expected, actual);
 	}
 
