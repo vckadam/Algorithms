@@ -17,7 +17,82 @@ Explanation: The maximum result is 5 ^ 25 = 28.
 
 */
 
+//Optimized O(n)
 public class Solution {
+    class Node {
+        Node[] nodes;
+        public Node() {
+            nodes = new Node[2];
+        }
+    }
+    class Trie {
+        Node root;
+        public Trie() {
+            root = new Node();
+        }
+        public void add(int n) {
+            Node temp = root;
+            /* 
+            n = 10000000000000000000000000000010
+            n >> 31 
+            00000000000000000000000000000001 & 1 - 1
+            */
+            for(int i = 31; i >= 0; i--) {
+                int digit = ((n >> i) & 1);
+                if(temp.nodes[digit] == null) temp.nodes[digit] = new Node();
+                temp = temp.nodes[digit];
+            }
+        }
+        
+        public int maxXOR(int n) {
+            /*
+            n1 - 00000000000000000000000000000010
+            n2 - 10000000000000000000000000000011
+            ans= 10000000000000000000000000000001
+            ret -00000000000000000000000000000000
+            
+            1
+            1 << 31
+            10000000000000000000000000000000 | ret
+            10000000000000000000000000000000
+            */
+            Node temp = root;
+            int ret = 0;
+            for(int i = 31; i >= 0; i--) {
+                int digit = ((n >> i) & 1);
+                if(temp.nodes[digit^1] != null) { // ^1 alternates the bit 0 to 1 and 1 to 0
+                    ret |= (1 << i);
+                    temp = temp.nodes[digit^1];
+                }
+                else temp = temp.nodes[digit];
+            }
+            return ret;
+        }
+    }
+    public int findMaximumXOR(int[] nums) {
+        /* 
+         3 -     11
+         10 -  1010
+         5  -   101
+         25 - 11001
+         2  -    10
+         8     1000
+        */
+        Trie trie = new Trie();
+        int ret = 0;
+        for(int num : nums) {
+            trie.add(num);
+        }
+        for(int num : nums) {
+            ret = Math.max(ret, trie.maxXOR(num));
+        }
+        return ret;
+    }
+}
+
+
+//Another approach.  Exponential Complexity
+class Solution2 {
     class Node {
         Node[] nodes;
         public Node() {
