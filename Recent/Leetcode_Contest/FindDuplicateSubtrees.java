@@ -32,6 +32,33 @@ and
  *     TreeNode(int x) { val = x; }
  * }
  */
+// Optimal Solution 
+public class Solution {
+    public List<TreeNode> findDuplicateSubtrees(TreeNode root) {
+        List<TreeNode> ret = new ArrayList<TreeNode>();
+        Map<String,List<TreeNode>> subTreeStr = new HashMap<>();
+        helper(root,subTreeStr);
+        for(String key : subTreeStr.keySet()) {
+            List<TreeNode> currList = subTreeStr.get(key);
+            if(currList != null && currList.size() > 1) {
+                ret.add(currList.get(0));
+            }
+        }
+        return ret;
+    }
+    public String helper(TreeNode root, Map<String,List<TreeNode>> subTreeStr) {
+        if(root == null) return "";
+        String leftStr = helper(root.left, subTreeStr);
+        String rightStr = helper(root.right, subTreeStr);
+        String currStr = root.val+"#"+leftStr+"#"+rightStr;
+        if(!subTreeStr.containsKey(currStr))
+           subTreeStr.put(currStr,new ArrayList<TreeNode>());
+        subTreeStr.get(currStr).add(root);
+        return currStr;
+    }
+}
+ 
+// Another Solution
 public class Solution {
     public List<TreeNode> findDuplicateSubtrees(TreeNode root) {
         List<TreeNode> ret = new ArrayList<TreeNode>();
