@@ -2,7 +2,7 @@ package array;
 
 public class FindIndTo0Max1Seq {
 	public int getIndex(int[] array) {
-		if(array == null || array.length == 0) 
+		if(array == null) 
 			throw new IllegalArgumentException("Illegal Argument");
 		int left = 0, right = 0, count = 0;
 		int ansLeft = -1, ansRight = -1;
@@ -24,5 +24,21 @@ public class FindIndTo0Max1Seq {
 					return i;
 		}
 		return -1;
+	}
+	
+	public int getIndex2(int[] array) {
+		if(array == null)
+			throw new IllegalArgumentException("Illegal Argument");
+		int maxLen = 0, ind = 0, prevZero = -1, prevPrevZero = -1;
+		for(int i = 0; i < array.length; i++) {
+			if(array[i]== 0) {
+				prevPrevZero = prevZero;
+				prevZero = i;
+			}
+			if(i - prevPrevZero > maxLen) {
+				ind = prevZero;
+			}
+		}
+		return ind;
 	}
 }
