@@ -1,3 +1,8 @@
+package array;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /*
 Largest subarray of 0's and 1's
 
@@ -41,10 +46,10 @@ you need to write your solution in the form Function(s) only.
 Driver Code to call/invoke your function would be added by GfG's Online Judge.*/
 
 
-class GfG
+public class LargestSubarrayOfZerosOnesEqual
 {
     /*You are required to complete this method*/ 
-    int maxLen(int[] arr) 
+    public int maxLen(int[] arr) 
     {
          int mL = 0, total = 0;
          Map<Integer,Integer> hm = new HashMap<>();
