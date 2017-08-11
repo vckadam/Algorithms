@@ -22,4 +22,19 @@ public class FloorAndCeiling {
 		}
 		return array[left];
 	}
+	
+	public int getCeiling(int[] array, int num) {
+		if(array == null || array.length == 0)
+			throw new IllegalArgumentException("Illegal Argument");
+		if(array[array.length-1] < num)
+			return -1;
+		int left = 0, right = array.length-1;
+		while(left < right) {
+			int mid = (left + right) >> 1;
+			if(num == array[mid]) return num;
+			else if(num > array[mid]) left = mid + 1;
+			else right = mid;
+		}
+		return array[left];
+	}
 }
