@@ -53,12 +53,12 @@ public class Solution {
 
     static class Node {
         Node[] nodes;
-        int visited;
-        int eow; 
+        boolean visited;
+        boolean eow; 
         public Node() {
             nodes = new Node[26];
-            eow = 0;
-            visited = 0;
+            eow = false;
+            visited = false;
         }
     }
     
@@ -71,17 +71,18 @@ public class Solution {
         public boolean add(String str) {
             Node temp = root;
             for(int i = 0; i < str.length(); i++) {
-                if(temp.nodes[str.charAt(i)-'a'] == null) temp.nodes[str.charAt(i)-'a'] = new Node();
+                if(temp.nodes[str.charAt(i)-'a'] == null)
+                    temp.nodes[str.charAt(i)-'a'] = new Node();
                 temp = temp.nodes[str.charAt(i)-'a'];
-                if(i < str.length()-1 && temp.eow > 0) { // ex g followed by ghi 
-                    return false;
-                }
-                temp.visited++;
+                if(temp.eow) 
+                    return false;   // a , ab
+                if(i < str.length()-1)
+                    temp.visited = true;
             }
-            if(temp.visited > 1 || temp.eow > 0) {  // for visited - ghi followed by g
-                return false;                       // eow - ghi followed by ghi
-            }
-            temp.eow++;
+            if(temp.visited)
+                return false;    // ab, a & ab, ab
+            temp.visited = true;
+            temp.eow = true;
             return true;
         }
         
