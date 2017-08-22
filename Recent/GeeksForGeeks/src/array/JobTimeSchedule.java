@@ -13,9 +13,9 @@ public class JobTimeSchedule {
 	}
 	
 	public int helper(int[] jobTimes, int workers, int left, int right) {
-		int mid = left + (right-left)/2;
 		int ret = right;
 		while(left <= right) {
+			int mid = (left + right)/2;
 			if(isPossible(jobTimes,workers,mid)) {
 				ret = Math.min(ret, mid);
 				right = mid - 1;
@@ -27,15 +27,14 @@ public class JobTimeSchedule {
 	}
 	
 	public boolean isPossible(int[] jobTimes, int workers, int time) {
-		int count = 0, currStatus = 0;
-		for(int i = 0; i < jobTimes.length; i++) {
-			currStatus += jobTimes[i];
-			if(currStatus > time) {
-				i--;
-				currStatus = 0;
+		int count = 1, currStatus = 0;
+		int i = 0;
+		while(i < jobTimes.length) {
+			if(currStatus + jobTimes[i] > time) {
 				count++;
+				currStatus = 0;
 			} else {
-				currStatus += jobTimes[i];
+				currStatus += jobTimes[i++];
 			}
 		}
 		return count <= workers;
