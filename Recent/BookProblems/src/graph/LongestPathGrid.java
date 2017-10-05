@@ -3,6 +3,7 @@ package graph;
 public class LongestPathGrid {
 	
 	public static final int[][] dirs = {{0,1},{1,0},{-1,0},{0,-1}};
+	
 	public int getLongestPath(char[][] grid, char start, char end) {
 		if(grid.length == 0)
 			return 0;

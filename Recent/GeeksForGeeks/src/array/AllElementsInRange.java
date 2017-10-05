@@ -7,6 +7,7 @@ public class AllElementsInRange {
 	/** checks array contains all the positive elements in range [a,b].*/
 	public boolean areInRangePositive(Integer[] array, Integer a, Integer b) {
 		 /* 
+		  * 
 		  * array = {1,2,3,4,3,7} a = 1, b = 4 
 		  * int[] status - len = 4 - 1 + 1
 		  * status = { 1, 1, 1, 1 }
