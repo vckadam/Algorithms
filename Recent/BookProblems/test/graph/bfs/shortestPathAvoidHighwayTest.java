@@ -28,7 +28,7 @@ public class shortestPathAvoidHighwayTest {
 		int[][] highways = {{0,1},{1,2}};
 		String actualPath = this.shortestPathAvoidHighway.getSortestPath(3, edges, highways, 0, 2);
 		String expectedPath = "0->2";
-		assertEquals(expectedPath, actualPath);
+		assertEquals(expectedPath, actualPath) ;
 	}
 	
 	@Test
