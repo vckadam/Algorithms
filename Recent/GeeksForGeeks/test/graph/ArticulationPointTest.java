@@ -54,5 +54,23 @@ public class ArticulationPointTest {
 		Set<Integer> expectedPoints = new HashSet<Integer>();
 		assertEquals(expectedPoints, actualPoints);
 	}
+	
+	@Test
+	public void testGetArticulationPoint_GFG1() {
+		int[][] edges = {{1,0},{0,2},{2,1},{0,3},{3,4}};
+		List<Integer> actual = this.articulationPoint.getArticulationPoint(5, edges);
+		Set<Integer> actualPoints = new HashSet<Integer>(actual);
+		Set<Integer> expectedPoints = new HashSet<Integer>(Arrays.asList(0,3));
+		assertEquals(expectedPoints, actualPoints);
+	}
+	
+	@Test
+	public void testGetArticulationPoint_GFG2() {
+		int[][] edges = {{1,0},{0,2},{2,1},{1,3},{1,4},{1,6},{3,5},{4,5}};
+		List<Integer> actual = this.articulationPoint.getArticulationPoint(7, edges);
+		Set<Integer> actualPoints = new HashSet<Integer>(actual);
+		Set<Integer> expectedPoints = new HashSet<Integer>(Arrays.asList(1));
+		assertEquals(expectedPoints, actualPoints);
+	}
 
 }

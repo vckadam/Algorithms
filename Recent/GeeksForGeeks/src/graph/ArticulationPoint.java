@@ -46,13 +46,14 @@ public class ArticulationPoint {
 				parent[neighbour] = curr;
 				childern++;
 				dfs(neighbour, adjList, status, visited, parent, time, low, currTime+1, curr);
+				low[curr] = Math.min(low[curr], low[neighbour]);
 				if(parent[curr] == curr && childern >= 2) 
 					status[curr] = true;
 				if(parent[curr] != curr && time[curr] <= low[neighbour]) {
 					status[curr] = true;
 				}
 			} else {
-				low[curr] = Math.min(low[curr], low[neighbour]);
+				low[curr] = Math.min(low[curr], time[neighbour]);
 			}
 		}
 	}
