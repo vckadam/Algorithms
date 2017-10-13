@@ -39,6 +39,4 @@ public class RemoveZeroSumSequence {
 		}
 		return fakeHead.next;
 	}
-	
-	
 }

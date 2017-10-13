@@ -28,6 +28,16 @@ public class RemoveZeroSumSequenceTest {
 		assertEquals(expectedList, actualList);
 	}
 	
+	@Test
+	public void testGetUpdatedList_LastTwoRemains() {
+		int[] list = {4, 6, -10, 8, 9, 10, -19, 10, -18, 20, 25 };
+		Node head = createLinkedList(list);
+		Node actualHead = this.removeZeroSumSequence.getUpdatedList(head);
+		List<Integer> actualList = listToArray(actualHead);
+		List<Integer> expectedList = new ArrayList<Integer>(Arrays.asList(20, 25));
+		assertEquals(expectedList, actualList);
+	}
+	
 	public List<Integer> listToArray(Node head) {
 		List<Integer> ret = new ArrayList<Integer>();
 		while(head != null) {
