@@ -18,23 +18,27 @@ public class RemoveZeroSumSequence {
 			return head;
 		Node fakeHead = new Node(0);
 		fakeHead.next = head;
-		Node temp = head;
 		int sum = 0;
-		while(temp != null) {
+		while(head != null) {
 			Node prev = fakeHead;
 			int tempSum = sum;
-			while(prev != temp) {
-				if(tempSum == temp.val) {
-					prev.next = temp.next;
+			while(prev != head) {
+				tempSum -= prev.val;
+				if(tempSum == -head.val) {
+					prev.next = head.next;
+					head = head.next;
 					sum -= tempSum;
 					break;
 				}
-				tempSum -= prev.val;
 				prev = prev.next;
 			}
-			sum += temp.val;
-			temp = temp.next;
+			if(head != null) {
+				sum += head.val;
+				head = head.next;
+			}
 		}
 		return fakeHead.next;
 	}
+	
+	
 }
