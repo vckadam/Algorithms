@@ -62,7 +62,7 @@ public class AVLTree {
 		root.left = temp.right;
 		root.height = Math.max(getHeight(root.left),getHeight(root.right)) + 1;
 		temp.count -= getCount(temp.right);
-		temp.right = root; // when right changes, need to update count (only for dupliate)
+		temp.right = root; // when right changes, need to update count (only for duplicate)
 		temp.count += getCount(temp.right);
 		root = temp;
 		root.height = Math.max(getHeight(root.left),getHeight(root.right)) + 1;
