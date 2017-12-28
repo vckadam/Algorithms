@@ -17,5 +17,12 @@ public class ReplaceKthNode {
 		}
 		if(startPrev == endPrev)
 			return fakeHead.next;
+		Node temp = startPrev.next;
+		startPrev.next = endPrev.next;
+		endPrev.next = temp;
+		temp = startPrev.next.next;
+		startPrev.next.next  = endPrev.next.next;
+		endPrev.next.next = temp;
+		return fakeHead.next;
 	}
 }
